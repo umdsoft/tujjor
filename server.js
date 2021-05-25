@@ -17,6 +17,7 @@ app.get('/',(req,res)=>{
     res.send('Hello Server')
 })
 app.use('/api/category',require('./routes/category'))
+app.use('/api/user',require('./routes/user'))
 
 
 app.listen(3001,()=>{

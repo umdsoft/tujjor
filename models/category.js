@@ -5,7 +5,7 @@ const CategorySchema = new mongoose.Schema({
         uz: {type: String, required: true, trim: true},
         ru: {type: String, required: true, trim: true}
     },
-    parendtId: {type: String}
+    parentId: {type: String}
 }, {timestamps: true})
 
 module.exports = mongoose.model('category',CategorySchema)

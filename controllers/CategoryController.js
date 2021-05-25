@@ -29,8 +29,8 @@ exports.create = (req,res)=>{
             ru: req.body.name.ru
         }
     })
-    if(req.body.parendtId){
-        category.parentId = req.body.parendtId
+    if(req.body.parentId){
+        category.parentId = req.body.parentId
     }
     category.save()
         .then(()=>{
@@ -39,8 +39,7 @@ exports.create = (req,res)=>{
         .catch((err)=>{
             res.status(400).json({success: false, err})
         })
-}
-
+}                                                                       
 exports.getCategory = async (req, res,next) => {
     await Category.find({})
         .sort({num: 1})
@@ -48,8 +47,22 @@ exports.getCategory = async (req, res,next) => {
             if(error)  res.status(400).json({error})
             if(categories){
                 const categoryList = createCategories(categories)
-                res.status(200).json({categoryList })
+                res.status(200).json({data: categoryList })
             }
         })
-
 };
+exports.deleteCategory = async (req,res)=>{
+    await Category.findByIdAndDelete(req.params.id , (err,data)=>{
+        if(err) throw res.status(400).json(err)
+        res.status(200).json({
+            success: true,
+            data: []
+        })
+    })
+}
+exports.editCategory = async (req,res)=>{
+    await Category.updateOne({_id: req.params.id},{$set:req.body},(err,data)=>{
+        if(err) return res.status(400).json({success: false})
+        res.status(200).json({success: true})
+    })
+}
