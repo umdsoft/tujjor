@@ -21,7 +21,7 @@ function createCategories (categories, parentId = null){
     }
     return categoryList
 }
-async function deleteCategory (parentId) {
+const deleteCategory = async (parentId) => {
     let item = await Category.find({parentId});
     if(item.length) {
         item.forEach(key=>{
@@ -60,19 +60,20 @@ exports.getCategory = async (req, res,next) => {
             }
         })
 };
+exports.getById = (req, res)=>{
+    Category.findById({_id: req.params.id}).then((err,data)=>{
+        if(err){
+            return res.status(400).json({err})
+        }
+        res.status(200).json(data)
+    })
+}
 exports.deleteCategory = async (req,res)=>{
 
     await Category.findByIdAndDelete({_id: req.params.id}).then(()=>{
         deleteCategory(req.params.id);
         res.status(200).json({data: []})
     })
-    // await Category.findByIdAndDelete(req.params.id , (err,data)=>{
-    //     if(err) throw res.status(400).json(err)
-    //     res.status(200).json({
-    //         success: true,
-    //         data: []
-    //     })
-    // })
 }
 exports.editCategory = async (req,res)=>{
     await Category.updateOne({_id: req.params.id},{$set:req.body},(err,data)=>{
