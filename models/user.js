@@ -3,10 +3,19 @@ const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const config = require('../config/config')
 const UserSchema = new mongoose.Schema({
-    phone: {type: String, unique: true, required: true},
+    phone: {type: String, unique: true, required: true, trim: true},
     password: {type: String, required: true},
     name: {type: String, required: true, trim: true},
-    role: {type: String, required: true, default: '0'}
+    email: {type: String, unique: true, required: true},
+    role: {
+        type: String, 
+        required: true, 
+        enum:[
+            'admin',
+            'seller',
+            'client'
+        ],
+        default: 'client'}
 },{timestamps: true})
 
 // Encrypt password using bcrypt

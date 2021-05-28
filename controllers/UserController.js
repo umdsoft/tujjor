@@ -32,9 +32,9 @@ exports.register = async (req,res)=>{
     const user = new User({
         name: req.body.name,
         password: req.body.password,
-        phone: req.body.phone
+        phone: req.body.phone,
+        email: req.body.email
     })
-
     await user.save()
         .then(()=>{
             res.status(201).json({
