@@ -56,7 +56,7 @@ exports.getCategory = async (req, res,next) => {
             if(error)  res.status(400).json({error})
             if(categories){
                 const categoryList = createCategories(categories)
-                res.status(200).json({data: categoryList })
+                res.status(200).json({success: true, data: categoryList })
             }
         })
 };
