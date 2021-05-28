@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const ShopSchema = new mongoose.Schema({
     name: {type: String, unique: true, required: true, trim: true},
     user: {type: mongoose.Schema.ObjectId, ref: 'user', required: true},
-    image: [{type: String, required: true}],
+    image: {type: String, required: true},
     description: {type: String},
     info:{
         email: {type: String, required: true},

@@ -22,7 +22,7 @@ app.get('/',(req,res)=>{
 })
 app.use('/api/category',require('./routes/category'))
 app.use('/api/user',require('./routes/user'))
-
+app.use('/api/shop',require('./routes/shop'))
 const PORT = process.env.PORT || 3001;
 app.listen(PORT,()=>{
     console.log('Server running')

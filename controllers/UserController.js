@@ -1,7 +1,6 @@
 const User = require('../models/user');
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
-const config = require('../config/config')
 const sendTokenResponse = (user, statusCode, res) => {
     // Create token
 
@@ -9,11 +8,11 @@ const sendTokenResponse = (user, statusCode, res) => {
     console.log("Working...........");
     const options = {
         expires: new Date(
-            Date.now() + config.JWT_COOKIE_EXPIRE * 24 * 60 * 60 * 1000
+            Date.now() + process.env.JWT_COOKIE_EXPIRE * 24 * 60 * 60 * 1000
         ),
         httpOnly: true
     };
-    if (config.NODE_ENV === 'production') {options.secure = true;}
+    if (process.env.NODE_ENV === 'production') {options.secure = true;}
     res
         .status(statusCode)
         .cookie('token', token, options)

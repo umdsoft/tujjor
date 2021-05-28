@@ -13,7 +13,7 @@ exports.create = async (req, res) =>{
             email: req.body.email,
             address: req.body.address
         },
-        image: `/uploads/brands/${req.file.filename}`
+        image: `/uploads/shops/${req.file.filename}`
     })
     shop.save()
     .then(()=>{
@@ -24,12 +24,29 @@ exports.create = async (req, res) =>{
     })
 }
 exports.getShop = async (req, res) => {
-    const data = await Shop.find();
-    res.data(200).json({success: true, data})
+    res.status(200).json({success: true, data: await Shop.find()})
+}
+exports.getOne = async (req, res) => {
+    if(!req.params.id){
+        return res.status(400).json({success: false, data: 'id is required'})
+    }
+    await Shop.findById({_id: req.params.id}, (err, data)=>{
+        if(err){
+            return res.status(400).json({success: false, data:'Not Found'})
+        }
+        if(!data){
+            return res.status(400).json({success:false, data: 'Not Found'})
+        }
+        res.status(200).json({success:true, data})
+    })
+}
+exports.editStatus = async (req, res)=>{
+}
+exports.edit = async (req, res)=>{
 }
 exports.editImage = async (req,res)=>{
-    const img = {image: `/uploads/brands/${req.file.filename}`}
-    await Brand.findOne({_id: req.params.id },async (err,data)=> {
+    const img = {image: `uploads/shops/${req.file.filename}`}
+    await Shop.findOne({_id: req.params.id },async (err,data)=> {
         if (err) return res.status(200).json({success: false, err});
         fs.unlink(
             path.join(path.dirname(__dirname) + `/public/${data.image}`),
@@ -37,9 +54,8 @@ exports.editImage = async (req,res)=>{
                 if (err) return res.status(400).json({success: false, err});
             }
         )
-    }
-    )
-    await Brand.updateOne({_id: req.params.id},{$set: img})
+    })
+    await Shop.updateOne({_id: req.params.id},{$set: img})
         .exec((err,data)=>{
             if(err) return res.status(400).json({success: false,err})
 
@@ -56,7 +72,7 @@ exports.delete = async (req,res)=>{
                 console.log('success')
         }
         )
-        await Brand.findByIdAndDelete(data._id)
+        await Shop.findByIdAndDelete(data._id)
         res.status(200).json({
             success: true,
             data: []
