@@ -24,7 +24,7 @@ exports.create = async (req, res) =>{
     })
 }
 exports.getShop = async (req, res) => {
-    res.status(200).json({success: true, data: await Shop.find({}).select({__v: 0})
+    res.status(200).json({success: true, data: await Shop.find({}).populate('category').select({__v: 0})
 })
 }
 exports.getOne = async (req, res) => {
