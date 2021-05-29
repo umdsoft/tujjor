@@ -83,7 +83,7 @@ exports.editImage = async (req,res)=>{
 }
 exports.delete = async (req,res)=>{
     await Shop.findOne({_id:req.params.id},async (err,data)=>{
-        if(err) throw res.status(400).json({success:false, data:err});
+        if(err) {return res.status(400).json({success:false, data:err});}
         fs.unlink(
             path.join(path.dirname(__dirname)+`/public/${data.image}`),
             (err)=>{
