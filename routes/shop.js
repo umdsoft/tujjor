@@ -1,10 +1,11 @@
 const express = require('express');
 const router = express.Router();
-const Shop = require('../controllers/ShopControllers');
+const ShopController = require('../controllers/ShopControllers');
 const multer = require('multer');
 const md5 = require('md5');
 const path = require('path');
-const { protect } = require('../middleware/auth');
+const { protectAdmin } = require('../middleware/auth');
+
 const storage = multer.diskStorage({
     destination: function (req,file,cb) {
         cb(null, './public/uploads/shops');
@@ -15,12 +16,12 @@ const storage = multer.diskStorage({
 });
 const upload = multer({storage: storage});
 
-router.post('/create', upload.single('image'), Shop.create);
-router.get('/all', Shop.getShop);
-router.get('/:id', Shop.getOne);
-router.put('/status/:id',Shop.editStatus);
-router.put('/:id',Shop.edit);
-router.put('/image/:id',upload.single('image'), Shop.editImage);
-router.delete('/:id', Shop.delete);
+router.post('/create', upload.single('image'), ShopController.create);
+router.get('/all', ShopController.getShop);
+router.get('/:id', ShopController.getOne);
+router.put('/status/:id', ShopController.editStatus);
+router.put('/:id', ShopController.edit);
+router.put('/image/:id',upload.single('image'), ShopController.editImage);
+router.delete('/:id', ShopController.delete);
 
 module.exports = router;

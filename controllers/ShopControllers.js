@@ -24,7 +24,9 @@ exports.create = async (req, res) =>{
     })
 }
 exports.getShop = async (req, res) => {
-    res.status(200).json({success: true, data: await Shop.find({}, { __v: 0 })})
+    res.status(200).json({success: true, data: await Shop.find({})
+    // .populate({path: 'category', select:['name', '_id', 'parentId']})
+})
 }
 exports.getOne = async (req, res) => {
     if(!req.params.id){
@@ -38,7 +40,7 @@ exports.getOne = async (req, res) => {
             return res.status(400).json({success:false, data: 'Not Found'})
         }
         res.status(200).json({success:true, data})
-    })
+    }).populate('category user')
 }
 exports.editStatus = async (req, res)=>{
     if(!req.body.status){

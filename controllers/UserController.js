@@ -89,3 +89,13 @@ exports.me = async (req,res)=>{
         })
     })
 }
+exports.delete = async (req,res)=>{
+    if(!req.params.id){
+        return res.status(400).json({success: false, data: 'Somting is wrong'})
+    }
+    let result = await User.findByIdAndDelete({_id: req.params.id});
+    if(!result){
+        return res.status(400).json({success: false, data: 'This id not found'})
+    }
+    return res.status(200).json({success: true, data:[]})
+}
