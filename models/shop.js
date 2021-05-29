@@ -10,6 +10,7 @@ const ShopSchema = new mongoose.Schema({
         phone: {type: String, required: true},
         address: {type: String, required: true}
     },
-    category: {type: mongoose.Schema.ObjectId, ref: 'category', }
+    category: {type: mongoose.Schema.ObjectId, ref: 'category', required: true},
+    status: {type: Number, enum:[0,1], default: 0}
 })
 module.exports = mongoose.model('shop', ShopSchema);

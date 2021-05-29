@@ -15,12 +15,12 @@ const storage = multer.diskStorage({
 });
 const upload = multer({storage: storage});
 
-router.post('/create', protect, upload.single('image'), Shop.create);
-router.get('/all', protect,Shop.getShop);
-router.get('/:id', protect,Shop.getOne);
-router.put('/status/:id',protect, Shop.editStatus);
-router.put('/:id',protect, Shop.edit);
-router.put('/image/:id',protect, upload.single('image'), Shop.editImage);
-router.delete('/:id', protect, Shop.delete);
+router.post('/create', upload.single('image'), Shop.create);
+router.get('/all', Shop.getShop);
+router.get('/:id', Shop.getOne);
+router.put('/status/:id',Shop.editStatus);
+router.put('/:id',Shop.edit);
+router.put('/image/:id',upload.single('image'), Shop.editImage);
+router.delete('/:id', Shop.delete);
 
 module.exports = router;

@@ -24,13 +24,13 @@ exports.create = async (req, res) =>{
     })
 }
 exports.getShop = async (req, res) => {
-    res.status(200).json({success: true, data: await Shop.find()})
+    res.status(200).json({success: true, data: await Shop.find({}, { __v: 0 })})
 }
 exports.getOne = async (req, res) => {
     if(!req.params.id){
         return res.status(400).json({success: false, data: 'id is required'})
     }
-    await Shop.findById({_id: req.params.id}, (err, data)=>{
+    await Shop.findById({_id: req.params.id}, { __v: 0 }, (err, data)=>{
         if(err){
             return res.status(400).json({success: false, data:'Not Found'})
         }
@@ -41,8 +41,26 @@ exports.getOne = async (req, res) => {
     })
 }
 exports.editStatus = async (req, res)=>{
+    if(!req.body.status){
+        return res.status(400).json({success: false, data: 'Something is wrong'})
+    }
+    await Shop.updateOne({_id: req.params.id},{$set: {status: req.body.status}}, (err, data)=>{
+        if(err){
+            return res.status(400).json({success: false, data: 'Not Found'})
+        }
+        res.status(200).json({success: true, data})
+    })
 }
 exports.edit = async (req, res)=>{
+    if(!req.body || req.body.status){
+        return res.status(400).json({success: false, data: 'Something is wrong'})
+    }
+    await Shop.updateOne({_id: req.params.id},{$set: req.body}, (err, data)=>{
+        if(err){
+            return res.status(400).json({success: false, data: 'Not Found'})
+        }
+        res.status(200).json({success: true, data})
+    })
 }
 exports.editImage = async (req,res)=>{
     const img = {image: `uploads/shops/${req.file.filename}`}
