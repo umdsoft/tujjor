@@ -1,9 +1,12 @@
+const router = require('express').Router();
+const multer = require('multer');
+const md5 = require('md5');
+const path = require('path');
 const BrandController =require('../controllers/BrandController')
-const {Router} = require('express');
 
 const storage = multer.diskStorage({
     destination: function (req,file,cb) {
-        cb(null, './public/uploads/shops');
+        cb(null, './public/uploads/brands');
     },
     filename: function (req,file,cb) {
         cb(null, `${md5(Date.now())}${path.extname(file.originalname)}`);
@@ -11,8 +14,10 @@ const storage = multer.diskStorage({
 });
 const upload = multer({storage: storage});
 
-Router.post('/create', BrandController.create);
-Router.get('/all', BrandController.getAll);
-Router.get('/:id', BrandController.getOne);
-Router.put('/:id', BrandController.edit);
-Router.delete('/create', BrandController.delete);
+router.post('/create', upload.single('image'), BrandController.create);
+router.get('/all', BrandController.getAll);
+router.get('/:id', BrandController.getOne);
+router.put('/:id', BrandController.edit);
+router.delete('/:id', BrandController.delete);
+
+module.exports = router;

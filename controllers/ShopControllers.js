@@ -1,9 +1,13 @@
-const Shop = require('../models/shop');
+const {Shop, validate} = require('../models/shop');
 const fs = require('fs');
 const path = require('path');
 const { getSlug } = require('../utils');
 
-exports.create = async (req, res) =>{
+exports.create = async (req, res) => {
+    const { error } = validate(req.body);
+    if (error) {
+        return res.status(400).json({success: false, message: error.details[0].message});
+    }
     const shop = new Shop({
         name: req.body.name,
         user: req.body.user,

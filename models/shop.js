@@ -1,7 +1,8 @@
+const Joi = require('joi');
 const mongoose = require('mongoose');
 
 const ShopSchema = new mongoose.Schema({
-    name: {type: String, required: true, trim: true},
+    name: {type: String, unique: true, required: true, trim: true},
     user: {type: mongoose.Schema.ObjectId, ref: 'user', required: true},
     image: {type: String, required: true},
     description: {type: String},
@@ -14,4 +15,19 @@ const ShopSchema = new mongoose.Schema({
     status: { type: Number, enum: [0, 1], default: 0 },
     slug: {type: String, unique: true, required: true}
 })
-module.exports = mongoose.model('shop', ShopSchema);
+exports.Shop = mongoose.model('shop', ShopSchema);
+
+exports.validate = (shop) => {
+    const schema = {
+        name: Joi.string().required(),
+        user: Joi.string().required(),
+        category: Joi.string().required(),
+        description: Joi.string().required(),
+        email: Joi.string().required(),
+        phone: Joi.string().required(),
+        address: Joi.string().required(),
+        status: Joi.number().required().valid(0, 1),
+    };
+
+    return Joi.validate(shop, schema);
+}
