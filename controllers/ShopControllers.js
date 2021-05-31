@@ -1,6 +1,7 @@
 const Shop = require('../models/shop');
 const fs = require('fs');
-const path = require('path')
+const path = require('path');
+const { getSlug } = require('../utils');
 
 exports.create = async (req, res) =>{
     const shop = new Shop({
@@ -13,7 +14,8 @@ exports.create = async (req, res) =>{
             email: req.body.email,
             address: req.body.address
         },
-        image: `/uploads/shops/${req.file.filename}`
+        image: `/uploads/shops/${req.file.filename}`,
+        slug: getSlug(req.body.name)
     })
     shop.save()
     .then(()=>{
@@ -84,6 +86,7 @@ exports.editImage = async (req,res)=>{
 exports.delete = async (req,res)=>{
     await Shop.findOne({_id:req.params.id},async (err,data)=>{
         if(err) {return res.status(400).json({success:false, data:err});}
+        if(!data.length) {return res.status(400).json({success:false, data:"id not Found"});}
         fs.unlink(
             path.join(path.dirname(__dirname)+`/public/${data.image}`),
             (err)=>{

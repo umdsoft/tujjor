@@ -1,5 +1,5 @@
 const Category = require('../models/category')
-
+const {getSlug} = require('../utils')
 function createCategories (categories, parentId = null){
     const categoryList = []
     let category;
@@ -16,6 +16,8 @@ function createCategories (categories, parentId = null){
                 uz: cate.name.uz,
                 ru: cate.name.ru
             },
+            parentId: cate.parentId,
+            slug: cate.slug,
             children: createCategories(categories, cate._id)
         })
     }
@@ -36,7 +38,8 @@ exports.create = (req,res)=>{
         name: {
             uz: req.body.name.uz,
             ru: req.body.name.ru
-        }
+        },
+        slug: getSlug(req.body.name.ru)
     })
     if(req.body.parentId){
         category.parentId = req.body.parentId
@@ -49,23 +52,22 @@ exports.create = (req,res)=>{
             res.status(400).json({success: false, err})
         })
 }                                                                       
-exports.getCategory = async (req, res,next) => {
-    await Category.find({})
-        .sort({num: 1})
-        .exec((error, categories) => {
-            if(error)  res.status(400).json({error})
-            if(categories){
-                const categoryList = createCategories(categories)
-                res.status(200).json({success: true, data: categoryList })
-            }
-        })
+exports.getCategory = async (req, res, next) => {
+    await Category.find()
+    .exec((error, categories) => {
+        if(error)  res.status(400).json({error})
+        if(categories){
+            const categoryList = createCategories(categories)
+            res.status(200).json({success: true, data: categoryList })
+        }
+    })
 };
 exports.getById = (req, res)=>{
-    Category.findById({_id: req.params.id}).then((err,data)=>{
-        if(err){
-            return res.status(400).json({err})
+    Category.findOne({ slug: req.params.slug }, (err, data) => {
+        if (err) {
+            return res.status(400).json({success: false, err})
         }
-        res.status(200).json(data)
+        res.status(200).json({success: true, data})
     })
 }
 exports.deleteCategory = async (req,res)=>{
