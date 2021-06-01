@@ -6,7 +6,7 @@ const HelpSchema = new mongoose.Schema({
         uz: { type: String, required: true },
         ru: { type: String, required: true}
     },
-    status: {type: Boolean, required: true},
+    status: {type: Boolean, required: true, default: true},
     description:{
         uz: { type: String, required: true },
         ru: { type: String, required: true}
@@ -20,7 +20,7 @@ exports.validate = (help) => {
             uz: Joi.string().required(),
             ru: Joi.string().required()
         },
-        status: Joi.boolean().required(),
+        status: Joi.boolean(),
         description: {
             uz: Joi.string().required(),
             ru: Joi.string().required()

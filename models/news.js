@@ -1,31 +1,34 @@
 const Joi = require("joi");
 const mongoose = require("mongoose");
 
-const InfoSchema = new mongoose.Schema({
+const NewsSchema = new mongoose.Schema({
     title: {
         uz: { type: String, required: true },
         ru: { type: String, required: true}
     },
-    status: {type: Boolean, required: true, default: true},
     description:{
         uz: { type: String, required: true },
         ru: { type: String, required: true}
     },
+    hashtag: {type: String},
+    file: {type: String, required: true},
+    status: {type: Boolean, required: true, default: true},
     slug: {type: String, required: true, unique: true}
-},{timestamps: true})
-exports.Info = mongoose.model('info', InfoSchema);
-exports.validate = (info) => {
+}, { timestamps: true })
+
+exports.News = mongoose.model('news', NewsSchema);
+exports.validate = (news) => {
     const schema = Joi.object({
         title: {
             uz: Joi.string().required(),
             ru: Joi.string().required()
         },
-        status: Joi.boolean(),
         description: {
             uz: Joi.string().required(),
             ru: Joi.string().required()
         },
+        status: Joi.boolean(),
     });
 
-    return schema.validate(info);
+    return schema.validate(news);
 }
