@@ -12,7 +12,7 @@ const storage = multer.diskStorage({
 });
 const upload = multer({storage: storage});
 
-router.post('/create', upload.single('image'), (req, res) => {
+router.post('/create', upload.single('uploads'), (req, res) => {
     res.status(200).json({success: true, url: `/uploads/images/${req.file.filename}`})
 })
 
