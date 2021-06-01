@@ -14,7 +14,7 @@ const ShopSchema = new mongoose.Schema({
     category: {type: mongoose.Schema.ObjectId, ref: 'category', required: true},
     status: { type: Number, enum: [0, 1], default: 0 },
     slug: {type: String, unique: true, required: true}
-})
+},{timestamps: true})
 exports.Shop = mongoose.model('shop', ShopSchema);
 
 exports.validate = (shop) => {

@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const ShopController = require('../controllers/ShopControllers');
+const ShopController = require('../controllers/ShopController');
 const multer = require('multer');
 const md5 = require('md5');
 const path = require('path');
