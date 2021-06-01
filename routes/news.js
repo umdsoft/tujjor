@@ -2,15 +2,14 @@ const router = require('express').Router();
 const multer = require('multer');
 const md5 = require('md5');
 const path = require('path');
-// const NewsController = require('../controllers/NewsController')
+const NewsController = require('../controllers/NewsController')
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
         console.log(file);
         if (file.mimetype.startsWith('video')) {
             cb(null, './public/uploads/news/videos');
-            
-        } else if (file.mimetype.startsWith('image')) {
+        } else {
             cb(null, './public/uploads/news/images');
         }
     },
@@ -20,12 +19,11 @@ const storage = multer.diskStorage({
 });
 const upload = multer({storage: storage});
 
-router.post('/create', upload.single('file'), (req, res) => {
-    return res.status(200).json({ success: true, data: req.file});
-});
-// router.get('/all', NewsController.getAll);
-// router.get('/:id', NewsController.getOne);
-// router.put('/:id', NewsController.edit);
-// router.delete('/:id', NewsController.delete);
+router.post('/create', upload.single('file'), NewsController.create);
+router.get('/all', NewsController.getAll);
+router.get('/:slug', NewsController.getOne);
+router.put('/:id', NewsController.edit);
+router.put('/file/:id', upload.single('file'), NewsController.editFile);
+router.delete('/:id', NewsController.delete);
 
 module.exports = router;

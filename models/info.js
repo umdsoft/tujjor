@@ -6,12 +6,13 @@ const InfoSchema = new mongoose.Schema({
         uz: { type: String, required: true },
         ru: { type: String, required: true}
     },
-    status: {type: Boolean, required: true, default: true},
     description:{
         uz: { type: String, required: true },
         ru: { type: String, required: true}
     },
-    slug: {type: String, required: true, unique: true}
+    status: {type: Boolean, required: true, default: true},
+    slug: { type: String, required: true, unique: true },
+    type: { type: String, required: true, enum:['image', 'video']}
 },{timestamps: true})
 exports.Info = mongoose.model('info', InfoSchema);
 exports.validate = (info) => {
@@ -20,11 +21,11 @@ exports.validate = (info) => {
             uz: Joi.string().required(),
             ru: Joi.string().required()
         },
-        status: Joi.boolean(),
         description: {
             uz: Joi.string().required(),
             ru: Joi.string().required()
         },
+        status: Joi.boolean(),
     });
 
     return schema.validate(info);

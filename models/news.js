@@ -13,7 +13,8 @@ const NewsSchema = new mongoose.Schema({
     hashtag: {type: String},
     file: {type: String, required: true},
     status: {type: Boolean, required: true, default: true},
-    slug: {type: String, required: true, unique: true}
+    slug: { type: String, required: true, unique: true },
+    type: { type: String, required: true }
 }, { timestamps: true })
 
 exports.News = mongoose.model('news', NewsSchema);
