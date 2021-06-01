@@ -14,7 +14,7 @@ const NewsSchema = new mongoose.Schema({
     file: {type: String, required: true},
     status: {type: Boolean, required: true, default: true},
     slug: { type: String, required: true, unique: true },
-    type: { type: String, required: true }
+    type: { type: String, required: true, enum:['image', 'video']}
 }, { timestamps: true })
 
 exports.News = mongoose.model('news', NewsSchema);

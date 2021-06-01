@@ -11,8 +11,7 @@ const InfoSchema = new mongoose.Schema({
         ru: { type: String, required: true}
     },
     status: {type: Boolean, required: true, default: true},
-    slug: { type: String, required: true, unique: true },
-    type: { type: String, required: true, enum:['image', 'video']}
+    slug: { type: String, required: true, unique: true }
 },{timestamps: true})
 exports.Info = mongoose.model('info', InfoSchema);
 exports.validate = (info) => {

@@ -36,6 +36,10 @@ exports.getAll = async (req, res) => {
 exports.getOne = async (req, res) => {
     res.status(200).json({success: true, data: await News.findOne({slug: req.params.slug})})
 }
+exports.getType = async (req, res) => {
+    console.log(req)
+    res.status(200).json({success: true, data: req})
+}
 exports.edit = async (req, res) => {
     const { error } = validate(req.body);
     if (error) {

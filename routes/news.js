@@ -22,6 +22,7 @@ const upload = multer({storage: storage});
 router.post('/create', upload.single('file'), NewsController.create);
 router.get('/all', NewsController.getAll);
 router.get('/:slug', NewsController.getOne);
+router.get('/type', NewsController.getType);
 router.put('/:id', NewsController.edit);
 router.put('/file/:id', upload.single('file'), NewsController.editFile);
 router.delete('/:id', NewsController.delete);
