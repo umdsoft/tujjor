@@ -27,9 +27,11 @@ exports.register = async (req, res) => {
             data: "required",
         });
     }
+    const salt = await bcrypt.genSalt(12);
+    const pass = await bcrypt.hash(req.body.password, salt);
     const user = new User({
         name: req.body.name,
-        password: req.body.password,
+        password: pass,
         phone: req.body.phone,
         email: req.body.email,
     });
@@ -103,5 +105,5 @@ exports.delete = async (req, res) => {
             .status(400)
             .json({ success: false, data: "This id not found" });
     }
-    return res.status(200).json({ success: true, data: [] });
-};
+    return res.status(200).json({success: true, data:[]})
+}
