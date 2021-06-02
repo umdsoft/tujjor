@@ -4,6 +4,7 @@ const fs = require('fs');
 const path = require('path');
 
 exports.create = (req, res) => {
+    console.log(req.body)
     const { error } = validate(req.body);
     if (error) return res.status(400).json({success: false, message: error.details[0].message});
     if (!req.file) {
@@ -89,9 +90,6 @@ exports.delete = async (req, res) => {
             }
         )
         await News.findByIdAndDelete(data._id)
-        res.status(200).json({
-            success: true,
-            data: []
-        })
+        res.status(200).json({success: true, data: [] })
     })
 }
