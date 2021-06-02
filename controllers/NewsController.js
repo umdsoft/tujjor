@@ -4,7 +4,6 @@ const fs = require('fs');
 const path = require('path');
 
 exports.create = (req, res) => {
-    console.log(req.body)
     const { error } = validate(req.body);
     if (error) return res.status(400).json({success: false, message: error.details[0].message});
     if (!req.file) {
@@ -20,6 +19,7 @@ exports.create = (req, res) => {
             uz: req.body.description.uz,
             ru: req.body.description.ru
         },
+        startTime: req.body.startTime,
         file: `/uploads/news/${filePath}/${req.file.filename}`,
         status: req.body.status,
         slug: getSlug(req.body.title.ru),
@@ -66,8 +66,8 @@ exports.editFile = async (req, res) => {
         if (err) return res.status(200).json({success: false, err});
         fs.unlink(
             path.join(path.dirname(__dirname)+`/public${data.file}`),
-            (err)=>{
-                if(err) res.status(400).json({success: false, err});
+            (err) => {
+                if (err) return res.status(400).json({success: false, err});
             }
         )
     })
@@ -85,8 +85,8 @@ exports.delete = async (req, res) => {
 
         fs.unlink(
             path.join(path.dirname(__dirname)+`/public${data.file}`),
-            (err)=>{
-                if(err) res.status(400).json({success: false, err});
+            (err) => {
+                if (err) return res.status(400).json({success: false, err});
             }
         )
         await News.findByIdAndDelete(data._id)

@@ -10,7 +10,8 @@ const NewsSchema = new mongoose.Schema({
         uz: { type: String, required: true },
         ru: { type: String, required: true}
     },
-    hashtag: {type: String},
+    hashtag: { type: String },
+    startTime: {type: String, required: true},
     file: {type: String, required: true},
     status: {type: Boolean, required: true, default: true},
     slug: { type: String, required: true, unique: true },
@@ -28,6 +29,7 @@ exports.validate = (news) => {
             uz: Joi.string().required(),
             ru: Joi.string().required()
         },
+        startTime: Joi.date().required(),
         status: Joi.boolean(),
     });
 
