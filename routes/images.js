@@ -2,11 +2,9 @@ const router = require('express').Router();
 const multer = require('multer');
 const md5 = require('md5');
 const path = require('path');
-const BrandController =require('../controllers/BrandController')
-
 const storage = multer.diskStorage({
     destination: function (req,file,cb) {
-        cb(null, './public/uploads/brands');
+        cb(null, './public/uploads/images');
     },
     filename: function (req,file,cb) {
         cb(null, `${md5(Date.now())}${path.extname(file.originalname)}`);
@@ -14,10 +12,8 @@ const storage = multer.diskStorage({
 });
 const upload = multer({storage: storage});
 
-router.post('/create', upload.single('image'), BrandController.create);
-router.get('/all', BrandController.getAll);
-router.get('/:id', BrandController.getOne);
-router.put('/:id', BrandController.edit);
-router.delete('/:id', BrandController.delete);
+router.post('/create', upload.single('upload'), (req, res) => {
+    res.status(200).json({success: true, url: `http://cdn.tujjor.org/uploads/images/${req.file.filename}`})
+})
 
 module.exports = router;

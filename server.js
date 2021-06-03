@@ -20,9 +20,14 @@ app.use(cors());
 app.get('/',(req,res)=>{
     res.send('Hello Tujjor Server')
 })
-app.use('/api/category',require('./routes/category'))
-app.use('/api/user',require('./routes/user'))
-app.use('/api/shop',require('./routes/shop'))
+app.use('/api/category', require('./routes/category'))
+app.use('/api/user', require('./routes/user'))
+app.use('/api/shop', require('./routes/shop'))
+app.use('/api/brand', require('./routes/brand'))
+app.use('/api/uploads', require('./routes/images'))
+app.use('/api/help', require('./routes/help'))
+app.use('/api/info', require('./routes/info'))
+app.use('/api/news', require('./routes/news'))
 const PORT = process.env.PORT || 3001;
 app.listen(PORT,()=>{
     console.log('Server running')

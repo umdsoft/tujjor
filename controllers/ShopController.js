@@ -1,8 +1,13 @@
-const Shop = require('../models/shop');
+const {Shop, validate} = require('../models/shop');
 const fs = require('fs');
-const path = require('path')
+const path = require('path');
+const { getSlug } = require('../utils');
 
-exports.create = async (req, res) =>{
+exports.create = async (req, res) => {
+    const { error } = validate(req.body);
+    if (error) {
+        return res.status(400).json({success: false, message: error.details[0].message});
+    }
     const shop = new Shop({
         name: req.body.name,
         user: req.body.user,
@@ -13,7 +18,8 @@ exports.create = async (req, res) =>{
             email: req.body.email,
             address: req.body.address
         },
-        image: `/uploads/shops/${req.file.filename}`
+        image: `/uploads/shops/${req.file.filename}`,
+        slug: getSlug(req.body.name)
     })
     shop.save()
     .then(()=>{
@@ -63,12 +69,15 @@ exports.edit = async (req, res)=>{
         res.status(200).json({success: true, data})
     })
 }
-exports.editImage = async (req,res)=>{
-    const img = {image: `uploads/shops/${req.file.filename}`}
+exports.editImage = async (req, res) => {
+    if (!req.file) {
+        return res.status(400).json({success: false, message: "File don't upload"})
+    }
+    const img = {image: `/uploads/shops/${req.file.filename}`}
     await Shop.findOne({_id: req.params.id },async (err,data)=> {
         if (err) return res.status(200).json({success: false, err});
         fs.unlink(
-            path.join(path.dirname(__dirname) + `/public/${data.image}`),
+            path.join(path.dirname(__dirname) + `/public${data.image}`),
             (err) => {
                 if (err) return res.status(400).json({success: false, err});
             }
@@ -83,14 +92,14 @@ exports.editImage = async (req,res)=>{
 }
 exports.delete = async (req,res)=>{
     await Shop.findOne({_id:req.params.id},async (err,data)=>{
-        if(err) {return res.status(400).json({success:false, data:err});}
+        if(err) {return res.status(400).json({success:false, err});}
+        if(!data.length) {return res.status(400).json({success:false, data:"id not Found"});}
         fs.unlink(
-            path.join(path.dirname(__dirname)+`/public/${data.image}`),
+            path.join(path.dirname(__dirname)+`/public${data.image}`),
             (err)=>{
                 if(err) throw console.log(err);
                 console.log('success')
-        }
-        )
+        })
         await Shop.findByIdAndDelete(data._id)
         res.status(200).json({
             success: true,
