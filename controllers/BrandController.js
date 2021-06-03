@@ -23,13 +23,13 @@ exports.create = (req, res) => {
     })
 }
 exports.getAll = async (req, res) => {
-    return res.status(200).json({success: true, data: await Brand.find()})
+    return res.status(200).json({success: true, data: await Brand.find().populate('category')})
 }
 exports.getOne = async (req, res) => {
     if (!req.params.slug) {
         return res.status(400).json({success: false, data:[]})
     }
-    res.status(200).json({success: true, data: await Brand.findOne({slug: req.params.slug})})
+    res.status(200).json({success: true, data: await Brand.findOne({slug: req.params.slug}).populate('category')})
 }
 exports.edit = async (req, res) => {
     const { error } = validate(req.body);
