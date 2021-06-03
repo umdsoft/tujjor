@@ -25,7 +25,7 @@ exports.create = (req, res) => {
     })
 }
 exports.getAll = async (req, res) => {
-    return res.status(200).json({success: true, data: await Help.find()})
+    return res.status(200).json({success: true, data: await Help.find({status: true})})
 }
 exports.getOne = async (req, res) => {
     res.status(200).json({success: true, data: await Help.findOne({slug: req.params.slug})})
