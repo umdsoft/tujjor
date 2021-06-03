@@ -18,7 +18,7 @@ app.use(cors());
 
 // Routes
 app.get('/',(req,res)=>{
-    res.send('Hello Tujjor Server')
+    res.send('Success working Server')
 })
 app.use('/api/category', require('./routes/category'))
 app.use('/api/user', require('./routes/user'))
@@ -28,6 +28,7 @@ app.use('/api/uploads', require('./routes/images'))
 app.use('/api/help', require('./routes/help'))
 app.use('/api/info', require('./routes/info'))
 app.use('/api/news', require('./routes/news'))
+app.use('/api/product', require('./routes/product'))
 const PORT = process.env.PORT || 3001;
 app.listen(PORT,()=>{
     console.log('Server running')

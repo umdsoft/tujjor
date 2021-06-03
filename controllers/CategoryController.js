@@ -54,7 +54,7 @@ exports.create = (req, res) => {
             res.status(400).json({success: false, err})
         })
 }                                                                       
-exports.getCategory = async (req, res, next) => {
+exports.getAll = async (req, res, next) => {
     await Category.find()
     .exec((error, categories) => {
         if(error)  res.status(400).json({error})
@@ -64,7 +64,7 @@ exports.getCategory = async (req, res, next) => {
         }
     })
 };
-exports.getById = (req, res)=>{
+exports.getOne = (req, res)=>{
     Category.findOne({ slug: req.params.slug }, (err, data) => {
         if (err) {
             return res.status(400).json({success: false, err})
@@ -72,14 +72,14 @@ exports.getById = (req, res)=>{
         res.status(200).json({success: true, data})
     })
 }
-exports.deleteCategory = async (req,res)=>{
+exports.delete = async (req,res)=>{
 
     await Category.findByIdAndDelete({_id: req.params.id}).then(()=>{
         deleteCategory(req.params.id);
         res.status(200).json({data: []})
     })
 }
-exports.editCategory = async (req,res)=>{
+exports.edit = async (req,res)=>{
     await Category.updateOne({_id: req.params.id},{$set:req.body},(err,data)=>{
         if(err) return res.status(400).json({success: false})
         res.status(200).json({success: true})
