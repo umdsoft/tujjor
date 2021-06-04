@@ -89,7 +89,7 @@ exports.delete = async (req, res) => {
                 if (err) return res.status(400).json({success: false, err});
             }
         )
-        await News.findByIdAndDelete(data._id)
+        await News.findByIdAndDelete({_id: data._id})
         res.status(200).json({success: true, data: [] })
     })
 }

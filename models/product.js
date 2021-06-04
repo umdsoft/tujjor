@@ -12,8 +12,9 @@ const ProductSchema = new mongoose.Schema({
         "uz": String,
         "ru": String,
     },
+    slug: {type: String, unique: true, required: true},
     hashtag: {type: String}
-})
+},{timestamps: true})
 
 exports.Product = mongoose.model('product', ProductSchema);
 exports.validate = (product) => {

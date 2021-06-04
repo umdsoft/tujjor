@@ -27,7 +27,7 @@ const deleteCategory = async (parentId) => {
     let item = await Category.find({parentId});
     if(item.length) {
         item.forEach(key=>{
-            Category.findByIdAndDelete(key._id).then(()=>{
+            Category.findByIdAndDelete({_id: key._id}).then(()=>{
                 deleteCategory(key._id);
             })
         })

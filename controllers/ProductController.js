@@ -1,5 +1,5 @@
 const {Product, validate} = require('../models/product');
-
+const {getSlug} = require('../utils')
 exports.create = (req, res) => {
     const {error} = validate(req.body);
     if(error) {
@@ -17,7 +17,8 @@ exports.create = (req, res) => {
             uz: req.body.description?.uz || "",
             ru: req.body.description?.ru || ""
         },
-        hashtag: req.body.hashtag || ""
+        hashtag: req.body.hashtag || "",
+        slug: getSlug(req.body.name.ru)
     });
     product.save()
     .then(data => {
@@ -62,14 +63,14 @@ exports.edit = (req, res) => {
         res.status(400).json({message: error.details[0].message})
     }
 
-    Product.findByIdAndUpdate(req.params.id, {$set: req.body})
+    Product.findByIdAndUpdate({_id:req.params.id}, {$set: req.body})
     .then(data => {
         if(!data) {
             return res.status(404).json({
                 message: "Product not found with id " + req.params.id
             });
         }
-        res.status(200).json({success: true, data});
+        res.status(200).json({success: true});
     }).catch(err => {
         if(err.kind === 'ObjectId') {
             return res.status(404).json({
@@ -86,19 +87,19 @@ exports.delete = (req, res) => {
     Product.findByIdAndRemove(req.params.id)
     .then(product => {
         if(!product) {
-            return res.status(404).send({
+            return res.status(404).json({
                 message: "Product not found with id " + req.params.id
             });
         }
-        res.send({message: "Product deleted successfully!"});
+        res.json({message: "Product deleted successfully!"});
     }).catch(err => {
         if(err.kind === 'ObjectId' || err.name === 'NotFound') {
-            return res.status(404).send({
-                message: "Product not found with id " + req.params.productId
+            return res.status(404).json({
+                message: "Product not found with id " + req.params.id
             });                
         }
-        return res.status(500).send({
-            message: "Could not delete product with id " + req.params.productId
+        return res.status(500).json({
+            message: "Could not delete product with id " + req.params.id
         });
     });
 };
