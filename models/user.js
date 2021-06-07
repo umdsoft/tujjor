@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt')
-const jwt = require('jsonwebtoken')
+const jwt = require('jsonwebtoken');
+const Joi = require('joi');
 const UserSchema = new mongoose.Schema({
     phone: {type: String, unique: true, required: true, trim: true},
     password: {type: String, required: true},
@@ -18,12 +19,7 @@ const UserSchema = new mongoose.Schema({
 },{timestamps: true})
 
 
-// Match user entered password to hashed password in database
-UserSchema.pre('remove', async function(next) {
-    await this.model('Like').deleteMany({user: this._id});
-    await this.model('Order').deleteMany({user: this._id});
-    next();
-});
+
 // Sign JWT and return
 UserSchema.methods.getSignedJwtToken = function() {
     return jwt.sign({ id: this._id}, process.env.JWT_SECRET, {
@@ -31,4 +27,15 @@ UserSchema.methods.getSignedJwtToken = function() {
     });
 };
 
-module.exports = mongoose.model('user',UserSchema)
+exports.User = mongoose.model('user',UserSchema)
+exports.validate = (user)=>{
+    const schema = Joi.object({
+        phone: Joi.string().min(12).max(13).required(),
+        password: Joi.string().required(),
+        name: Joi.string().required(),
+        email: Joi.string().required(),
+        role: Joi.string().valid('admin','seller','client').required()
+    });
+
+    return schema.validate(user);
+}

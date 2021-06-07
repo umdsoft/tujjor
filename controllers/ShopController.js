@@ -12,7 +12,10 @@ exports.create = async (req, res) => {
         name: req.body.name,
         user: req.body.user,
         category: req.body.category,
-        description: req.body.description,
+        description: {
+            uz: req.body.description?.uz || "",
+            ru: req.body.description?.ru || "",
+        },
         info: {
             phone: req.body.phone,
             email: req.body.email,

@@ -12,8 +12,9 @@ const ProductSchema = new mongoose.Schema({
         "uz": String,
         "ru": String,
     },
+    article: {type: String, unique: true, required: true},
     slug: {type: String, unique: true, required: true},
-    hashtag: {type: String}
+    tags: {type: Array}
 },{timestamps: true})
 
 exports.Product = mongoose.model('product', ProductSchema);
@@ -26,11 +27,12 @@ exports.validate = (product) => {
         shop: Joi.string().required(), 
         brand: Joi.string().required(), 
         category: Joi.string().required(),
+        article: Joi.string().required(),
         description: {
             uz: Joi.string(),
             ru: Joi.string()
         },
-        hashtag: Joi.string()
+        tags: Joi.array()
     });
 
     return schema.validate(product);
