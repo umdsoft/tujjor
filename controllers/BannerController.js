@@ -10,9 +10,6 @@ exports.create = (req, res) => {
     if(error) {
         res.status(400).json({message: error.details[0].message})
     }
-    if (!req.file) {
-        return res.status(400).json({success: false, message: "File don't upload"})
-    }
     const banner = new Banner({
         
         image: `/uploads/banners/${req.file.filename}`,
@@ -43,9 +40,6 @@ exports.edit = async (req, res) => {
     const {error} = validate(req.body);
     if(error) {
         res.status(400).json({message: error.details[0].message})
-    }
-    if (!req.file) {
-        return res.status(400).json({success: false, message: "File don't upload"})
     }
     const img = { image: `/uploads/banners/${req.file.filename}` }
 

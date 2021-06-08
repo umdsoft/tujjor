@@ -4,6 +4,7 @@ const multer = require('multer');
 const md5 = require('md5');
 const path = require('path');
 const BannerController = require('../controllers/BannerController');
+const { validateFile } = require('../middleware/errorFileUpload');
 
 const storage = multer.diskStorage({
     destination: function (req,file,cb) {
@@ -15,9 +16,9 @@ const storage = multer.diskStorage({
 });
 const upload = multer({storage: storage});
 
-router.post('/create', upload.single('image'), BannerController.create);
+router.post('/create', upload.single('image'), validateFile, BannerController.create);
 router.get('/all', BannerController.getAll);
 router.delete('/:id',BannerController.delete);
-router.put('/:id', upload.single('image'), BannerController.edit);
+router.put('/:id', upload.single('image'), validateFile, BannerController.edit);
 
 module.exports = router;

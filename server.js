@@ -23,6 +23,7 @@ app.get('/',(req,res)=>{
 app.use('/api/category', require('./routes/category'))
 app.use('/api/banner', require('./routes/banner'))
 app.use('/api/slider', require('./routes/slider'))
+app.use('/api/question', require('./routes/question'))
 app.use('/api/user', require('./routes/user'))
 app.use('/api/shop', require('./routes/shop'))
 app.use('/api/brand', require('./routes/brand'))

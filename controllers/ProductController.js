@@ -77,10 +77,6 @@ exports.createImage = (req, res) => {
     if(error) {
         res.status(400).json({message: error.details[0].message})
     }
-    if (!req.file) {
-        return res.status(400).json({success: false, message: "File don't upload"})
-    }
-
     const image = new ProductImage({
         paramId: req.body.paramId,
         image: `/uploads/productImages/${req.file.filename}`

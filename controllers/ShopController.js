@@ -68,9 +68,6 @@ exports.edit = async (req, res)=>{
     if(!req.body || req.body.status){
         return res.status(400).json({success: false, data: 'Something is wrong'})
     }
-    if (!req.file) {
-        return res.status(400).json({success: false, message: "File don't upload"})
-    }
     const img = {image: `/uploads/shops/${req.file.filename}`}
     await Shop.findOne({_id: req.params.id },async (err,data)=> {
         if (err) return res.status(200).json({success: false, err});

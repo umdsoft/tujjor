@@ -3,9 +3,6 @@ const fs = require("fs");
 const path = require("path");
 
 exports.create = (req, res) => {
-    if (!req.file) {
-        return res.status(400).json({success: false, message: "File don't upload"})
-    }
     const slider = new Slider({
         image: `/uploads/sliders/${req.file.filename}`
     });
@@ -31,11 +28,7 @@ exports.getAll = (req, res) => {
 };
 
 exports.edit = async (req, res) => {
-    if (!req.file) {
-        return res.status(400).json({success: false, message: "File don't upload"})
-    }
     const img = { image: `/uploads/sliders/${req.file.filename}` }
-
     await Slider.findById({_id: req.params.id },async (err,data)=> {
         if (err) return res.status(200).json({success: false, err});
         fs.unlink(

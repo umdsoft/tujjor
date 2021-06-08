@@ -9,9 +9,6 @@ exports.create = (req, res) => {
     }
     const { error } = validate(req.body);
     if (error) return res.status(400).json({success: false, message: error.details[0].message});
-    if (!req.file) {
-        return res.status(400).json({success: false, message: "File don't upload"})
-    }
     const filePath = req.file.mimetype.startsWith('video') ? 'videos' : 'images';
     const news = new News({
         title: {
@@ -57,9 +54,6 @@ exports.edit = async (req, res) => {
     })
 }
 exports.editFile = async (req, res) => {
-    if (!req.file) {
-        return res.status(400).json({success: false, message: "File don't upload"})
-    }
     const filePath = req.file.mimetype.startsWith('video') ? 'videos' : 'images';
     const file = {
         file: `/uploads/news/${filePath}/${req.file.filename}`,

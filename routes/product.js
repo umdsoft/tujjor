@@ -3,6 +3,7 @@ const ProductController = require('../controllers/ProductController')
 const multer = require('multer');
 const md5 = require('md5');
 const path = require('path');
+const { validateFile } = require('../middleware/errorFileUpload');
 
 const storage = multer.diskStorage({
     destination: function (req,file,cb) {
@@ -23,7 +24,7 @@ router.post('/param/create', ProductController.createParam)
 router.post('/size/create', ProductController.createSize)
 
 //images routes
-router.post('/image/create', upload.single('image'), ProductController.createImage)
+router.post('/image/create', upload.single('image'), validateFile, ProductController.createImage)
 router.get('/all', ProductController.getAll)
 router.get('/:slug', ProductController.getOne)
 router.delete('/:id',ProductController.delete)

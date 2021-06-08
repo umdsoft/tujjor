@@ -8,9 +8,6 @@ exports.create = (req, res) => {
     }
     const { error } = validate(req.body);
     if (error) return res.status(400).json({success: false, message: error.details[0].message});
-    if (!req.file) {
-        return res.status(400).json({success: false, message: "File don't upload"})
-    }
     const brand = new Brand({
         name: req.body.name,
         slug: getSlug(req.body.name),
@@ -45,9 +42,6 @@ exports.edit = async (req, res) => {
     })
 }
 exports.editImage = async (req, res) => {
-    if (!req.file) {
-        return res.status(400).json({success: false, message: "File don't upload"})
-    }
     const img = { image: `/uploads/brands/${req.file.filename}` }
     await Brand.findById({_id: req.params.id },async (err,data)=> {
         if (err) return res.status(200).json({success: false, err});
