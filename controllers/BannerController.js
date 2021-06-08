@@ -3,6 +3,9 @@ const fs = require("fs");
 const path = require("path");
 
 exports.create = (req, res) => {
+    if(!Object.keys(req.body).length){
+        return res.status(400).json({success: false, message: 'Required !'})
+    }
     const {error} = validate(req.body);
     if(error) {
         res.status(400).json({message: error.details[0].message})

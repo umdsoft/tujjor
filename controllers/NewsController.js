@@ -4,6 +4,9 @@ const fs = require('fs');
 const path = require('path');
 
 exports.create = (req, res) => {
+    if(!Object.keys(req.body).length){
+        return res.status(400).json({success: false, message: 'Required !'})
+    }
     const { error } = validate(req.body);
     if (error) return res.status(400).json({success: false, message: error.details[0].message});
     if (!req.file) {
@@ -19,7 +22,7 @@ exports.create = (req, res) => {
             uz: req.body.description.uz,
             ru: req.body.description.ru
         },
-        startTime: req.body.startTime,
+        startTime: ISODate(req.body.startTime),
         file: `/uploads/news/${filePath}/${req.file.filename}`,
         status: req.body.status,
         slug: getSlug(req.body.title.ru),
@@ -81,8 +84,9 @@ exports.editFile = async (req, res) => {
 exports.delete = async (req, res) => {
     await News.findOne({ _id: req.params.id }, async (err, data) => {
         if (err) { return res.status(400).json({ success: false, err }) }
-        console.log(data)
-
+        if(!data) {
+            return res.status(404).json({success: false, message: "News not found with id "+ req.params.id})
+        }
         fs.unlink(
             path.join(path.dirname(__dirname)+`/public${data.file}`),
             (err) => {
@@ -92,4 +96,10 @@ exports.delete = async (req, res) => {
         await News.findByIdAndDelete({_id: data._id})
         res.status(200).json({success: true, data: [] })
     })
+}
+
+exports.getClientAll = async (req, res) =>{
+    return res.status(200).json({success: true, data: await News.find(
+        { startTime: {$gte: Date.now()}}
+    )})
 }

@@ -19,8 +19,7 @@ router.post('/create', upload.single('image'), ShopController.create);
 router.get('/all', ShopController.getShop);
 router.get('/:id', ShopController.getOne);
 router.put('/status/:id', ShopController.editStatus);
-router.put('/:id', ShopController.edit);
-router.put('/image/:id',upload.single('image'), ShopController.editImage);
+router.put('/:id', upload.single('image'), ShopController.edit);
 router.delete('/:id', ShopController.delete);
 
 module.exports = router;

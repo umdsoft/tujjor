@@ -29,5 +29,5 @@ router.put('/file/:id', upload.single('file'), NewsController.editFile);
 router.delete('/:id', NewsController.delete);
 
 //client
-router.get('/client/all', NewsController.getAll);
+router.get('/client/all', NewsController.getClientAll);
 module.exports = router;

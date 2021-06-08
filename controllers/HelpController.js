@@ -2,6 +2,9 @@ const { Help, validate } = require('../models/help');
 const { getSlug } = require('../utils');
 
 exports.create = (req, res) => {
+    if(!Object.keys(req.body).length){
+        return res.status(400).json({success: false, message: 'Required !'})
+    }
     const { error } = validate(req.body);
     if (error) {
         return res.status(400).json({success: false, message: error.details[0].message})
@@ -25,7 +28,7 @@ exports.create = (req, res) => {
     })
 }
 exports.getAll = async (req, res) => {
-    return res.status(200).json({success: true, data: await Help.find({status: true})})
+    return res.status(200).json({success: true, data: await Help.find()})
 }
 exports.getOne = async (req, res) => {
     res.status(200).json({success: true, data: await Help.findOne({slug: req.params.slug})})
@@ -49,4 +52,8 @@ exports.delete = async (req, res) => {
         }
         res.status(200).json({success: true})
     })
+}
+
+exports.getClientAll = async (req, res) => {
+    return res.status(200).json({success: true, data: await Help.find({status: true})})
 }
