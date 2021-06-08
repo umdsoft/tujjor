@@ -73,7 +73,7 @@ exports.delete = async (req, res) => {
             }
         )
     })
-    await Brand.findByIdAndDelete({ _id: req.params.id }, (data, err)=>{
+    await Brand.findByIdAndDelete({ _id: req.params.id }, (err, data)=>{
         if(err) return res.status(400).json({success: false, err})
         res.status(200).json({success: true, data: []})
     })
