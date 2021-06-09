@@ -4,7 +4,7 @@ const ApplicationShopController = require('../controllers/ApplicationShopControl
 router.post('/create', ApplicationShopController.create);
 router.get('/all', ApplicationShopController.getAll);
 router.get('/:user', ApplicationShopController.getOne);
-router.put('/:id', ApplicationShopController.edit);
+router.put('/status/:id', ApplicationShopController.editStatus);
 router.delete('/:id', ApplicationShopController.delete);
 
 module.exports = router;

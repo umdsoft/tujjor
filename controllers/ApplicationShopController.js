@@ -26,8 +26,8 @@ exports.getOne = async (req, res) => {
         return res.status(500).json({success: false, message: err})
     })
 }
-exports.edit = async (req, res) => {
-    await Application.findByIdAndUpdate({ _id: req.params.id }, { $set: req.body }, (err, data) => {
+exports.editStatus = async (req, res) => {
+    await Application.findByIdAndUpdate({ _id: req.params.id }, { $set: {status: req.body.status}}, (err, data) => {
         if (err) {
             return res.status(400).json({success: false, err})
         }
