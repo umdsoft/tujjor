@@ -1,4 +1,4 @@
-const {Shop, validate} = require('../models/shop');
+const Shop = require('../models/shop');
 const fs = require('fs');
 const path = require('path');
 const { getSlug } = require('../utils');
@@ -6,10 +6,6 @@ const { getSlug } = require('../utils');
 exports.create = async (req, res) => {
     if(!Object.keys(req.body).length){
         return res.status(400).json({success: false, message: 'Required !'})
-    }
-    const { error } = validate(req.body);
-    if (error) {
-        return res.status(400).json({success: false, message: error.details[0].message});
     }
     const shop = new Shop({
         name: req.body.name,

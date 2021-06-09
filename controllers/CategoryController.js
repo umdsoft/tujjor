@@ -1,4 +1,4 @@
-const {Category, validate} = require('../models/category')
+const Category = require('../models/category')
 const {getSlug} = require('../utils')
 function createCategories (categories, parentId = null){
     const categoryList = []
@@ -37,8 +37,6 @@ exports.create = (req, res) => {
     if(!Object.keys(req.body).length){
         return res.status(400).json({success: false, message: 'Required !'})
     }
-    const { error } = validate(req.body);
-    if (error) return res.status(400).json({success: false, message: error.details[0].message});
     const category = new Category({
         name: {
             uz: req.body.name.uz,

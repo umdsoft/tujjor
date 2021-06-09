@@ -1,17 +1,9 @@
-const {Banner, validate} = require('../models/banner');
+const Banner = require('../models/banner');
 const fs = require("fs");
 const path = require("path");
 
 exports.create = (req, res) => {
-    if(!Object.keys(req.body).length){
-        return res.status(400).json({success: false, message: 'Required !'})
-    }
-    const {error} = validate(req.body);
-    if(error) {
-        res.status(400).json({message: error.details[0].message})
-    }
     const banner = new Banner({
-        
         image: `/uploads/banners/${req.file.filename}`,
         position: req.body.position
     });
@@ -37,10 +29,6 @@ exports.getAll = (req, res) => {
 };
 
 exports.edit = async (req, res) => {
-    const {error} = validate(req.body);
-    if(error) {
-        res.status(400).json({message: error.details[0].message})
-    }
     const img = { image: `/uploads/banners/${req.file.filename}` }
 
     await Banner.findById({_id: req.params.id },async (err,data)=> {

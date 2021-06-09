@@ -1,4 +1,3 @@
-const Joi = require('joi');
 const mongoose = require('mongoose');
 
 const ShopSchema = new mongoose.Schema({
@@ -18,21 +17,4 @@ const ShopSchema = new mongoose.Schema({
     status: { type: Number, enum: [0, 1], default: 0},
     slug: {type: String, unique: true, required: true}
 },{timestamps: true})
-exports.Shop = mongoose.model('shop', ShopSchema);
-
-exports.validate = (shop) => {
-    const schema = Joi.object({
-        name: Joi.string().required(),
-        user: Joi.string().required(),
-        category: Joi.string().required(),
-        description: {
-            uz: Joi.string(),
-            ru: Joi.string(),
-        },
-        email: Joi.string().required(),
-        phone: Joi.string().required(),
-        address: Joi.string().required(),
-        status: Joi.number().valid(0, 1),
-    });
-    return schema.validate(shop);
-}
+module.exports = mongoose.model('shop', ShopSchema);

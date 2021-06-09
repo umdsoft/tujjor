@@ -1,6 +1,4 @@
-const Joi = require('joi');
 const mongoose = require('mongoose')
-
 const CategorySchema = new mongoose.Schema({
     name: {
         uz: {type: String, required: true, trim: true},
@@ -10,14 +8,4 @@ const CategorySchema = new mongoose.Schema({
     slug: {type: String, required: true}
 }, {timestamps: true})
 
-exports.Category = mongoose.model('category',CategorySchema)
-exports.validate = (category) => {
-    const schema = Joi.object({
-        name: {
-            uz: Joi.string().required(),
-            ru: Joi.string().required()
-        },
-        parentId: Joi.string()
-    });
-    return schema.validate(category);
-};
+module.exports = mongoose.model('category',CategorySchema)

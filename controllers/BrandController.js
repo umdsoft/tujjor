@@ -1,4 +1,4 @@
-const {Brand, validate} = require("../models/brand");
+const Brand = require("../models/brand");
 const { getSlug } = require("../utils");
 const fs = require("fs");
 const path = require("path");
@@ -6,8 +6,6 @@ exports.create = (req, res) => {
     if(!Object.keys(req.body).length){
         return res.status(400).json({success: false, message: 'Required !'})
     }
-    const { error } = validate(req.body);
-    if (error) return res.status(400).json({success: false, message: error.details[0].message});
     const brand = new Brand({
         name: req.body.name,
         slug: getSlug(req.body.name),
@@ -32,8 +30,6 @@ exports.getOne = async (req, res) => {
     res.status(200).json({success: true, data: await Brand.findOne({slug: req.params.slug}).populate('category')})
 }
 exports.edit = async (req, res) => {
-    const { error } = validate(req.body);
-    if (error) return res.status(400).json({success: false, message: error.details[0].message});
     await Brand.findByIdAndUpdate({ _id: req.params.id }, { $set: req.body }, async (err, data) => {
         if (err) {
             return res.status(400).json({success: false, err})

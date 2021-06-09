@@ -1,4 +1,4 @@
-const { News, validate } = require('../models/news');
+const News = require('../models/news');
 const { getSlug } = require('../utils');
 const fs = require('fs');
 const path = require('path');
@@ -7,8 +7,6 @@ exports.create = (req, res) => {
     if(!Object.keys(req.body).length){
         return res.status(400).json({success: false, message: 'Required !'})
     }
-    const { error } = validate(req.body);
-    if (error) return res.status(400).json({success: false, message: error.details[0].message});
     const filePath = req.file.mimetype.startsWith('video') ? 'videos' : 'images';
     const news = new News({
         title: {
@@ -42,10 +40,6 @@ exports.getType = async (req, res) => {
     res.status(200).json({success: true, data: req})
 }
 exports.edit = async (req, res) => {
-    const { error } = validate(req.body);
-    if (error) {
-        return res.status(400).json({success: false, message: error.details[0].message})
-    }
     await News.findByIdAndUpdate({ _id: req.params.id }, { $set: req.body }, (err, data) => {
         if (err) {
             return res.status(400).json({success: false, err})

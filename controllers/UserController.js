@@ -1,4 +1,4 @@
-const {User, validate} = require('../models/user');
+const User = require('../models/user');
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
 const sendTokenResponse = (user, statusCode, res) => {
@@ -24,10 +24,6 @@ const sendTokenResponse = (user, statusCode, res) => {
 exports.register = async (req,res)=>{
     if(!Object.keys(req.body).length){
         return res.status(400).json({success: false, message: 'Required !'})
-    }
-    const {error} = validate(req.body);
-    if(error) {
-        res.status(400).json({message: error.details[0].message})
     }
     const salt = await bcrypt.genSalt(12);
     const pass = await bcrypt.hash(req.body.password, salt);

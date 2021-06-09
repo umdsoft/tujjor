@@ -1,13 +1,9 @@
-const { Info, validate } = require('../models/info');
+const  Info = require('../models/info');
 const { getSlug } = require('../utils');
 
 exports.create = (req, res) => {
     if(!Object.keys(req.body).length){
         return res.status(400).json({success: false, message: 'Required !'})
-    }
-    const { error } = validate(req.body);
-    if (error) {
-        return res.status(400).json({success: false, message: error.details[0].message})
     }
     const info = new Info({
         title: {
@@ -34,10 +30,6 @@ exports.getOne = async (req, res) => {
     res.status(200).json({success: true, data: await Info.findOne({slug: req.params.slug})})
 }
 exports.edit = async (req, res) => {
-    const { error } = validate(req.body);
-    if (error) {
-        return res.status(400).json({success: false, message: error.details[0].message})
-    }
     await Info.findByIdAndUpdate({ _id: req.params.id }, { $set: req.body }, (err, data) => {
         if (err) {
             return res.status(400).json({success: false, err})

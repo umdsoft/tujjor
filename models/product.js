@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const Joi = require('joi')
 const ProductSchema = new mongoose.Schema({
     name: {
         "uz": {type: String, required: true, trim: true},
@@ -17,23 +16,4 @@ const ProductSchema = new mongoose.Schema({
     tags: {type: Array}
 },{timestamps: true})
 
-exports.Product = mongoose.model('product', ProductSchema);
-exports.validate = (product) => {
-    const schema = Joi.object({
-        name: {
-            uz: Joi.string().required(),
-            ru: Joi.string().required()
-        },
-        shop: Joi.string().required(), 
-        brand: Joi.string().required(), 
-        category: Joi.string().required(),
-        article: Joi.string().required(),
-        description: {
-            uz: Joi.string(),
-            ru: Joi.string()
-        },
-        tags: Joi.array()
-    });
-
-    return schema.validate(product);
-}
+module.exports = mongoose.model('product', ProductSchema);

@@ -1,13 +1,9 @@
-const {Product, validate} = require('../models/product');
-const {Param, validateParam} = require('../models/param');
-const {Size, validateSize} = require('../models/size');
-const {ProductImage, validateProductImage} = require('../models/productImage');
+const Product = require('../models/product');
+const Param = require('../models/param');
+const Size = require('../models/size');
+const ProductImage = require('../models/productImage');
 const {getSlug} = require('../utils')
 exports.create = (req, res) => {
-    const {error} = validate(req.body);
-    if(error) {
-        res.status(400).json({message: error.details[0].message})
-    }
     const product = new Product({
         name: {
             uz: req.body.name.uz,
@@ -34,10 +30,6 @@ exports.create = (req, res) => {
     });
 };
 exports.createParam = (req, res) => {
-    const {error} = validateParam(req.body);
-    if(error) {
-        res.status(400).json({message: error.details[0].message})
-    }
     const param = new Param({
         color: req.body.color,
         productId: req.body.productId
@@ -52,10 +44,6 @@ exports.createParam = (req, res) => {
     });
 }
 exports.createSize = (req, res) => {
-    const {error} = validateSize(req.body);
-    if(error) {
-        res.status(400).json({message: error.details[0].message})
-    }
     const size = new Size({
         productId: req.body.productId,
         paramId: req.body.paramId,
@@ -73,10 +61,6 @@ exports.createSize = (req, res) => {
     });
 }
 exports.createImage = (req, res) => {
-    const {error} = validateProductImage(req.body);
-    if(error) {
-        res.status(400).json({message: error.details[0].message})
-    }
     const image = new ProductImage({
         paramId: req.body.paramId,
         image: `/uploads/productImages/${req.file.filename}`
@@ -205,11 +189,6 @@ exports.getOne = (req, res) => {
 };
 
 exports.edit = (req, res) => {
-    const {error} = validate(req.body);
-    if(error) {
-        res.status(400).json({message: error.details[0].message})
-    }
-
     Product.findByIdAndUpdate({_id:req.params.id}, {$set: req.body})
     .then(data => {
         if(!data) {

@@ -1,6 +1,4 @@
-const Joi = require("joi");
 const mongoose = require("mongoose");
-
 const HelpSchema = new mongoose.Schema({
     title: {
         uz: { type: String, required: true },
@@ -13,19 +11,4 @@ const HelpSchema = new mongoose.Schema({
     },
     slug: {type: String, required: true, unique: true}
 },{timestamps: true})
-exports.Help = mongoose.model('help', HelpSchema);
-exports.validate = (help) => {
-    const schema = Joi.object({
-        title: {
-            uz: Joi.string().required(),
-            ru: Joi.string().required()
-        },
-        status: Joi.boolean(),
-        description: {
-            uz: Joi.string().required(),
-            ru: Joi.string().required()
-        },
-    });
-
-    return schema.validate(help);
-}
+module.exports = mongoose.model('help', HelpSchema);
