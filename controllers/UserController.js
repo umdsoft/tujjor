@@ -1,6 +1,9 @@
 const User = require('../models/user');
+const Shop = require('../models/shop');
+const Application = require('../models/applicationShop')
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
+
 const sendTokenResponse = (user, statusCode, res) => {
     // Create token
 
@@ -22,9 +25,6 @@ const sendTokenResponse = (user, statusCode, res) => {
         });
 };
 exports.register = async (req,res)=>{
-    if(!Object.keys(req.body).length){
-        return res.status(400).json({success: false, message: 'Required !'})
-    }
     const salt = await bcrypt.genSalt(12);
     const pass = await bcrypt.hash(req.body.password, salt);
     const user = new User({
@@ -79,12 +79,23 @@ exports.me = async (req,res)=>{
     const token = req.headers.token
     const user = jwt.decode(token.slice(7))
     await User.findOne({_id: user.id})
-    .select({password: 0,code:0,hash:0})
-    .exec((err,data)=>{
+    .select({password: 0, __v: 0, role: 0})
+    .exec( async (err,data)=>{
         if(err) return res.status(400).json({success: false,err});
-        res.status(200).json({
-            success: true,
-            data
+        await Application.findOne({user: user.id})
+        .exec((errApplication, dataApplication)=>{
+            if(dataApplication){
+                res.status(200).json({
+                    success: true,
+                    data,
+                    application: dataApplication.status
+                })
+            } else {
+                res.status(200).json({
+                    success: true,
+                    data
+                })
+            }
         })
     })
 }

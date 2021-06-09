@@ -4,9 +4,6 @@ const fs = require('fs');
 const path = require('path');
 
 exports.create = (req, res) => {
-    if(!Object.keys(req.body).length){
-        return res.status(400).json({success: false, message: 'Required !'})
-    }
     const filePath = req.file.mimetype.startsWith('video') ? 'videos' : 'images';
     const news = new News({
         title: {

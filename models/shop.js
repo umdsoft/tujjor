@@ -9,9 +9,9 @@ const ShopSchema = new mongoose.Schema({
         ru: { type: String}
     },
     info:{
-        email: {type: String, required: true},
-        phone: {type: String, required: true},
-        address: {type: String, required: true}
+        email: {type: String},
+        phone: {type: String},
+        address: {type: String}
     },
     category: {type: mongoose.Schema.ObjectId, ref: 'category', required: true},
     status: { type: Number, enum: [0, 1], default: 0},

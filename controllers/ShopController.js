@@ -4,9 +4,6 @@ const path = require('path');
 const { getSlug } = require('../utils');
 
 exports.create = async (req, res) => {
-    if(!Object.keys(req.body).length){
-        return res.status(400).json({success: false, message: 'Required !'})
-    }
     const shop = new Shop({
         name: req.body.name,
         user: req.body.user,
