@@ -6,7 +6,8 @@ exports.create = (req, res) => {
         user: req.body.user,
         phone: req.body.phone,
         email: req.body.email,
-        companyName: req.body.companyName
+        companyName: req.body.companyName,
+        comment: req.body.comment
     })
     application.save().then(() => {
         return res.status(200).json({success: true, data: application})
