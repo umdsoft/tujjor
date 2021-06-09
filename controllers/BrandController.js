@@ -1,29 +1,97 @@
-const {Brand, validate} = require("../models/brand");
+const { Brand, validate } = require("../models/brand");
 const { getSlug } = require("../utils");
-
+const fs = require("fs");
+const path = require("path");
 exports.create = (req, res) => {
     const { error } = validate(req.body);
-    if (error) return res.status(400).json({success: false, message: error.details[0].message});
+    if (error)
+        return res
+            .status(400)
+            .json({ success: false, message: error.details[0].message });
     if (!req.file) {
-        return res.status(400).json({success: false, message: "File don't upload"})
+        return res
+            .status(400)
+            .json({ success: false, message: "File don't upload" });
     }
     const brand = new Brand({
         name: req.body.name,
         slug: getSlug(req.body.name),
         category: req.body.category,
         image: `/uploads/brands/${req.file.filename}`,
-    })
-    brand.save()
+    });
+    brand
+        .save()
         .then(() => {
-        return res.status(200).json({success: true, data: brand})
-    })
-        .catch(err => {
-        return res.status(400).json({success: false, err})
-    })
-}
+            return res.status(200).json({ success: true, data: brand });
+        })
+        .catch((err) => {
+            return res.status(400).json({ success: false, err });
+        });
+};
 exports.getAll = async (req, res) => {
-    res.status(200).json({success: true, data: await Brand.find({},{__v: 0})})
-}
-exports.getOne = (req, res)=>{}
-exports.edit = (req, res)=>{}
-exports.delete = (req, res)=>{}
+    return res.status(200).json({ success: true, data: await Brand.find() });
+};
+exports.getOne = async (req, res) => {
+    if (!req.params.slug) {
+        return res.status(400).json({ success: false, data: [] });
+    }
+    res.status(200).json({
+        success: true,
+        data: await Brand.findOne({ slug: req.params.slug }),
+    });
+};
+exports.edit = async (req, res) => {
+    const { error } = validate(req.body);
+    if (error)
+        return res
+            .status(400)
+            .json({ success: false, message: error.details[0].message });
+    await Brand.findByIdAndUpdate(
+        { _id: req.params.id },
+        { $set: req.body },
+        async (err, data) => {
+            if (err) {
+                return res.status(400).json({ success: false, err });
+            }
+            await res.status(200).json({ success: true });
+        }
+    );
+};
+exports.editImage = async (req, res) => {
+    if (!req.file) {
+        return res
+            .status(400)
+            .json({ success: false, message: "File don't upload" });
+    }
+    const img = { image: `/uploads/brands/${req.file.filename}` };
+    await Brand.findById({ _id: req.params.id }, async (err, data) => {
+        if (err) return res.status(200).json({ success: false, err });
+        fs.unlink(
+            path.join(path.dirname(__dirname) + `/public${data.image}`),
+            (err) => {
+                if (err) return res.status(400).json({ success: false, err });
+            }
+        );
+    });
+    Brand.findByIdAndUpdate({ _id: req.params.id }, { $set: img }).exec(
+        (err, data) => {
+            if (err) return res.status(400).json({ success: false, err });
+            return res.status(200).json({ success: true, data });
+        }
+    );
+};
+exports.delete = async (req, res) => {
+    await Brand.findById({ _id: req.params.id }, async (err, data) => {
+        if (err) {
+            res.status(400).json({ success: false, err });
+        }
+        fs.unlink(
+            path.join(path.dirname(__dirname), `/public${data.image}`),
+            (err) => {
+                if (err) return res.status(400).json({ success: false, err });
+            }
+        );
+    });
+    await Brand.findByIdAndDelete({ _id: req.params.id });
+    res.status(200).json({ success: true, data: [] });
+};

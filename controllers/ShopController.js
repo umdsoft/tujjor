@@ -96,10 +96,10 @@ exports.delete = async (req,res)=>{
         if(!data.length) {return res.status(400).json({success:false, data:"id not Found"});}
         fs.unlink(
             path.join(path.dirname(__dirname)+`/public${data.image}`),
-            (err)=>{
-                if(err) throw console.log(err);
-                console.log('success')
-        })
+            (err) => {
+                if (err) return res.status(400).json({success: false, err});
+            }
+        )
         await Shop.findByIdAndDelete(data._id)
         res.status(200).json({
             success: true,

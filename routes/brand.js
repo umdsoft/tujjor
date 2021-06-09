@@ -16,8 +16,9 @@ const upload = multer({storage: storage});
 
 router.post('/create', upload.single('image'), BrandController.create);
 router.get('/all', BrandController.getAll);
-router.get('/:id', BrandController.getOne);
+router.get('/:slug', BrandController.getOne);
 router.put('/:id', BrandController.edit);
+router.put('/image/:id', upload.single('image'), BrandController.editImage);
 router.delete('/:id', BrandController.delete);
 
 module.exports = router;
