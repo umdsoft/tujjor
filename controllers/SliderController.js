@@ -1,4 +1,4 @@
-const {Slider} = require('../models/slider');
+const Slider = require('../models/slider');
 const fs = require("fs");
 const path = require("path");
 
