@@ -61,13 +61,11 @@ exports.editStatus = async (req, res)=>{
         if(err){
             return res.status(400).json({success: false, data: 'Not Found'})
         }
+
         res.status(200).json({success: true, data})
     })
 }
 exports.edit = async (req, res)=>{
-    if(!req.body || req.body.status){
-        return res.status(400).json({success: false, data: 'Something is wrong'})
-    }
     const img = {image: `/uploads/shops/${req.file.filename}`}
     await Shop.findOne({_id: req.params.id },async (err,data)=> {
         if (err) return res.status(200).json({success: false, err});
@@ -87,7 +85,11 @@ exports.edit = async (req, res)=>{
 }
 exports.delete = async (req,res)=>{
     await Shop.findOne({_id:req.params.id},async (err,data)=>{
-        if(err) {return res.status(400).json({success:false, err});}
+        if(err || !data) {return res.status(404).json({success:false, message: "Not Found this Id"});}
+
+        deleteFile(`/public${data.fileContract}`)
+        deleteFile(`/public${data.fileCertificate}`)
+        deleteFile(`/public${data.image}`)
         await Shop.findByIdAndDelete({_id: data._id})
         res.status(200).json({
             success: true,
