@@ -16,7 +16,7 @@ const storage = multer.diskStorage({
 });
 const upload = multer({storage: storage});
 
-router.post('/create', upload.single('image'), validateFile, ShopController.create);
+router.post('/create', upload.fields([{name: 'image', maxCount: 1}, {name: 'fileContract', maxCount: 1}, {name: 'fileCertificate', maxCount: 1}]), validateFile, ShopController.create);
 router.get('/all', ShopController.getShop);
 router.get('/:id', ShopController.getOne);
 router.put('/status/:id', ShopController.editStatus);

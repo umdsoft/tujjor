@@ -1,6 +1,7 @@
 const Banner = require('../models/banner');
 const fs = require("fs");
 const path = require("path");
+const { deleteFile } = require('../utils');
 
 exports.create = (req, res) => {
     const banner = new Banner({
@@ -11,7 +12,8 @@ exports.create = (req, res) => {
     .then(data => {
         res.status(200).json({success: true, data});
     }).catch(err => {
-        res.status(500).json({
+        deleteFile(`/public/uploads/banners/${req.file.filename}`)
+        res.status(400).json({
             message: err.message || "Something wrong while creating the banner."
         });
     });
@@ -29,18 +31,7 @@ exports.getAll = (req, res) => {
 };
 
 exports.edit = async (req, res) => {
-    const img = { image: `/uploads/banners/${req.file.filename}` }
-
-    await Banner.findById({_id: req.params.id },async (err,data)=> {
-        if (err) return res.status(200).json({success: false, err});
-        fs.unlink(
-            path.join(path.dirname(__dirname) + `/public${data.image}`),
-            (err) => {
-                if (err) return res.status(400).json({success: false, err});
-            }
-        )
-    })
-    await Banner.findByIdAndUpdate({_id: req.params.id},{$set: {...req.body, ...img}})
+    await Banner.findByIdAndUpdate({_id: req.params.id},{$set: req.body})
     .then(data => {
         if(!data) {
             return res.status(404).json({
@@ -59,7 +50,23 @@ exports.edit = async (req, res) => {
         });
     });
 };
-
+exports.editImage = async (req, res) => {
+    const img = { image: `/uploads/brands/${req.file.filename}` }
+    await Banner.findById({_id: req.params.id },async (err,data)=> {
+        if (err) return res.status(200).json({success: false, err});
+        fs.unlink(
+            path.join(path.dirname(__dirname) + `/public${data.image}`),
+            (err) => {
+                if (err) return res.status(400).json({success: false, err});
+            }
+        )
+    })
+    await Brand.findByIdAndUpdate({_id: req.params.id},{$set: img})
+    .exec((err,data)=>{
+        if(err) return res.status(400).json({success: false,err})
+        return res.status(200).json({success: true, data})
+    })
+}
 exports.delete = (req, res) => {
     Banner.findByIdAndRemove(req.params.id)
     .then(banner => {

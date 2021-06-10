@@ -5,26 +5,33 @@ const { getSlug } = require('../utils');
 
 exports.create = async (req, res) => {
     const shop = new Shop({
-        name: req.body.name,
+        fullNameDirector: req.body.fullNameDirector,
+        shopName: req.body.shopName,
+        shopId: req.body.shopId,
+        address: req.body.address,
+        phone: req.body.phone,
+        bankName: req.body.bankName,
+        inn: req.body.inn,
+        email: req.body.email,
         user: req.body.user,
-        category: req.body.category,
+        image: req.files.image? `/uploads/shops/${req.files.image[0].filename}`: "",
         description: {
             uz: req.body.description?.uz || "",
-            ru: req.body.description?.ru || "",
+            ru: req.body.description?.ru || ""
         },
-        info: {
-            phone: req.body.phone,
-            email: req.body.email,
-            address: req.body.address
-        },
-        image: `/uploads/shops/${req.file.filename}`,
-        slug: getSlug(req.body.name)
+        category: req.body.category || "Not selected",
+        slug: req.body.shopName? getSlug(req.body.shopName): "",
+        fileContract:  `/uploads/shops/${req.files.fileContract[0].filename}`,
+        fileCertificate : `/uploads/shops/${req.files.fileCertificate[0].filename}`,
     })
     shop.save()
     .then(()=>{
         res.status(200).json({success:true, data: shop})
     })
     .catch(err=>{
+        Object.keys(req.files).forEach(key=>{
+            fs.unlink(path.join(path.dirname(__dirname) + `/public/uploads/shops/${req.files[key][0].filename}`),err=>{})
+        })
         res.status(400).json({success:false, err})
     })
 }

@@ -46,7 +46,55 @@ exports.register = async (req,res)=>{
             })
         })
 }
-exports.login = async (req,res)=>{
+exports.loginAdmin = async (req,res)=>{
+    if(!req.body.phone || !req.body.password){
+        return res.status(400).json({
+            success: false,
+            data: 'required'
+        })
+    }
+    await User.findOne({phone: req.body.phone},(err,user)=>{
+        if(err) return res.send(err);
+        if(!user || user.role != 'admin'){
+            return res.json({
+                success: false,
+                data: 'phone or password wrong'
+            })
+        }
+        if(!bcrypt.compareSync(req.body.password,user.password)){
+            return res.json({
+                success: false,
+                data: 'phone or password wrong'
+            })
+        }
+        sendTokenResponse(user,200,res)
+    })
+}
+exports.loginCeller = async (req,res)=>{
+    if(!req.body.phone || !req.body.password){
+        return res.status(400).json({
+            success: false,
+            data: 'required'
+        })
+    }
+    await User.findOne({phone: req.body.phone},(err,user)=>{
+        if(err) return res.send(err);
+        if(!user || user.role != 'celler'){
+            return res.json({
+                success: false,
+                data: 'phone or password wrong'
+            })
+        }
+        if(!bcrypt.compareSync(req.body.password,user.password)){
+            return res.json({
+                success: false,
+                data: 'phone or password wrong'
+            })
+        }
+        sendTokenResponse(user,200,res)
+    })
+}
+exports.loginClient = async (req,res)=>{
     if(!req.body.phone || !req.body.password){
         return res.status(400).json({
             success: false,
@@ -82,21 +130,7 @@ exports.me = async (req,res)=>{
     .select({password: 0, __v: 0, role: 0})
     .exec( async (err,data)=>{
         if(err) return res.status(400).json({success: false,err});
-        await Application.findOne({user: user.id})
-        .exec((errApplication, dataApplication)=>{
-            if(dataApplication){
-                res.status(200).json({
-                    success: true,
-                    data,
-                    application: dataApplication.status
-                })
-            } else {
-                res.status(200).json({
-                    success: true,
-                    data
-                })
-            }
-        })
+        res.status(200).json({success: true, data})
     })
 }
 exports.delete = async (req,res)=>{
