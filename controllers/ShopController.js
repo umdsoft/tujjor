@@ -4,6 +4,7 @@ const path = require('path');
 const { getSlug, deleteFile } = require('../utils');
 
 exports.create = async (req, res) => {
+    console.log(req.files, req.body)
     try {const shop = new Shop({
         fullNameDirector: req.body.fullNameDirector,
         shopName: req.body.shopName,
