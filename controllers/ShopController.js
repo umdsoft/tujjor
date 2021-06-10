@@ -1,7 +1,7 @@
 const Shop = require('../models/shop');
 const fs = require('fs');
 const path = require('path');
-const { getSlug } = require('../utils');
+const { getSlug, deleteFile } = require('../utils');
 
 exports.create = async (req, res) => {
     const shop = new Shop({
@@ -30,7 +30,7 @@ exports.create = async (req, res) => {
     })
     .catch(err=>{
         Object.keys(req.files).forEach(key=>{
-            fs.unlink(path.join(path.dirname(__dirname) + `/public/uploads/shops/${req.files[key][0].filename}`),err=>{})
+            deleteFile(path.join(path.dirname(__dirname) + `/public/uploads/shops/${req.files[key][0].filename}`))
         })
         res.status(400).json({success:false, err})
     })
@@ -88,13 +88,6 @@ exports.edit = async (req, res)=>{
 exports.delete = async (req,res)=>{
     await Shop.findOne({_id:req.params.id},async (err,data)=>{
         if(err) {return res.status(400).json({success:false, err});}
-        if(!data.length) {return res.status(400).json({success:false, data:"id not Found"});}
-        fs.unlink(
-            path.join(path.dirname(__dirname)+`/public${data.image}`),
-            (err) => {
-                if (err) return res.status(400).json({success: false, err});
-            }
-        )
         await Shop.findByIdAndDelete({_id: data._id})
         res.status(200).json({
             success: true,
