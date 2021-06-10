@@ -4,8 +4,7 @@ const path = require('path');
 const { getSlug, deleteFile } = require('../utils');
 
 exports.create = async (req, res) => {
-    console.log(req.files, req.body)
-    try {const shop = new Shop({
+        const shop = new Shop({
         fullNameDirector: req.body.fullNameDirector,
         shopName: req.body.shopName,
         shopId: req.body.shopId,
@@ -34,9 +33,7 @@ exports.create = async (req, res) => {
             deleteFile(path.join(path.dirname(__dirname) + `/public/uploads/shops/${req.files[key][0].filename}`))
         })
         res.status(400).json({success:false, err})
-    })} catch(err){
-       return res.status(500).json({err})
-    }
+    })
 }
 exports.getShop = async (req, res) => {
     res.status(200).json({success: true, data: await Shop.find({}).populate('category').select({__v: 0})
