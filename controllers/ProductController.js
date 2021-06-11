@@ -138,16 +138,31 @@ exports.getAll = async (req, res) => {
                                      { $project : { price: 1, _id: 0, size: 1} }
                                 ],
                                 as: 'sizes' 
+                            }
+                        },
+                        { 
+                            $project : {
+                                "size":  {$first: "$sizes"},
+                                "image":  {$first: "$productImages"}
                             } 
-                        }
+                        },
+                        { 
+                            $project : {
+                                "price": "$size.price",
+                                "image": "$image.image" 
+                            } 
+                        },
                     ],
                     as: "params"
                 }
             },
             {
-                $project: { 
-                    price: { $first: "$params.sizes" },
-                    image: { $first: "$params.productImages" }
+                $project: {
+                    name: 1,
+                    slug: 1,
+                    category: 1,
+                    "param": {$first: "$params"},
+                    _id: 0
                 }
             }
         ]
@@ -158,16 +173,15 @@ exports.getAll = async (req, res) => {
 };
 
 exports.getOne = async (req, res) => {
-    console.log(req.params.id)
     await Product.aggregate([
-        {$match: {_id: mongoose.Types.ObjectId(req.params.id)}},
+        {$match: {slug: req.params.slug}},
         {
             $lookup:{
                 from: "brands",
                 let: { brand: "$brand" },    
                 pipeline : [
                     { $match: { $expr: { $eq: [ "$_id", "$$brand" ] } }, },
-                    { $project : { __v: 0, createdAt: 0, updatedAt: 0, slug: 0} }
+                    { $project : { __v: 0, createdAt: 0, updatedAt: 0} }
                 ],
                 as: "brand"
             }
@@ -179,7 +193,7 @@ exports.getOne = async (req, res) => {
                 let: { category: "$category" },    
                 pipeline : [
                     { $match: { $expr: { $eq: [ "$_id", "$$category" ] } }, },
-                    { $project : { __v: 0, createdAt: 0, updatedAt: 0, slug: 0} }
+                    { $project : { __v: 0, createdAt: 0, updatedAt: 0} }
                 ],
                 as: "category"
             },
@@ -250,7 +264,7 @@ exports.getOne = async (req, res) => {
         }
     ]).exec((err,data)=>{
         if(err) return res.status(400).json({success: false , err})
-        res.status(200).json({success: true, data: data[0]})
+        res.status(200).json({success: true, data})
     })
 };
 

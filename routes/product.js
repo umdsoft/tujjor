@@ -26,7 +26,7 @@ router.post('/size/create', ProductController.createSize)
 //images routes
 router.post('/image/create', upload.single('image'), validateFile, ProductController.createImage)
 router.get('/all', ProductController.getAll)
-router.get('/:id', ProductController.getOne)
+router.get('/:slug', ProductController.getOne)
 router.delete('/:id',ProductController.delete)
 router.put('/:id',ProductController.edit)
 
