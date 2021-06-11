@@ -21,4 +21,9 @@ const ShopSchema = new mongoose.Schema({
     fileCertificate: {type: String, required: true},
     fileContract : {type: String, required: true}
 },{timestamps: true})
+
+ShopSchema.pre('remove', async function (next) {
+    await this.model('Product').deleteMany({shop: this._id});
+    next();
+});
 module.exports = mongoose.model('shop', ShopSchema);

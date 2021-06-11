@@ -7,7 +7,10 @@ const UserSchema = new mongoose.Schema({
     email: {type: String, unique: true, required: true},
     role: {type: String, required: true, default: "client", enum: ["admin", "seller", "client"]}
 },{timestamps: true})
-
+UserSchema.pre('remove', async function (next) {
+    await this.model('Product').deleteMany({user: this._id});
+    next();
+});
 // Sign JWT and return
 UserSchema.methods.getSignedJwtToken = function() {
     return jwt.sign({ id: this._id}, process.env.JWT_SECRET, {
