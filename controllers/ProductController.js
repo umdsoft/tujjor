@@ -145,11 +145,11 @@ exports.getAll = async (req, res) => {
                 }
             },
             {
-                $addFields: {
-                  price: "$params.0" ,
-                  image: "$params.0" ,
+                $project: { 
+                    price: { $first: "$params.sizes.0" },
+                    image: { $first: "$params.productImages.0" }
                 }
-              },
+            }
         ]
         ).exec((err,data)=>{
         if(err) return res.status(400).json({success: false , err})
