@@ -173,6 +173,7 @@ exports.getAll = async (req, res) => {
 };
 
 exports.getOne = async (req, res) => {
+    console.log(req.params.id)
     await Product.aggregate([
         {$match: {_id: req.params.id}},
         {
