@@ -105,7 +105,7 @@ exports.getAll = async (req, res) => {
                               }
                            }
                         },
-                        { $project : {color: 1, paramId: 1, _id: 0} },
+                        { $project : {color: 1} },
                         { 
                             $lookup: { 
                                 from: 'productimages',
