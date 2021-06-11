@@ -105,7 +105,7 @@ exports.getAll = async (req, res) => {
                               }
                            }
                         },
-                        { $project : {color: 1, _id: 0} },
+                        { $project : {color: 1, paramId: 1, _id: 0} },
                         { 
                             $lookup: { 
                                 from: 'productimages',
@@ -143,7 +143,13 @@ exports.getAll = async (req, res) => {
                     ],
                     as: "params"
                 }
-            }
+            },
+            {
+                $addFields: {
+                  price: "$params.0.sizes.0.price" ,
+                  image: "$params.0.productImages.0.image" ,
+                }
+              },
         ]
         ).exec((err,data)=>{
         if(err) return res.status(400).json({success: false , err})
