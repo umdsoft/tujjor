@@ -52,15 +52,15 @@ exports.editStatus = async (req, res)=>{
     if(!req.body){
         return res.status(400).json({success: false, data: 'Something is wrong'})
     }
-    await Shop.findByIdAndUpdate({_id: req.params.id},{$set: {status: req.body.status}}, {new: true}, (err, data)=>{
+    await Shop.findOneAndUpdate({_id: req.params.id},{$set: {status: req.body.status}}, {new: true}, (err, data)=>{
         if(err){
             return res.status(400).json({success: false, data: 'Not Found'})
         }
             if(req.body.status === 1){
                 console.log("________________", data.user)
-                User.findByIdAndUpdate({_id: data.user}, {$set: {role: "seller"}})
+                User.findOneAndUpdate({_id: data.user}, {$set: {role: "seller"}})
             } else {
-                User.findByIdAndUpdate({_id: data.user}, {$set: {role: "client"}})
+                User.findOneAndUpdate({_id: data.user}, {$set: {role: "client"}})
             }
         res.status(200).json({success: true, data})
     })
