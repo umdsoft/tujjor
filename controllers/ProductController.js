@@ -146,8 +146,8 @@ exports.getAll = async (req, res) => {
             },
             {
                 $project: { 
-                    price: { $first: "$params.sizes.0" },
-                    image: { $first: "$params.productImages.0" }
+                    price: { $first: "$params.sizes" },
+                    image: { $first: "$params.productImages" }
                 }
             }
         ]
