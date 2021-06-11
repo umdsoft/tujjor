@@ -49,13 +49,14 @@ exports.getOne = async (req, res) => {
     })
 }
 exports.editStatus = async (req, res)=>{
-    if(!req.body.status){
+    if(!req.body){
         return res.status(400).json({success: false, data: 'Something is wrong'})
     }
     await Shop.updateOne({_id: req.params.id},{$set: {status: req.body.status}}, (err, data)=>{
         if(err){
             return res.status(400).json({success: false, data: 'Not Found'})
         }
+            console.log()
             User.updateOne({_id: data.user}, {$set: {role: (req.body.status === 0)?"client":"seller"}})
         res.status(200).json({success: true, data})
     })
