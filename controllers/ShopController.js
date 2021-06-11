@@ -44,6 +44,7 @@ exports.getContract = async (req, res) => {
     res.status(200).json({success: true, data: await Shop.find({status: 0}).select({__v: 0})
 })
 }
+
 exports.getOne = async (req, res) => {
     await Shop.findOne({user: req.params.user}).select({user: 0, __v: 0})
     .then(data => {
