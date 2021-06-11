@@ -56,8 +56,8 @@ exports.editStatus = async (req, res)=>{
         if(err){
             return res.status(400).json({success: false, data: 'Not Found'})
         }
-            console.log()
-            User.updateOne({_id: data.user}, {$set: {role: (req.body.status === 0)?"client":"seller"}})
+            console.log(req.body.status)
+            User.updateOne({_id: data.user}, {$set: {role: (req.body.status == 0)?"client":"seller"}})
         res.status(200).json({success: true, data})
     })
 }
