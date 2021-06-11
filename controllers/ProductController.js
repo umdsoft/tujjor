@@ -92,7 +92,6 @@ exports.getAll = async (req, res) => {
                     as: "category"
                 },
             },
-            {$unwind: "$category"},
             {
                 $lookup:{
                     from: "params",
@@ -160,7 +159,7 @@ exports.getAll = async (req, res) => {
                 $project: {
                     name: 1,
                     slug: 1,
-                    category: 1,
+                    category: {$first: "$category"},
                     "param": {$first: "$params"},
                     _id: 0
                 }
