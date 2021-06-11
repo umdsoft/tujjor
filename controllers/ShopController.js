@@ -41,7 +41,8 @@ exports.getShop = async (req, res) => {
 })
 }
 exports.getContract = async (req, res) => {
-    res.status(200).json({success: true, data: await Shop.find({status: 0}).populate('user').select({__v: 0})
+    res.status(200).json({success: true, data: await Shop.find({status: 0})
+        .populate([{path:'user', select: {name: 1, phone: 1, _id: 0, }}]).select({__v: 0})
 })
 }
 
