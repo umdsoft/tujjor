@@ -14,7 +14,7 @@ exports.create = (req, res) => {
             uz: req.body.description.uz,
             ru: req.body.description.ru
         },
-        startTime: ISODate(req.body.startTime),
+        startTime: req.body.startTime,
         file: `/uploads/news/${filePath}/${req.file.filename}`,
         status: req.body.status,
         slug: getSlug(req.body.title.ru),
