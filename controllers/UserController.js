@@ -20,12 +20,9 @@ const sendTokenResponse = (user, statusCode, res) => {
         token,
     });
 };
-exports.register = async (req, res) => {
-    if (!req.body) {
-        return res.status(400).json({
-            success: false,
-            data: "required",
-        });
+exports.register = async (req,res)=>{
+    if(!Object.keys(req.body).length){
+        return res.status(400).json({success: false, message: 'Required !'})
     }
     const salt = await bcrypt.genSalt(12);
     const pass = await bcrypt.hash(req.body.password, salt);

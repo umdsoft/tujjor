@@ -1,13 +1,11 @@
-const { News, validate } = require('../models/news');
+const News = require('../models/news');
 const { getSlug } = require('../utils');
 const fs = require('fs');
 const path = require('path');
 
 exports.create = (req, res) => {
-    const { error } = validate(req.body);
-    if (error) return res.status(400).json({success: false, message: error.details[0].message});
-    if (!req.file) {
-        return res.status(400).json({success: false, message: "File don't upload"})
+    if(!Object.keys(req.body).length){
+        return res.status(400).json({success: false, message: 'Required !'})
     }
     const filePath = req.file.mimetype.startsWith('video') ? 'videos' : 'images';
     const news = new News({
@@ -19,7 +17,7 @@ exports.create = (req, res) => {
             uz: req.body.description.uz,
             ru: req.body.description.ru
         },
-        startTime: req.body.startTime,
+        startTime: ISODate(req.body.startTime),
         file: `/uploads/news/${filePath}/${req.file.filename}`,
         status: req.body.status,
         slug: getSlug(req.body.title.ru),
@@ -42,10 +40,6 @@ exports.getType = async (req, res) => {
     res.status(200).json({success: true, data: req})
 }
 exports.edit = async (req, res) => {
-    const { error } = validate(req.body);
-    if (error) {
-        return res.status(400).json({success: false, message: error.details[0].message})
-    }
     await News.findByIdAndUpdate({ _id: req.params.id }, { $set: req.body }, (err, data) => {
         if (err) {
             return res.status(400).json({success: false, err})
@@ -54,9 +48,6 @@ exports.edit = async (req, res) => {
     })
 }
 exports.editFile = async (req, res) => {
-    if (!req.file) {
-        return res.status(400).json({success: false, message: "File don't upload"})
-    }
     const filePath = req.file.mimetype.startsWith('video') ? 'videos' : 'images';
     const file = {
         file: `/uploads/news/${filePath}/${req.file.filename}`,
@@ -81,15 +72,22 @@ exports.editFile = async (req, res) => {
 exports.delete = async (req, res) => {
     await News.findOne({ _id: req.params.id }, async (err, data) => {
         if (err) { return res.status(400).json({ success: false, err }) }
-        console.log(data)
-
+        if(!data) {
+            return res.status(404).json({success: false, message: "News not found with id "+ req.params.id})
+        }
         fs.unlink(
             path.join(path.dirname(__dirname)+`/public${data.file}`),
             (err) => {
                 if (err) return res.status(400).json({success: false, err});
             }
         )
-        await News.findByIdAndDelete(data._id)
+        await News.findByIdAndDelete({_id: data._id})
         res.status(200).json({success: true, data: [] })
     })
+}
+
+exports.getClientAll = async (req, res) =>{
+    return res.status(200).json({success: true, data: await News.find(
+        { startTime: {$gte: Date.now()}}
+    )})
 }
