@@ -52,7 +52,7 @@ exports.editStatus = async (req, res)=>{
     if(!req.body){
         return res.status(400).json({success: false, data: 'Something is wrong'})
     }
-    await Shop.findByIdAndUpdate({_id: req.params.id},{$set: {status: req.body.status}}, (err, data)=>{
+    await Shop.findByIdAndUpdate({_id: req.params.id},{$set: {status: req.body.status}}, {new: true}, (err, data)=>{
         if(err){
             return res.status(400).json({success: false, data: 'Not Found'})
         }
