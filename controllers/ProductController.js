@@ -146,8 +146,8 @@ exports.getAll = async (req, res) => {
             },
             {
                 $addFields: {
-                  price: "$params.0.sizes.0.price" ,
-                  image: "$params.0.productImages.0.image" ,
+                  price: "$params" ,
+                  image: "$params" ,
                 }
               },
         ]
