@@ -52,6 +52,18 @@ exports.edit = async (req, res) => {
                 if (err) return res.status(400).json({success: false, err});
             }
         )
+        await sharp(path.join(path.dirname(__dirname) + `/public/uploads/temp/${filename}`) )
+            .jpeg({
+                quality: 70
+            })
+            .toFile(path.join(path.dirname(__dirname) + `/public/uploads/sliders/${filename}`), (err)=>{
+                if(err) {
+                    console.log(err)
+                }
+                fs.unlink(path.join(path.dirname(__dirname) + `/public/uploads/temp/${filename}`),(err)=>{
+                    if(err) console.log(err)
+                })
+            })
     })
     await Slider.findByIdAndUpdate({_id: req.params.id},{$set: {...req.body, ...img}})
     .then(data => {

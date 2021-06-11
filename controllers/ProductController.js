@@ -76,6 +76,7 @@ exports.createImage = (req, res) => {
     });
 }
 exports.getAll = async (req, res) => {
+    
     await Product.aggregate([
         {$sort: {createdAt: -1}},
         {
@@ -167,7 +168,6 @@ exports.getAll = async (req, res) => {
         }
     ]).exec((err,data)=>{
         if(err) return res.status(400).json({success: false , err})
-
         res.status(200).json({success: true, data})
     })
 };
