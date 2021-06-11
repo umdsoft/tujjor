@@ -43,7 +43,8 @@ exports.getAll = (req, res) => {
 };
 
 exports.edit = async (req, res) => {
-    const img = { image: `/uploads/sliders/${req.file.filename}` }
+    const {filename} = req.file;
+    const img = { image: `/uploads/sliders/${filename}` }
     await Slider.findById({_id: req.params.id },async (err,data)=> {
         if (err) return res.status(200).json({success: false, err});
         fs.unlink(
