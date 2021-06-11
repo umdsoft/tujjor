@@ -44,5 +44,5 @@ exports.delete = async (req, res) => {
 }
 
 exports.getClientAll = async (req, res)=>{
-    return res.status(200).json({success: true, data: await Info.find({status: 1})})
+    return res.status(200).json({success: true, data: await Info.find({status: true})})
 }

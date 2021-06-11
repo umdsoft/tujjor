@@ -85,6 +85,6 @@ exports.delete = async (req, res) => {
 
 exports.getClientAll = async (req, res) =>{
     return res.status(200).json({success: true, data: await News.find(
-        { startTime: {$gte: Date.now()}}
+        { status: true, startTime: {$gte: Date.now()}}
     )})
 }

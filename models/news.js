@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const NewsSchema = new mongoose.Schema({
     title: {
-        uz: { type: String, required: true },
+        uz: { type: String, required: true},
         ru: { type: String, required: true}
     },
     description:{

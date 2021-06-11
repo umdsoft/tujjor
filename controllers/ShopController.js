@@ -43,6 +43,9 @@ exports.getShop = async (req, res) => {
 exports.getOne = async (req, res) => {
     await Shop.findOne({user: req.params.user}).select({user: 0, __v: 0})
     .then(data => {
+        if(!data){
+            return res.status(404).json({success: false, message: "Not found this shop"})
+        }
         return res.status(200).json({success: true, data})
     }).catch(err => {
         return res.status(500).json({success: false, message: err})
@@ -83,13 +86,17 @@ exports.edit = async (req, res)=>{
     })
 }
 exports.delete = async (req,res)=>{
-    await Shop.findOne({_id:req.params.id},async (err,data)=>{
+    await Shop.findOne({_id:req.params.id}, async (err,data)=>{
         if(err || !data) {return res.status(404).json({success:false, message: "Not Found this Id"});}
 
         deleteFile(`/public${data.fileContract}`)
         deleteFile(`/public${data.fileCertificate}`)
         deleteFile(`/public${data.image}`)
-        await Shop.findByIdAndDelete({_id: data._id})
+        await Shop.findByIdAndDelete({_id: data._id}, async (err, data)=>{
+            if(data){
+                await User.findOneAndUpdate({_id: data.user}, {$set: {role: "client"}})
+            }
+        })
         res.status(200).json({
             success: true,
             data: []
