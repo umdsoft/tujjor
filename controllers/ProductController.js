@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const Product = require('../models/product');
 const Param = require('../models/param');
 const Size = require('../models/size');
@@ -175,7 +176,7 @@ exports.getAll = async (req, res) => {
 exports.getOne = async (req, res) => {
     console.log(req.params.id)
     await Product.aggregate([
-        {$match: {_id: `ObjectId(${req.params.id})`}},
+        {$match: {_id: mongoose.Types.ObjectId(req.params.id)}},
         {
             $lookup:{
                 from: "brands",
