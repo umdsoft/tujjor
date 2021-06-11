@@ -1,4 +1,5 @@
 const Shop = require('../models/shop');
+const User = require('../models/user');
 const fs = require('fs');
 const path = require('path');
 const { getSlug, deleteFile } = require('../utils');
@@ -40,18 +41,12 @@ exports.getShop = async (req, res) => {
 })
 }
 exports.getOne = async (req, res) => {
-    if(!req.params.id){
-        return res.status(400).json({success: false, data: 'id is required'})
-    }
-    await Shop.findById({_id: req.params.id}, { __v: 0 }, (err, data)=>{
-        if(err){
-            return res.status(400).json({success: false, data:'Not Found'})
-        }
-        if(!data){
-            return res.status(400).json({success:false, data: 'Not Found'})
-        }
-        res.status(200).json({success:true, data})
-    }).populate('category user')
+    await Shop.findOne({user: req.params.user}).select({user: 0, __v: 0})
+    .then(data => {
+        return res.status(200).json({success: true, data})
+    }).catch(err => {
+        return res.status(500).json({success: false, message: err})
+    })
 }
 exports.editStatus = async (req, res)=>{
     if(!req.body.status){
@@ -61,7 +56,7 @@ exports.editStatus = async (req, res)=>{
         if(err){
             return res.status(400).json({success: false, data: 'Not Found'})
         }
-
+            User.updateOne({_id: data.user}, {$set: {role: (req.body.status === 0)?"client":"seller"}})
         res.status(200).json({success: true, data})
     })
 }
