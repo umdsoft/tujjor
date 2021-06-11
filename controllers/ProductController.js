@@ -81,42 +81,18 @@ exports.getAll = async (req, res) => {
     await Product.aggregate(
         [
             {$sort: {createdAt: -1}},
-            // {
-            //     $lookup:{
-            //         from: "brands",
-            //         let: { brand: "$brand" },    
-            //         pipeline : [
-            //             { $match: { $expr: { $eq: [ "$_id", "$$brand" ] } }, },
-            //             { $project : { __v: 0, createdAt: 0, updatedAt: 0, slug: 0} }
-            //         ],
-            //         as: "brand"
-            //     }
-            // },
-            // {$unwind: "$brand"},
             {
                 $lookup:{
                     from: "categories",
                     let: { category: "$category" },    
                     pipeline : [
                         { $match: { $expr: { $eq: [ "$_id", "$$category" ] } }, },
-                        { $project : { __v: 0, createdAt: 0, updatedAt: 0, slug: 0} }
+                        { $project : {name: 1, _id: 0} }
                     ],
                     as: "category"
                 },
             },
             {$unwind: "$category"},
-            // {
-            //     $lookup:{
-            //         from: "shops",
-            //         let: { shop: "$shop" },    
-            //         pipeline : [
-            //             { $match: { $expr: { $eq: [ "$_id", "$$shop" ] } }, },
-            //             { $project : {name: 1, _id: 0} }
-            //         ],
-            //         as: "shop"
-            //     },
-            // },
-            // {$unwind: "$shop"},
             {
                 $lookup:{
                     from: "params",
@@ -159,7 +135,7 @@ exports.getAll = async (req, res) => {
                                            }
                                         }
                                      },
-                                     { $project : { __v: 0, createdAt: 0, updatedAt: 0, slug: 0} }
+                                     { $project : { price: 1, _id: 0, size: 1} }
                                 ],
                                 as: 'sizes' 
                             } 
