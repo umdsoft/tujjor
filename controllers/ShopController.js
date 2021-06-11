@@ -55,6 +55,17 @@ exports.getOne = async (req, res) => {
         return res.status(500).json({success: false, message: err})
     })
 }
+exports.getOneAdmin = async (req, res) => {
+    await Shop.findById({_id: req.params.id}).select({user: 0, __v: 0})
+    .then(data => {
+        if(!data){
+            return res.status(404).json({success: false, message: "Not found this shop"})
+        }
+        return res.status(200).json({success: true, data})
+    }).catch(err => {
+        return res.status(500).json({success: false, message: err})
+    })
+}
 exports.editStatus = async (req, res)=>{
     if(!req.body){
         return res.status(400).json({success: false, data: 'Something is wrong'})
