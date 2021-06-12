@@ -153,7 +153,7 @@ exports.getAll = async (req, res) => {
                 $project: {
                     name: 1,
                     slug: 1,
-                    category: {$first: "$category"},
+                    category: { $arrayElemAt: [ "$category", 0 ] },
                     "param": { $arrayElemAt: [ "$params", 0 ] },
                     _id: 0
                 }
