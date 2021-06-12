@@ -143,12 +143,14 @@ exports.getAll = async (req, res) => {
                             $project : {
                                 "price":  { $arrayElemAt: [ "$sizes", 0 ] },
                                 "image":  { $arrayElemAt: [ "$images", 0 ] } 
-                            },
+                            }
+                        },
+                        {
                             $project : {
                                 "price": "$prrice.price" ,
                                 "image": "$images.image" 
-                            } 
-                        },
+                            }
+                        }
                     ],
                     as: "params"
                 }
