@@ -219,6 +219,7 @@ exports.getOne = async (req, res) => {
                     {
                         $project: {
                             shopName: 1,
+                            phone: 1,
                         },
                     },
                     {
