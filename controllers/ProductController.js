@@ -139,12 +139,12 @@ exports.getAll = async (req, res) => {
                                 as: 'sizes' 
                             }
                         },
-                        // { 
-                        //     $project : {
-                        //         "size":  {$first: "$sizes"},
-                        //         "image":  {$first: "$productImages"}
-                        //     } 
-                        // },
+                        { 
+                            $project : {
+                                "size":  {$first: "$sizes"},
+                                "image":  {$first: "$productImages"}
+                            } 
+                        },
                         { 
                             $project : {
                                 "price": "$size.price",
@@ -155,15 +155,15 @@ exports.getAll = async (req, res) => {
                     as: "params"
                 }
             },
-            // {
-            //     $project: {
-            //         name: 1,
-            //         slug: 1,
-            //         category: {$first: "$category"},
-            //         "param": {$first: "$params"},
-            //         _id: 0
-            //     }
-            // }
+            {
+                $project: {
+                    name: 1,
+                    slug: 1,
+                    category: {$first: "$category"},
+                    "param": {$first: "$params"},
+                    _id: 0
+                }
+            }
         ]
         ).exec((err,data)=>{
         if(err) return res.status(400).json({success: false , err})
