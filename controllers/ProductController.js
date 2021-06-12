@@ -23,7 +23,7 @@ exports.create = (req, res) => {
     product
         .save()
         .then((data) => {
-            res.status(200).json({ success: true });
+            res.status(200).json({ success: true, data: { _id: data._id } });
         })
         .catch((err) => {
             res.status(500).json({
@@ -41,7 +41,7 @@ exports.createParam = (req, res) => {
     param
         .save()
         .then((data) => {
-            res.status(200).json({ success: true });
+            res.status(200).json({ success: true, data: { _id: data._id } });
         })
         .catch((err) => {
             res.status(500).json({
