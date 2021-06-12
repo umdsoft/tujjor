@@ -149,25 +149,25 @@ exports.getAll = async (req, res) => {
                     as: "params"
                 }
             },
-            // {
-            //     $project: {
-            //         name: 1,
-            //         slug: 1,
-            //         category: { $arrayElemAt: [ "$category", 0 ] },
-            //         "param": { $arrayElemAt: [ "$params", 0 ] },
-            //         _id: 0
-            //     }
-            // },
-            // {
-            //     $project: {
-            //         name: 1,
-            //         slug: 1,
-            //         category: 1,
-            //         image: "$param.image.image",
-            //         price: "$param.price.price",
-            //         _id: 0
-            //     }
-            // }
+            {
+                $project: {
+                    name: 1,
+                    slug: 1,
+                    category: { $arrayElemAt: [ "$category", 0 ] },
+                    "param": { $arrayElemAt: [ "$params", 0 ] },
+                    _id: 0
+                }
+            },
+            {
+                $project: {
+                    name: 1,
+                    slug: 1,
+                    category: 1,
+                    image: "$param.image.image",
+                    price: "$param.price.price",
+                    _id: 0
+                }
+            }
         ]
         ).exec((err,data)=>{
         if(err) return res.status(400).json({success: false , err})
