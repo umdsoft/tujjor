@@ -80,6 +80,18 @@ exports.getAll = async (req, res) => {
     
     await Product.aggregate(
         [
+            {$sort: {createdAt: -1}},
+            // {
+            //     $lookup:{
+            //         from: "categories",
+            //         let: { category: "$category" },    
+            //         pipeline : [
+            //             { $match: { $expr: { $eq: [ "$_id", "$$category" ] } }, },
+            //             { $project : {name: 1, _id: 0} }
+            //         ],
+            //         as: "category"
+            //     },
+            // },
             // {
             //     $lookup:{
             //         from: "params",
@@ -142,17 +154,6 @@ exports.getAll = async (req, res) => {
             //         ],
             //         as: "params"
             //     }
-            // },
-            // {
-            //     $lookup:{
-            //         from: "categories",
-            //         let: { category: "$category" },    
-            //         pipeline : [
-            //             { $match: { $expr: { $eq: [ "$_id", "$$category" ] } }, },
-            //             { $project : {name: 1, _id: 0} }
-            //         ],
-            //         as: "category"
-            //     },
             // },
             // {
             //     $project: {
