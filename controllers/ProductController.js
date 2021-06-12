@@ -139,12 +139,6 @@ exports.getAll = async (req, res) => {
                                 as: 'sizes' 
                             }
                         },
-                        { 
-                            $project : {
-                                "productImages": { $slice: 1 },
-                                "sizes": { $slice: 1 }
-                            } 
-                        },
                         // { 
                         //     $project : {
                         //         "price": "$size.price",
