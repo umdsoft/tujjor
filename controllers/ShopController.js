@@ -104,17 +104,10 @@ exports.editStatus = async (req, res) => {
                     .status(400)
                     .json({ success: false, data: "Not Found" });
             }
-            if (req.body.status === 1) {
-                await User.findOneAndUpdate(
-                    { _id: data.user },
-                    { $set: { role: "seller" } }
-                );
-            } else {
-                await User.findOneAndUpdate(
-                    { _id: data.user },
-                    { $set: { role: "client" } }
-                );
-            }
+            await User.findOneAndUpdate(
+                { _id: data.user },
+                { $set: { role: "seller" } }
+            );
             res.status(200).json({ success: true, data });
         }
     );
