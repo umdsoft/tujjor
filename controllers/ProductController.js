@@ -230,6 +230,7 @@ exports.getOne = async (req, res) => {
                         $project: {
                             slug: 0,
                             __v: 0,
+                            productId: 0,
                         },
                     },
 
