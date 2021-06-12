@@ -218,10 +218,7 @@ exports.getOne = async (req, res) => {
                     },
                     {
                         $project: {
-                            __v: 0,
-                            createdAt: 0,
-                            updatedAt: 0,
-                            slug: 0,
+                            shopName: 1,
                         },
                     },
                     {
