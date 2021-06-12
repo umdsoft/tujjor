@@ -80,69 +80,69 @@ exports.getAll = async (req, res) => {
     
     await Product.aggregate(
         [
-            {
-                $lookup:{
-                    from: "params",
-                    let: { productId: "$_id"},
-                    pipeline: [
-                        { $match:
-                           { $expr:
-                              { 
-                                  $eq: ["$productId", "$$productId"]
-                              }
-                           }
-                        },
-                        { $project : {color: 1} },
-                        { 
-                            $lookup: { 
-                                from: 'productimages',
-                                let: { paramId: "$_id"},
-                                pipeline: [
-                                    { $match:
-                                        { $expr:
-                                           { 
-                                               $eq: ["$paramId", "$$paramId"]
-                                           }
-                                        }
-                                     },
-                                     { $project : {image: 1, _id: 0} }
-                                ],
-                                as: 'productImages' 
-                            } 
-                        },
-                        { 
-                            $lookup: { 
-                                from: 'sizes',
-                                let: { paramId: "$_id"},
-                                pipeline: [
-                                    { $match:
-                                        { $expr:
-                                           { 
-                                               $eq: ["$paramId", "$$paramId"]
-                                           }
-                                        }
-                                     },
-                                     { $project : { price: 1, _id: 0, size: 1} }
-                                ],
-                                as: 'sizes' 
-                            }
-                        },
-                        { 
-                            $project : {
-                                "size":  {$first: "$sizes"},
-                                "image":  {$first: "$productImages"}
-                            } 
-                        },
-                        { 
-                            $project : {
-                                "price": "$size.price",
-                                "image": "$image.image" 
-                            } 
-                        },
-                    ],
-                    as: "params"
-                }
-            },
+            // {
+            //     $lookup:{
+            //         from: "params",
+            //         let: { productId: "$_id"},
+            //         pipeline: [
+            //             { $match:
+            //                { $expr:
+            //                   { 
+            //                       $eq: ["$productId", "$$productId"]
+            //                   }
+            //                }
+            //             },
+            //             { $project : {color: 1} },
+            //             { 
+            //                 $lookup: { 
+            //                     from: 'productimages',
+            //                     let: { paramId: "$_id"},
+            //                     pipeline: [
+            //                         { $match:
+            //                             { $expr:
+            //                                { 
+            //                                    $eq: ["$paramId", "$$paramId"]
+            //                                }
+            //                             }
+            //                          },
+            //                          { $project : {image: 1, _id: 0} }
+            //                     ],
+            //                     as: 'productImages' 
+            //                 } 
+            //             },
+            //             { 
+            //                 $lookup: { 
+            //                     from: 'sizes',
+            //                     let: { paramId: "$_id"},
+            //                     pipeline: [
+            //                         { $match:
+            //                             { $expr:
+            //                                { 
+            //                                    $eq: ["$paramId", "$$paramId"]
+            //                                }
+            //                             }
+            //                          },
+            //                          { $project : { price: 1, _id: 0, size: 1} }
+            //                     ],
+            //                     as: 'sizes' 
+            //                 }
+            //             },
+            //             { 
+            //                 $project : {
+            //                     "size":  {$first: "$sizes"},
+            //                     "image":  {$first: "$productImages"}
+            //                 } 
+            //             },
+            //             { 
+            //                 $project : {
+            //                     "price": "$size.price",
+            //                     "image": "$image.image" 
+            //                 } 
+            //             },
+            //         ],
+            //         as: "params"
+            //     }
+            // },
             {
                 $lookup:{
                     from: "categories",
