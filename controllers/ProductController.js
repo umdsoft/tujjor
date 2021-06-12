@@ -109,6 +109,23 @@ exports.getAll = async (req, res) => {
         },
         {
             $lookup: {
+                from: "shops",
+                let: { shop: "$shop" },
+                pipeline: [
+                    {
+                        $match: {
+                            $expr: {
+                                $eq: ["$_id", "$$shop"],
+                            },
+                        },
+                    },
+                    { $project: { status: 1, _id: 0 } },
+                ],
+                as: "shop",
+            },
+        },
+        {
+            $lookup: {
                 from: "sizes",
                 let: { productId: "$_id" },
                 pipeline: [
@@ -142,6 +159,7 @@ exports.getAll = async (req, res) => {
                 _id: 0,
                 name: 1,
                 category: 1,
+                shop: 1,
                 slug: 1,
                 price: { $arrayElemAt: ["$sizes", 0] },
                 image: { $arrayElemAt: ["$images", 0] },
@@ -152,6 +170,7 @@ exports.getAll = async (req, res) => {
                 _id: 0,
                 name: 1,
                 category: 1,
+                shop: 1,
                 slug: 1,
                 price: "$price.price",
                 image: "$image.image",
