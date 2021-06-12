@@ -154,7 +154,7 @@ exports.getAll = async (req, res) => {
                     name: 1,
                     slug: 1,
                     category: {$first: "$category"},
-                    "param": {$first: "$params"},
+                    "param": { $arrayElemAt: [ "$params", 0 ] },
                     _id: 0
                 }
             }
