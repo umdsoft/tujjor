@@ -122,23 +122,23 @@ exports.getAll = async (req, res) => {
                                 as: 'productImages' 
                             } 
                         },
-                        // { 
-                        //     $lookup: { 
-                        //         from: 'sizes',
-                        //         let: { paramId: "$_id"},
-                        //         pipeline: [
-                        //             { $match:
-                        //                 { $expr:
-                        //                    { 
-                        //                        $eq: ["$paramId", "$$paramId"]
-                        //                    }
-                        //                 }
-                        //              },
-                        //              { $project : { price: 1, _id: 0, size: 1} }
-                        //         ],
-                        //         as: 'sizes' 
-                        //     }
-                        // },
+                        { 
+                            $lookup: { 
+                                from: 'sizes',
+                                let: { paramId: "$_id"},
+                                pipeline: [
+                                    { $match:
+                                        { $expr:
+                                           { 
+                                               $eq: ["$paramId", "$$paramId"]
+                                           }
+                                        }
+                                     },
+                                     { $project : { price: 1, _id: 0, size: 1} }
+                                ],
+                                as: 'sizes' 
+                            }
+                        },
                         // { 
                         //     $project : {
                         //         "size":  {$first: "$sizes"},
