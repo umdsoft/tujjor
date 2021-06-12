@@ -119,7 +119,7 @@ exports.getAll = async (req, res) => {
                                      },
                                      { $project : {image: 1, _id: 0} }
                                 ],
-                                as: 'productImages' 
+                                as: 'images' 
                             } 
                         },
                         { 
@@ -141,8 +141,8 @@ exports.getAll = async (req, res) => {
                         },
                         { 
                             $project : {
-                                "price": "$size.price",
-                                "image": "$image.image" 
+                                "price":  { $arrayElemAt: [ "$sizes", 0 ] },
+                                "image":  { $arrayElemAt: [ "$images", 0 ] } 
                             } 
                         },
                     ],
