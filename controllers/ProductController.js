@@ -141,8 +141,8 @@ exports.getAll = async (req, res) => {
                         },
                         { 
                             $project : {
-                                "price":  { $arrayElemAt: [ "$sizes", 0 ] },
-                                "image":  { $arrayElemAt: [ "$images", 0 ] } 
+                                "price": { $arrayElemAt:  [ {$arrayElemAt: [ "$sizes", 0 ]}, "price"]},
+                                "image": { $arrayElemAt:  [ {$arrayElemAt: [ "$images", 0 ]}, "image"]}
                             } 
                         },
                     ],
