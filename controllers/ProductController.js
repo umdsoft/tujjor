@@ -193,10 +193,7 @@ exports.getOne = async (req, res) => {
                     { $match: { $expr: { $eq: ["$_id", "$$shop"] } } },
                     {
                         $project: {
-                            __v: 0,
-                            createdAt: 0,
-                            updatedAt: 0,
-                            slug: 0,
+                            shopName: 1,
                         },
                     },
                 ],
@@ -216,12 +213,7 @@ exports.getOne = async (req, res) => {
                             },
                         },
                     },
-                    {
-                        $project: {
-                            shopName: 1,
-                            phone: 1,
-                        },
-                    },
+
                     {
                         $lookup: {
                             from: "productimages",
