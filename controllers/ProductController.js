@@ -123,11 +123,6 @@ exports.getAll = async (req, res) => {
                             } 
                         },
                         { 
-                            $project : {
-                                "image":  {$first: "$productImages"}
-                            } 
-                        },
-                        { 
                             $lookup: { 
                                 from: 'sizes',
                                 let: { paramId: "$_id"},
@@ -146,7 +141,8 @@ exports.getAll = async (req, res) => {
                         },
                         { 
                             $project : {
-                                "size":  {$first: "$sizes"}
+                                "productImages": { $slice: 1 },
+                                "sizes": { $slice: 1 }
                             } 
                         },
                         // { 
