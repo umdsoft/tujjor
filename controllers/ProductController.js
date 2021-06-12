@@ -89,8 +89,13 @@ exports.createImage = (req, res) => {
         });
 };
 exports.getAll = async (req, res) => {
+    const page = parseInt(req.query.page);
+    const limit = parseInt(req.query.limit);
+    const num = await Product.countDocuments();
     await Product.aggregate([
         { $sort: { createdAt: -1 } },
+        { $skip: (page - 1) * limit },
+        { $limit: limit },
         {
             $lookup: {
                 from: "categories",
@@ -154,7 +159,7 @@ exports.getAll = async (req, res) => {
         },
     ]).exec((err, data) => {
         if (err) return res.status(400).json({ success: false, err });
-        res.status(200).json({ success: true, data });
+        res.status(200).json({ success: true, data, num });
     });
 };
 
@@ -167,7 +172,7 @@ exports.getOne = async (req, res) => {
                 let: { brand: "$brand" },
                 pipeline: [
                     { $match: { $expr: { $eq: ["$_id", "$$brand"] } } },
-                    { $project: { __v: 0, createdAt: 0, updatedAt: 0 } },
+                    { $project: { name: 1, slug: 1, _id: 1 } },
                 ],
                 as: "brand",
             },
@@ -337,4 +342,53 @@ exports.delete = (req, res) => {
                 message: "Could not delete product with id " + req.params.id,
             });
         });
+};
+
+exports.editParam = async (req, res) => {
+    await Param.updateOne({ _id: req.params.id }, { $set: req.body }).exec(
+        (err, data) => {
+            if (err) return res.status(400).json({ success: false, data: err });
+            return res.status(200).json({ success: true, data: data });
+        }
+    );
+};
+
+exports.editSize = async (req, res) => {
+    await Size.updateOne({ _id: req.params.id }, { $set: req.body }).exec(
+        (err, data) => {
+            if (err) return res.status(400).json({ success: false, data: err });
+            return res.status(200).json({ success: true, data: data });
+        }
+    );
+};
+exports.deleteParam = async (req, res) => {
+    await Param.findByIdAndDelete({ _id: req.params.id });
+    res.status(200).json({
+        success: true,
+        data: [],
+    });
+};
+exports.deleteSize = async (req, res) => {
+    await Size.findByIdAndDelete({ _id: req.params.id });
+    res.status(200).json({
+        success: true,
+        data: [],
+    });
+};
+
+exports.deleteImage = async (req, res) => {
+    await ProductImage.findOne({ _id: req.params.id }, async (err, data) => {
+        if (err) throw console.log(err);
+        fs.unlink(
+            path.join(path.dirname(__dirname) + `/public${data.image}`),
+            (err) => {
+                if (err) throw console.log(err);
+            }
+        );
+        await ProductImage.findByIdAndDelete({ _id: data._id });
+        res.status(200).json({
+            success: true,
+            data: [],
+        });
+    });
 };
