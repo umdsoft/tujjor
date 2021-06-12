@@ -122,43 +122,43 @@ exports.getAll = async (req, res) => {
                 as: "sizes",
             },
         },
-        {
-            $lookup: {
-                from: "productimages",
-                let: { productId: "$_id" },
-                pipeline: [
-                    {
-                        $match: {
-                            $expr: { $eq: ["$productId", "$$productId"] },
-                        },
-                    },
-                    { $project: { image: 1, _id: 0 } },
-                ],
-                as: "images",
-            },
-        },
-        {
-            $project: {
-                _id: 0,
-                name: 1,
-                category: 1,
-                shop: 1,
-                slug: 1,
-                price: { $arrayElemAt: ["$sizes", 0] },
-                image: { $arrayElemAt: ["$images", 0] },
-            },
-        },
-        {
-            $project: {
-                _id: 0,
-                name: 1,
-                category: 1,
-                shop: 1,
-                slug: 1,
-                price: "$price.price",
-                image: "$image.image",
-            },
-        },
+        // {
+        //     $lookup: {
+        //         from: "productimages",
+        //         let: { productId: "$_id" },
+        //         pipeline: [
+        //             {
+        //                 $match: {
+        //                     $expr: { $eq: ["$productId", "$$productId"] },
+        //                 },
+        //             },
+        //             { $project: { image: 1, _id: 0 } },
+        //         ],
+        //         as: "images",
+        //     },
+        // },
+        // {
+        //     $project: {
+        //         _id: 0,
+        //         name: 1,
+        //         category: 1,
+        //         shop: 1,
+        //         slug: 1,
+        //         price: { $arrayElemAt: ["$sizes", 0] },
+        //         image: { $arrayElemAt: ["$images", 0] },
+        //     },
+        // },
+        // {
+        //     $project: {
+        //         _id: 0,
+        //         name: 1,
+        //         category: 1,
+        //         shop: 1,
+        //         slug: 1,
+        //         price: "$price.price",
+        //         image: "$image.image",
+        //     },
+        // },
     ]).exec((err, data) => {
         if (err) return res.status(400).json({ success: false, err });
         res.status(200).json({ success: true, data, num });
