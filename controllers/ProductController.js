@@ -164,7 +164,7 @@ exports.getAll = async (req, res) => {
                     slug: 1,
                     category: 1,
                     image: "$param.image.image",
-                    image: "$param.price.price",
+                    price: "$param.price.price",
                     _id: 0
                 }
             }
