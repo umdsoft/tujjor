@@ -157,6 +157,16 @@ exports.getAll = async (req, res) => {
                     "param": { $arrayElemAt: [ "$params", 0 ] },
                     _id: 0
                 }
+            },
+            {
+                $project: {
+                    name: 1,
+                    slug: 1,
+                    category: 1,
+                    image: "$param.image.image",
+                    image: "$param.price.price",
+                    _id: 0
+                }
             }
         ]
         ).exec((err,data)=>{
