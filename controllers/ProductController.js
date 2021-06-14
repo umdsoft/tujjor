@@ -1,3 +1,4 @@
+const mongoose = require("mongoose");
 const Product = require("../models/product");
 const Param = require("../models/param");
 const Size = require("../models/size");
@@ -88,6 +89,180 @@ exports.createImage = (req, res) => {
             });
         });
 };
+//price , category, brand, color, size, tags,
+exports.filter = async (req, res) => {
+    const page = parseInt(req.query.page);
+    const limit = parseInt(req.query.limit);
+    const num = await Product.countDocuments();
+    let aggregateStart = [];
+    let aggregateEnd = [];
+
+    if (req.body.category && req.body.category.length) {
+        aggregateStart.push({
+            $match: {
+                category: {
+                    $in: req.body.category.map((key) =>
+                        mongoose.Types.ObjectId(key)
+                    ),
+                },
+            },
+        });
+    }
+    if (req.body.brand && req.body.brand.length) {
+        aggregateStart.push({
+            $match: {
+                brand: {
+                    $in: req.body.brand.map((key) =>
+                        mongoose.Types.ObjectId(key)
+                    ),
+                },
+            },
+        });
+    }
+    if (req.body.color) {
+        aggregateEnd.push({
+            $match: {
+                params: { $elemMatch: { color: req.body.color } },
+            },
+        });
+    }
+    if (req.body.size) {
+        aggregateEnd.push({
+            $match: {
+                params: {
+                    $elemMatch: {
+                        sizes: { $elemMatch: { size: req.body.size } },
+                    },
+                },
+            },
+        });
+    }
+    await Product.aggregate([
+        ...aggregateStart,
+        {
+            $lookup: {
+                from: "categories",
+                let: { category: "$category" },
+                pipeline: [
+                    { $match: { $expr: { $eq: ["$_id", "$$category"] } } },
+                    { $project: { name: 1, _id: 0 } },
+                ],
+                as: "category",
+            },
+        },
+        { $unwind: "$category" },
+        {
+            $lookup: {
+                from: "params",
+                let: { productId: "$_id" },
+                pipeline: [
+                    {
+                        $match: {
+                            $expr: {
+                                $eq: ["$productId", "$$productId"],
+                            },
+                        },
+                    },
+                    {
+                        $project: {
+                            slug: 0,
+                            __v: 0,
+                            productId: 0,
+                        },
+                    },
+
+                    {
+                        $lookup: {
+                            from: "productimages",
+                            let: { paramId: "$_id" },
+                            pipeline: [
+                                {
+                                    $match: {
+                                        $expr: {
+                                            $eq: ["$paramId", "$$paramId"],
+                                        },
+                                    },
+                                },
+                                {
+                                    $project: {
+                                        image: 1,
+                                    },
+                                },
+                            ],
+                            as: "images",
+                        },
+                    },
+                    {
+                        $lookup: {
+                            from: "sizes",
+                            let: { paramId: "$_id" },
+                            pipeline: [
+                                {
+                                    $match: {
+                                        $expr: {
+                                            $eq: ["$paramId", "$$paramId"],
+                                        },
+                                    },
+                                },
+                                {
+                                    $project: {
+                                        price: 1,
+                                        size: 1,
+                                        count: 1,
+                                    },
+                                },
+                            ],
+                            as: "sizes",
+                        },
+                    },
+                ],
+                as: "params",
+            },
+        },
+        ...aggregateEnd,
+
+        {
+            $project: {
+                _id: 0,
+                name: 1,
+                category: 1,
+                shop: 1,
+                slug: 1,
+                param: {
+                    $let: {
+                        vars: {
+                            param: { $arrayElemAt: ["$params", 0] },
+                        },
+                        in: {
+                            $let: {
+                                vars: {
+                                    sizes: "$$param.sizes",
+                                    images: "$$param.images",
+                                },
+                                in: {
+                                    sizes: { $arrayElemAt: ["$$sizes", 0] },
+                                    images: { $arrayElemAt: ["$$images", 0] },
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        },
+        {
+            $project: {
+                name: 1,
+                category: 1,
+                slug: 1,
+                price: "$param.sizes.price",
+                image: "$param.images.image",
+            },
+        },
+    ]).exec((err, data) => {
+        if (err) return res.status(400).json({ success: false, err });
+        res.status(200).json({ success: true, data, num });
+    });
+};
 exports.getAll = async (req, res) => {
     const page = parseInt(req.query.page);
     const limit = parseInt(req.query.limit);
@@ -107,6 +282,7 @@ exports.getAll = async (req, res) => {
                 as: "category",
             },
         },
+        { $unwind: "$category" },
         {
             $lookup: {
                 from: "sizes",
@@ -122,43 +298,45 @@ exports.getAll = async (req, res) => {
                 as: "sizes",
             },
         },
-        // {
-        //     $lookup: {
-        //         from: "productimages",
-        //         let: { productId: "$_id" },
-        //         pipeline: [
-        //             {
-        //                 $match: {
-        //                     $expr: { $eq: ["$productId", "$$productId"] },
-        //                 },
-        //             },
-        //             { $project: { image: 1, _id: 0 } },
-        //         ],
-        //         as: "images",
-        //     },
-        // },
-        // {
-        //     $project: {
-        //         _id: 0,
-        //         name: 1,
-        //         category: 1,
-        //         shop: 1,
-        //         slug: 1,
-        //         price: { $arrayElemAt: ["$sizes", 0] },
-        //         image: { $arrayElemAt: ["$images", 0] },
-        //     },
-        // },
-        // {
-        //     $project: {
-        //         _id: 0,
-        //         name: 1,
-        //         category: 1,
-        //         shop: 1,
-        //         slug: 1,
-        //         price: "$price.price",
-        //         image: "$image.image",
-        //     },
-        // },
+        {
+            $lookup: {
+                from: "productimages",
+                let: { productId: "$_id" },
+                pipeline: [
+                    {
+                        $match: {
+                            $expr: { $eq: ["$productId", "$$productId"] },
+                        },
+                    },
+                    { $project: { image: 1, _id: 0 } },
+                ],
+                as: "images",
+            },
+        },
+        {
+            $project: {
+                _id: 0,
+                name: 1,
+                category: 1,
+                slug: 1,
+                price: {
+                    $let: {
+                        vars: {
+                            size: { $arrayElemAt: ["$sizes", 0] },
+                        },
+                        in: "$$size.price",
+                    },
+                },
+                image: {
+                    $let: {
+                        vars: {
+                            image: { $arrayElemAt: ["$images", 0] },
+                        },
+                        in: "$$image.image",
+                    },
+                },
+            },
+        },
     ]).exec((err, data) => {
         if (err) return res.status(400).json({ success: false, err });
         res.status(200).json({ success: true, data, num });
