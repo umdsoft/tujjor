@@ -258,13 +258,13 @@ exports.filter = async (req, res) => {
                 image: "$param.images.image",
             },
         },
-    ]).exec((err, data) => {
+    ]).exec(async (err, data) => {
         if (err) return res.status(400).json({ success: false, err });
         res.status(200).json({
             success: true,
             data,
             num,
-            colors: Product.distinct("$params.color"),
+            colors: await Product.distinct("$params.color"),
         });
     });
 };
