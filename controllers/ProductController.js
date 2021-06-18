@@ -228,8 +228,6 @@ exports.filter = async (req, res) => {
                 category: 1,
                 shop: 1,
                 slug: 1,
-                colors: "$params.color",
-
                 param: {
                     $let: {
                         vars: {
@@ -256,14 +254,18 @@ exports.filter = async (req, res) => {
                 name: 1,
                 category: 1,
                 slug: 1,
-                colors: 1,
                 price: "$param.sizes.price",
                 image: "$param.images.image",
             },
         },
     ]).exec((err, data) => {
         if (err) return res.status(400).json({ success: false, err });
-        res.status(200).json({ success: true, data, num });
+        res.status(200).json({
+            success: true,
+            data,
+            num,
+            colors: Product.distinct("$params.color"),
+        });
     });
 };
 exports.getAll = async (req, res) => {
