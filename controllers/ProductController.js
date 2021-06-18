@@ -228,6 +228,8 @@ exports.filter = async (req, res) => {
                 category: 1,
                 shop: 1,
                 slug: 1,
+                colors: "$params.color",
+
                 param: {
                     $let: {
                         vars: {
