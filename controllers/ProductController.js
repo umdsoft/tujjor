@@ -264,14 +264,7 @@ exports.filter = async (req, res) => {
             success: true,
             data,
             num,
-            colors: await Product.aggregate([
-                {
-                    $group: {
-                        _id: null,
-                        uniqueValues: { $addToSet: "$params.color" },
-                    },
-                },
-            ]),
+            colors: Product.distinct("params.$.color"),
         });
     });
 };
