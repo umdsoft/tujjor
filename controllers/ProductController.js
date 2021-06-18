@@ -137,7 +137,7 @@ exports.filter = async (req, res) => {
             },
         });
     }
-    await Product.aggregate([
+    const result = await Product.aggregate([
         ...aggregateStart,
         {
             $lookup: {
@@ -221,6 +221,10 @@ exports.filter = async (req, res) => {
         },
         ...aggregateEnd,
 
+        // {
+        //     $project : "$params"
+        // },
+
         {
             $project: {
                 _id: 0,
@@ -258,15 +262,19 @@ exports.filter = async (req, res) => {
                 image: "$param.images.image",
             },
         },
-    ]).exec(async (err, data) => {
-        if (err) return res.status(400).json({ success: false, err });
-        res.status(200).json({
-            success: true,
-            data,
-            num,
-            colors: await Product.distinct("params"),
-        });
-    });
+    ]);
+
+    // .exec(async (err, data) => {
+    //     if (err) return res.status(400).json({ success: false, err });
+    //     res.status(200).json({
+    //         success: true,
+    //         data,
+    //         num,
+    //         colors: await Product.distinct("params"),
+    //     });
+
+    // });
+    console.log(result);
 };
 exports.getAll = async (req, res) => {
     const page = parseInt(req.query.page);
