@@ -264,7 +264,7 @@ exports.filter = async (req, res) => {
             success: true,
             data,
             num,
-            colors: await Product.distinct("$params.color"),
+            colors: await Product.distinct("params.color"),
         });
     });
 };
