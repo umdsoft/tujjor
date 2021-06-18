@@ -256,6 +256,7 @@ exports.filter = async (req, res) => {
                 name: 1,
                 category: 1,
                 slug: 1,
+                colors: 1,
                 price: "$param.sizes.price",
                 image: "$param.images.image",
             },
