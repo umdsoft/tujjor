@@ -234,10 +234,11 @@ exports.filter = async (req, res) => {
         ...aggregateEnd,
         {
             $project: {
-                _id: 0,
+                // _id: 0,
                 name: 1,
                 category: 1,
                 shop: 1,
+                brand: 1,
                 slug: 1,
                 param: {
                     $let: {
@@ -264,6 +265,7 @@ exports.filter = async (req, res) => {
             $project: {
                 name: 1,
                 category: 1,
+                brand: 1,
                 slug: 1,
                 price: "$param.sizes.price",
                 image: "$param.images.image",
@@ -272,7 +274,11 @@ exports.filter = async (req, res) => {
     ]).exec(async (err, data) => {
         if (err) return res.status(400).json({ success: false, err });
         const resData = [];
+        let brand = [];
         data.forEach((element, index) => {
+            if (brand.indexOf(element.brand._id) === -1) {
+                brand.push(element.brand._id);
+            }
             if (
                 (page - 1) * limit <= index &&
                 index < (page - 1) * limit + limit
@@ -287,6 +293,7 @@ exports.filter = async (req, res) => {
             success: true,
             data: resData,
             num,
+            brands: brand,
         });
     });
 };
