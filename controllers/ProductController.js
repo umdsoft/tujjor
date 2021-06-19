@@ -281,7 +281,6 @@ exports.filter = async (req, res) => {
                     resData.push(element);
                 }
             }
-            if(index > (page - 1) * limit + limit) break;
         });
 
         res.status(200).json({
