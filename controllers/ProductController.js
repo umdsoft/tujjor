@@ -262,13 +262,19 @@ exports.filter = async (req, res) => {
         const resData = [];
         let items = {};
         data.forEach((element, index) => {
-            items.brands[`${element.brand.name}`] = "";
+            if (element.brand && element.brand.name) {
+                items.brands[`${element.brand.name}`] = "";
+            }
             element.params &&
                 element.params.forEach((key) => {
-                    items.colors[`${key.color}`] = "";
+                    if (key.color) {
+                        items.colors[`${key.color}`] = "";
+                    }
                     key.sizes &&
-                        key.sizes.forEach((key) => {
-                            items.sizes[`${key.color}`] = "";
+                        key.sizes.forEach((item) => {
+                            if (item.size) {
+                                items.sizes[`${item.size}`] = "";
+                            }
                         });
                 });
 
