@@ -276,9 +276,7 @@ exports.filter = async (req, res) => {
         const resData = [];
         let brand = [];
         data.forEach((element, index) => {
-            if (brand.indexOf(element.brand._id) === -1) {
-                brand.push(element.brand._id);
-            }
+            brand.push(element.brand._id);
             if (
                 (page - 1) * limit <= index &&
                 index < (page - 1) * limit + limit
