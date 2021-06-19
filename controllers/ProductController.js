@@ -257,18 +257,36 @@ exports.filter = async (req, res) => {
                 image: "$param.images.image",
             },
         },
-    ])
-    .exec(async (err, data) => {
+    ]).exec(async (err, data) => {
         if (err) return res.status(400).json({ success: false, err });
         const resData = [];
-        for (let index = (page-1)*limit; index < (page-1)*limit+limit; index++) {
-            resData.push(data[index]);
-        }
-        console.log("DATA___________", resData)
+        let items = {};
+        data.forEach((element, index) => {
+            items.brands[`${element.brand.name}`] = "";
+            element.params &&
+                element.params.forEach((key) => {
+                    items.colors[`${key.color}`] = "";
+                    key.sizes &&
+                        key.sizes.forEach((key) => {
+                            items.sizes[`${key.color}`] = "";
+                        });
+                });
+
+            if (
+                (page - 1) * limit <= index &&
+                index < (page - 1) * limit + limit
+            ) {
+                if (element) {
+                    resData.push(element);
+                }
+            }
+        });
+
         res.status(200).json({
             success: true,
             data: resData,
-            num
+            items,
+            num,
         });
     });
 };
