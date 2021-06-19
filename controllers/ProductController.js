@@ -275,7 +275,12 @@ exports.filter = async (req, res) => {
         let items = { brands: [], colors: [], sizes: [] };
         data.forEach((element, index) => {
             if (element.brand && element.brand._id) {
-                if (items.brands.indexOf(element.brand._id) === -1) {
+                if (items.brands.indexOf(element.brand._id) > -1) {
+                    console.log(
+                        "BRAND ",
+                        element.brand._id,
+                        items.brands.indexOf(element.brand._id)
+                    );
                     items.brands.push(element.brand._id);
                 }
             }
