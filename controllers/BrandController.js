@@ -19,25 +19,37 @@ exports.create = (req, res) => {
         });
 };
 exports.getAll = async (req, res) => {
-    return res.status(200).json({success: true, data: await Brand.find().populate('category')})
-}
+    return res
+        .status(200)
+        .json({ success: true, data: await Brand.find().populate("category") });
+};
 exports.getOne = async (req, res) => {
     if (!req.params.slug) {
         return res.status(400).json({ success: false, data: [] });
     }
-    res.status(200).json({success: true, data: await Brand.findOne({slug: req.params.slug}).populate('category')})
-}
+    res.status(200).json({
+        success: true,
+        data: await Brand.findOne({ slug: req.params.slug }).populate(
+            "category"
+        ),
+    });
+};
 exports.edit = async (req, res) => {
-    await Brand.findByIdAndUpdate({ _id: req.params.id }, { $set: req.body }, async (err, data) => {
-        if (err) {
-            return res.status(400).json({success: false, err})
+    await Brand.findByIdAndUpdate(
+        { _id: req.params.id },
+        { $set: req.body },
+        async (err, data) => {
+            if (err) {
+                return res.status(400).json({ success: false, err });
+            }
+            res.status(200).json({ success: true });
         }
     );
 };
 exports.editImage = async (req, res) => {
-    const img = { image: `/uploads/brands/${req.file.filename}` }
-    await Brand.findById({_id: req.params.id },async (err,data)=> {
-        if (err) return res.status(200).json({success: false, err});
+    const img = { image: `/uploads/brands/${req.file.filename}` };
+    await Brand.findById({ _id: req.params.id }, async (err, data) => {
+        if (err) return res.status(200).json({ success: false, err });
         fs.unlink(
             path.join(path.dirname(__dirname) + `/public${data.image}`),
             (err) => {
@@ -62,10 +74,10 @@ exports.delete = async (req, res) => {
             (err) => {
                 if (err) return res.status(400).json({ success: false, err });
             }
-        )
-    })
-    await Brand.findByIdAndDelete({ _id: req.params.id }, (err, data)=>{
-        if(err) return res.status(400).json({success: false, err})
-        res.status(200).json({success: true, data: []})
-    })
-}
+        );
+    });
+    await Brand.findByIdAndDelete({ _id: req.params.id }, (err, data) => {
+        if (err) return res.status(400).json({ success: false, err });
+        res.status(200).json({ success: true, data: [] });
+    });
+};
