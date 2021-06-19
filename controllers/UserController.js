@@ -1,15 +1,9 @@
-<<<<<<< HEAD
 const User = require("../models/user");
+const Shop = require("../models/shop");
+const Application = require("../models/applicationShop");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
-=======
-const User = require('../models/user');
-const Shop = require('../models/shop');
-const Application = require('../models/applicationShop')
-const jwt = require('jsonwebtoken')
-const bcrypt = require('bcrypt')
 
->>>>>>> 48bad1ff5fa71bdba2e528e7b6aa23ff8b8c7d8f
 const sendTokenResponse = (user, statusCode, res) => {
     // Create token
 
@@ -29,7 +23,7 @@ const sendTokenResponse = (user, statusCode, res) => {
         token,
     });
 };
-exports.register = async (req,res)=>{
+exports.register = async (req, res) => {
     const salt = await bcrypt.genSalt(12);
     const pass = await bcrypt.hash(req.body.password, salt);
     const user = new User({
@@ -48,71 +42,60 @@ exports.register = async (req,res)=>{
         .catch((err) => {
             res.status(400).json({
                 success: false,
-<<<<<<< HEAD
                 err,
             });
         });
 };
-exports.login = async (req, res) => {
-    console.log("body-->", req.body);
-
+exports.loginAdmin = async (req, res) => {
     if (!req.body.phone || !req.body.password) {
-=======
-                err
-            })
-        })
-}
-exports.loginAdmin = async (req,res)=>{
-    if(!req.body.phone || !req.body.password){
         return res.status(400).json({
             success: false,
-            data: 'required'
-        })
+            data: "required",
+        });
     }
-    await User.findOne({phone: req.body.phone},(err,user)=>{
-        if(err) return res.send(err);
-        if(!user || user.role != 'admin'){
+    await User.findOne({ phone: req.body.phone }, (err, user) => {
+        if (err) return res.send(err);
+        if (!user || user.role != "admin") {
             return res.json({
                 success: false,
-                data: 'phone or password wrong'
-            })
+                data: "phone or password wrong",
+            });
         }
-        if(!bcrypt.compareSync(req.body.password,user.password)){
+        if (!bcrypt.compareSync(req.body.password, user.password)) {
             return res.json({
                 success: false,
-                data: 'phone or password wrong'
-            })
+                data: "phone or password wrong",
+            });
         }
-        sendTokenResponse(user,200,res)
-    })
-}
-exports.loginCeller = async (req,res)=>{
-    if(!req.body.phone || !req.body.password){
+        sendTokenResponse(user, 200, res);
+    });
+};
+exports.loginCeller = async (req, res) => {
+    if (!req.body.phone || !req.body.password) {
         return res.status(400).json({
             success: false,
-            data: 'required'
-        })
+            data: "required",
+        });
     }
-    await User.findOne({phone: req.body.phone},(err,user)=>{
-        if(err) return res.send(err);
-        if(!user || user.role != 'celler'){
+    await User.findOne({ phone: req.body.phone }, (err, user) => {
+        if (err) return res.send(err);
+        if (!user || user.role != "seller") {
             return res.json({
                 success: false,
-                data: 'phone or password wrong'
-            })
+                data: "phone or password wrong",
+            });
         }
-        if(!bcrypt.compareSync(req.body.password,user.password)){
+        if (!bcrypt.compareSync(req.body.password, user.password)) {
             return res.json({
                 success: false,
-                data: 'phone or password wrong'
-            })
+                data: "phone or password wrong",
+            });
         }
-        sendTokenResponse(user,200,res)
-    })
-}
-exports.loginClient = async (req,res)=>{
-    if(!req.body.phone || !req.body.password){
->>>>>>> 48bad1ff5fa71bdba2e528e7b6aa23ff8b8c7d8f
+        sendTokenResponse(user, 200, res);
+    });
+};
+exports.loginClient = async (req, res) => {
+    if (!req.body.phone || !req.body.password) {
         return res.status(400).json({
             success: false,
             data: "required",
@@ -132,7 +115,6 @@ exports.loginClient = async (req,res)=>{
                 data: "phone or password wrong2",
             });
         }
-<<<<<<< HEAD
         sendTokenResponse(user, 200, res);
     });
 };
@@ -145,13 +127,10 @@ exports.me = async (req, res) => {
     const token = req.headers.token;
     const user = jwt.decode(token.slice(7));
     await User.findOne({ _id: user.id })
-        .select({ password: 0, code: 0, hash: 0 })
-        .exec((err, data) => {
+        .select({ password: 0, __v: 0, role: 0 })
+        .exec(async (err, data) => {
             if (err) return res.status(400).json({ success: false, err });
-            res.status(200).json({
-                success: true,
-                data,
-            });
+            res.status(200).json({ success: true, data });
         });
 };
 exports.delete = async (req, res) => {
@@ -159,29 +138,6 @@ exports.delete = async (req, res) => {
         return res
             .status(400)
             .json({ success: false, data: "Somting is wrong" });
-=======
-        sendTokenResponse(user,200,res)
-    })
-}
-exports.getUsers = async (req,res)=>{
-    User.find({}, function(err, data) {
-        res.status(200).json({success: true, data});  
-      });
-}
-exports.me = async (req,res)=>{
-    const token = req.headers.token
-    const user = jwt.decode(token.slice(7))
-    await User.findOne({_id: user.id})
-    .select({password: 0, __v: 0, role: 0})
-    .exec( async (err,data)=>{
-        if(err) return res.status(400).json({success: false,err});
-        res.status(200).json({success: true, data})
-    })
-}
-exports.delete = async (req,res)=>{
-    if(!req.params.id){
-        return res.status(400).json({success: false, data: 'Somting is wrong'})
->>>>>>> 48bad1ff5fa71bdba2e528e7b6aa23ff8b8c7d8f
     }
     let result = await User.findByIdAndDelete({ _id: req.params.id });
     if (!result) {
@@ -189,5 +145,5 @@ exports.delete = async (req,res)=>{
             .status(400)
             .json({ success: false, data: "This id not found" });
     }
-    return res.status(200).json({success: true, data:[]})
-}
+    return res.status(200).json({ success: true, data: [] });
+};
