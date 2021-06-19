@@ -232,76 +232,47 @@ exports.filter = async (req, res) => {
             },
         },
         ...aggregateEnd,
-        // {
-        //     $project: {
-        //         _id: 0,
-        //         name: 1,
-        //         category: 1,
-        //         shop: 1,
-        //         slug: 1,
-        //         param: {
-        //             $let: {
-        //                 vars: {
-        //                     param: { $arrayElemAt: ["$params", 0] },
-        //                 },
-        //                 in: {
-        //                     $let: {
-        //                         vars: {
-        //                             sizes: "$$param.sizes",
-        //                             images: "$$param.images",
-        //                         },
-        //                         in: {
-        //                             sizes: { $arrayElemAt: ["$$sizes", 0] },
-        //                             images: { $arrayElemAt: ["$$images", 0] },
-        //                         },
-        //                     },
-        //                 },
-        //             },
-        //         },
-        //     },
-        // },
-        // {
-        //     $project: {
-        //         name: 1,
-        //         category: 1,
-        //         slug: 1,
-        //         price: "$param.sizes.price",
-        //         image: "$param.images.image",
-        //     },
-        // },
+        {
+            $project: {
+                _id: 0,
+                name: 1,
+                category: 1,
+                shop: 1,
+                slug: 1,
+                param: {
+                    $let: {
+                        vars: {
+                            param: { $arrayElemAt: ["$params", 0] },
+                        },
+                        in: {
+                            $let: {
+                                vars: {
+                                    sizes: "$$param.sizes",
+                                    images: "$$param.images",
+                                },
+                                in: {
+                                    sizes: { $arrayElemAt: ["$$sizes", 0] },
+                                    images: { $arrayElemAt: ["$$images", 0] },
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        },
+        {
+            $project: {
+                name: 1,
+                category: 1,
+                slug: 1,
+                price: "$param.sizes.price",
+                image: "$param.images.image",
+            },
+        },
     ]).exec(async (err, data) => {
         if (err) return res.status(400).json({ success: false, err });
         const resData = [];
-        let items = { brands: [], colors: [], sizes: [] };
         data.forEach((element, index) => {
-            if (element.brand && element.brand._id) {
-                console.log(
-                    "BRAND ",
-                    element.brand._id,
-                    items.brands,
-                    items.brands.indexOf(element.brand._id)
-                );
-                if (items.brands.indexOf(element.brand._id) == -1) {
-                    items.brands.push(element.brand._id);
-                }
-            }
-            element.params &&
-                element.params.forEach((param) => {
-                    if (param.color) {
-                        if (items.colors.indexOf(param.color) === -1) {
-                            items.colors.push(param.color);
-                        }
-                    }
-                    param.sizes &&
-                        param.sizes.forEach((item) => {
-                            if (item.size) {
-                                if (items.sizes.indexOf(item.size) === -1) {
-                                    items.sizes.push(item.size);
-                                }
-                            }
-                        });
-                });
-
             if (
                 (page - 1) * limit <= index &&
                 index < (page - 1) * limit + limit
@@ -310,12 +281,12 @@ exports.filter = async (req, res) => {
                     resData.push(element);
                 }
             }
+            if(index > (page - 1) * limit + limit) break;
         });
 
         res.status(200).json({
             success: true,
             data: resData,
-            items,
             num,
         });
     });
