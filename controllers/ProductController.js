@@ -257,15 +257,21 @@ exports.filter = async (req, res) => {
                 image: "$param.images.image",
             },
         },
-    ]).exec(async (err, data) => {
+    ])
+    .exec(async (err, data) => {
         if (err) return res.status(400).json({ success: false, err });
+        const resData = [];
+        for (let index = page*size; index < page*size+size; index++) {
+            resData.push(data[index]);
+        }
+        
         res.status(200).json({
             success: true,
-            data,
-            num,
-            colors: await Product.find({}),
+            data: resData,
+            num
         });
     });
+
 };
 exports.getAll = async (req, res) => {
     const page = parseInt(req.query.page);
