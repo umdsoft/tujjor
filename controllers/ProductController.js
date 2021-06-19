@@ -157,7 +157,7 @@ exports.filter = async (req, res) => {
                 let: { brand: "$brand" },
                 pipeline: [
                     { $match: { $expr: { $eq: ["$_id", "$$brand"] } } },
-                    { $project: { name: 1, _id: 0 } },
+                    { $project: { name: 1 } },
                 ],
                 as: "brand",
             },
