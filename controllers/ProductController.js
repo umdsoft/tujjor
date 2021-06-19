@@ -153,6 +153,18 @@ exports.filter = async (req, res) => {
         { $unwind: "$category" },
         {
             $lookup: {
+                from: "brands",
+                let: { brand: "$brand" },
+                pipeline: [
+                    { $match: { $expr: { $eq: ["$_id", "$$brand"] } } },
+                    { $project: { name: 1 } },
+                ],
+                as: "brand",
+            },
+        },
+        { $unwind: "$brand" },
+        {
+            $lookup: {
                 from: "params",
                 let: { productId: "$_id" },
                 pipeline: [
@@ -222,10 +234,11 @@ exports.filter = async (req, res) => {
         ...aggregateEnd,
         {
             $project: {
-                _id: 0,
+                // _id: 0,
                 name: 1,
                 category: 1,
                 shop: 1,
+                brand: 1,
                 slug: 1,
                 param: {
                     $let: {
@@ -252,6 +265,7 @@ exports.filter = async (req, res) => {
             $project: {
                 name: 1,
                 category: 1,
+                brand: 1,
                 slug: 1,
                 price: "$param.sizes.price",
                 image: "$param.images.image",
@@ -259,11 +273,27 @@ exports.filter = async (req, res) => {
         },
     ]).exec(async (err, data) => {
         if (err) return res.status(400).json({ success: false, err });
+        const resData = [];
+        let brand = [];
+        data.forEach((element, index) => {
+            if (brand.indexOf(element.brand._id) === -1) {
+                brand.push(element.brand._id);
+            }
+            if (
+                (page - 1) * limit <= index &&
+                index < (page - 1) * limit + limit
+            ) {
+                if (element) {
+                    resData.push(element);
+                }
+            }
+        });
+
         res.status(200).json({
             success: true,
-            data,
+            data: resData,
             num,
-            colors: await Product.find({}),
+            brands: brand,
         });
     });
 };
