@@ -280,7 +280,7 @@ exports.filter = async (req, res) => {
                     element.brand._id,
                     items.brands.indexOf(element.brand._id)
                 );
-                if (items.brands.indexOf(element.brand._id) === -1) {
+                if (items.brands.indexOf(element.brand._id) == -1) {
                     items.brands.push(element.brand._id);
                 }
             }
@@ -306,17 +306,7 @@ exports.filter = async (req, res) => {
                 index < (page - 1) * limit + limit
             ) {
                 if (element) {
-                    resData.push({
-                        name: element.name,
-                        category: element.category,
-                        slug: element.slug,
-                        image: element.params[0].images[0]
-                            ? element.params[0].images[0].image
-                            : "",
-                        price: element.params[0].sizes[0]
-                            ? element.params[0].sizes[0].price
-                            : "",
-                    });
+                    resData.push(element);
                 }
             }
         });
