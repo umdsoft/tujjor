@@ -4,9 +4,6 @@ const fs = require('fs');
 const path = require('path');
 
 exports.create = (req, res) => {
-    if(!Object.keys(req.body).length){
-        return res.status(400).json({success: false, message: 'Required !'})
-    }
     const filePath = req.file.mimetype.startsWith('video') ? 'videos' : 'images';
     const news = new News({
         title: {
@@ -17,7 +14,7 @@ exports.create = (req, res) => {
             uz: req.body.description.uz,
             ru: req.body.description.ru
         },
-        startTime: ISODate(req.body.startTime),
+        startTime: req.body.startTime,
         file: `/uploads/news/${filePath}/${req.file.filename}`,
         status: req.body.status,
         slug: getSlug(req.body.title.ru),
@@ -88,6 +85,6 @@ exports.delete = async (req, res) => {
 
 exports.getClientAll = async (req, res) =>{
     return res.status(200).json({success: true, data: await News.find(
-        { startTime: {$gte: Date.now()}}
+        { status: true, startTime: {$gte: Date.now()}}
     )})
 }

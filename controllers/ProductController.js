@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const Product = require('../models/product');
 const Param = require('../models/param');
 const Size = require('../models/size');
@@ -76,8 +77,90 @@ exports.createImage = (req, res) => {
     });
 }
 exports.getAll = async (req, res) => {
+    
+    await Product.aggregate(
+        [
+            {$sort: {createdAt: -1}},
+            {
+                $lookup:{
+                    from: "categories",
+                    let: { category: "$category" },    
+                    pipeline : [
+                        { $match: { $expr: { $eq: [ "$_id", "$$category" ] } }, },
+                        { $project : {name: 1, _id: 0} }
+                    ],
+                    as: "category"
+                },
+            },
+            {$unwind: "$category"},
+            {
+                $lookup:{
+                    from: "params",
+                    let: { productId: "$_id"},
+                    pipeline: [
+                        { $match:
+                           { $expr:
+                              { 
+                                  $eq: ["$productId", "$$productId"]
+                              }
+                           }
+                        },
+                        { $project : {color: 1} },
+                        { 
+                            $lookup: { 
+                                from: 'productimages',
+                                let: { paramId: "$_id"},
+                                pipeline: [
+                                    { $match:
+                                        { $expr:
+                                           { 
+                                               $eq: ["$paramId", "$$paramId"]
+                                           }
+                                        }
+                                     },
+                                     { $project : {image: 1, _id: 0} }
+                                ],
+                                as: 'productImages' 
+                            } 
+                        },
+                        { 
+                            $lookup: { 
+                                from: 'sizes',
+                                let: { paramId: "$_id"},
+                                pipeline: [
+                                    { $match:
+                                        { $expr:
+                                           { 
+                                               $eq: ["$paramId", "$$paramId"]
+                                           }
+                                        }
+                                     },
+                                     { $project : { price: 1, _id: 0, size: 1} }
+                                ],
+                                as: 'sizes' 
+                            } 
+                        }
+                    ],
+                    as: "params"
+                }
+            },
+            {
+                $addFields: {
+                  price: "$params.0.sizes.0.price" ,
+                  image: "$params.0.productImages.0.image" ,
+                }
+              },
+        ]
+        ).exec((err,data)=>{
+        if(err) return res.status(400).json({success: false , err})
+        res.status(200).json({success: true, data})
+    })
+};
+
+exports.getOne = async (req, res) => {
+    console.log(req.params.id)
     await Product.aggregate([
-        {$sort: {createdAt: -1}},
+        {$match: {_id: mongoose.Types.ObjectId(req.params.id)}},
         {
             $lookup:{
                 from: "brands",
@@ -167,25 +250,8 @@ exports.getAll = async (req, res) => {
         }
     ]).exec((err,data)=>{
         if(err) return res.status(400).json({success: false , err})
-
-        res.status(200).json({success: true, data})
+        res.status(200).json({success: true, data: data[0]})
     })
-};
-
-exports.getOne = (req, res) => {
-    Product.findOne({slug: req.params.slug})
-    .then(product => {
-        if(!product) {
-            return res.status(404).json({
-                message: "Product not found"
-            });            
-        }
-        res.send(product);
-    }).catch(err => {
-        return res.status(404).json({
-            message: "Product not found"
-        });
-    });
 };
 
 exports.edit = (req, res) => {

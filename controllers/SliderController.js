@@ -1,10 +1,25 @@
-const {Slider} = require('../models/slider');
+const Slider = require('../models/slider');
+const sharp = require('sharp');
 const fs = require("fs");
 const path = require("path");
 
-exports.create = (req, res) => {
+exports.create = async (req, res) => {
+    const {filename} = req.file;
+       
+        await sharp(path.join(path.dirname(__dirname) + `/public/uploads/temp/${filename}`) )
+            .jpeg({
+                quality: 70
+            })
+            .toFile(path.join(path.dirname(__dirname) + `/public/uploads/sliders/${filename}`), (err)=>{
+                if(err) {
+                    console.log(err)
+                }
+                fs.unlink(path.join(path.dirname(__dirname) + `/public/uploads/temp/${filename}`),(err)=>{
+                    if(err) console.log(err)
+                })
+            })
     const slider = new Slider({
-        image: `/uploads/sliders/${req.file.filename}`
+        image: `/uploads/sliders/${filename}`
     });
     slider.save()
     .then(data => {
@@ -28,7 +43,8 @@ exports.getAll = (req, res) => {
 };
 
 exports.edit = async (req, res) => {
-    const img = { image: `/uploads/sliders/${req.file.filename}` }
+    const {filename} = req.file;
+    const img = { image: `/uploads/sliders/${filename}` }
     await Slider.findById({_id: req.params.id },async (err,data)=> {
         if (err) return res.status(200).json({success: false, err});
         fs.unlink(
@@ -37,6 +53,18 @@ exports.edit = async (req, res) => {
                 if (err) return res.status(400).json({success: false, err});
             }
         )
+        await sharp(path.join(path.dirname(__dirname) + `/public/uploads/temp/${filename}`) )
+            .jpeg({
+                quality: 70
+            })
+            .toFile(path.join(path.dirname(__dirname) + `/public/uploads/sliders/${filename}`), (err)=>{
+                if(err) {
+                    console.log(err)
+                }
+                fs.unlink(path.join(path.dirname(__dirname) + `/public/uploads/temp/${filename}`),(err)=>{
+                    if(err) console.log(err)
+                })
+            })
     })
     await Slider.findByIdAndUpdate({_id: req.params.id},{$set: {...req.body, ...img}})
     .then(data => {

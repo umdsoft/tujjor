@@ -2,9 +2,6 @@ const  Info = require('../models/info');
 const { getSlug } = require('../utils');
 
 exports.create = (req, res) => {
-    if(!Object.keys(req.body).length){
-        return res.status(400).json({success: false, message: 'Required !'})
-    }
     const info = new Info({
         title: {
             uz: req.body.title?.uz || "",
@@ -47,5 +44,5 @@ exports.delete = async (req, res) => {
 }
 
 exports.getClientAll = async (req, res)=>{
-    return res.status(200).json({success: true, data: await Info.find({status: 1})})
+    return res.status(200).json({success: true, data: await Info.find({status: true})})
 }

@@ -2,9 +2,6 @@ const Help = require('../models/help');
 const { getSlug } = require('../utils');
 
 exports.create = (req, res) => {
-    if(!Object.keys(req.body).length){
-        return res.status(400).json({success: false, message: 'Required !'})
-    }
     const help = new Help({
         title: {
             uz: req.body.title.uz,

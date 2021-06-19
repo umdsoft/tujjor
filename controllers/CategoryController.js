@@ -34,9 +34,6 @@ const deleteCategory = async (parentId) => {
     }
 }
 exports.create = (req, res) => {
-    if(!Object.keys(req.body).length){
-        return res.status(400).json({success: false, message: 'Required !'})
-    }
     const category = new Category({
         name: {
             uz: req.body.name.uz,

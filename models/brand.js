@@ -5,4 +5,8 @@ const BrandSchema = new mongoose.Schema({
     category: { type: mongoose.Schema.ObjectId, ref: 'category', required: true },
     slug: {type: String, required: true, unique: true}  
 },{timestamps: true})
+BrandSchema.pre('remove', async function (next) {
+    await this.model('Product').deleteMany({brand: this._id});
+    next();
+});
 module.exports = mongoose.model('brand', BrandSchema);
