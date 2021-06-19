@@ -305,8 +305,12 @@ exports.filter = async (req, res) => {
                         name: element.name,
                         category: element.category,
                         slug: element.slug,
-                        image: element.params[0].images[0].image,
-                        price: element.params[0].sizes[0].price,
+                        image: element.params[0].images[0]
+                            ? element.params[0].images[0].image
+                            : "",
+                        price: element.params[0].sizes[0]
+                            ? element.params[0].sizes[0].price
+                            : "",
                     });
                 }
             }
