@@ -275,27 +275,37 @@ exports.filter = async (req, res) => {
         let items = { brands: [], colors: [], sizes: [] };
         data.forEach((element, index) => {
             if (element.brand && element.brand._id) {
-                items.brands.push(element.brand._id);
+                if (items.brands.indexOf(element.brand._id) === -1) {
+                    items.brands.push(element.brand._id);
+                }
             }
-            // element.params &&
-            //     element.params.forEach((param) => {
-            //         if (param.color) {
-            //             items.colors[`id_${param.color}`] = "";
-            //         }
-            //         param.sizes &&
-            //             param.sizes.forEach((item) => {
-            //                 if (item.size) {
-            //                     items.sizes[`id_${item.size}`] = "";
-            //                 }
-            //             });
-            //     });
+            element.params &&
+                element.params.forEach((param) => {
+                    if (param.color) {
+                        if (items.colors.indexOf(param.color) === -1) {
+                            items.colors.push(param.color);
+                        }
+                    }
+                    param.sizes &&
+                        param.sizes.forEach((item) => {
+                            if (item.size) {
+                                if (items.sizes.indexOf(item.size) === -1) {
+                                    items.sizes.push(item.size);
+                                }
+                            }
+                        });
+                });
 
             if (
                 (page - 1) * limit <= index &&
                 index < (page - 1) * limit + limit
             ) {
                 if (element) {
-                    resData.push(element);
+                    resData.push({
+                        name: element.name,
+                        category: element.category,
+                        slug: element.slug,
+                    });
                 }
             }
         });
