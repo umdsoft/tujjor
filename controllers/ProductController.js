@@ -277,7 +277,7 @@ exports.filter = async (req, res) => {
             if (element.brand && element.brand._id) {
                 console.log(
                     "BRAND ",
-                    element.brand._id,
+                    items.brands,
                     items.brands.indexOf(element.brand._id)
                 );
                 if (items.brands.indexOf(element.brand._id) == -1) {
