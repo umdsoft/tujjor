@@ -153,6 +153,18 @@ exports.filter = async (req, res) => {
         { $unwind: "$category" },
         {
             $lookup: {
+                from: "brands",
+                let: { brand: "$brand" },
+                pipeline: [
+                    { $match: { $expr: { $eq: ["$_id", "$$brand"] } } },
+                    { $project: { name: 1, _id: 0 } },
+                ],
+                as: "brand",
+            },
+        },
+        { $unwind: "$brand" },
+        {
+            $lookup: {
                 from: "params",
                 let: { productId: "$_id" },
                 pipeline: [
@@ -263,20 +275,20 @@ exports.filter = async (req, res) => {
         let items = {};
         data.forEach((element, index) => {
             if (element.brand && element.brand.name) {
-                items.brands[`${element.brand.name}`] = "";
+                items.brands[`id_${element.brand.name}`] = "";
             }
-            element.params &&
-                element.params.forEach((key) => {
-                    if (key.color) {
-                        items.colors[`${key.color}`] = "";
-                    }
-                    key.sizes &&
-                        key.sizes.forEach((item) => {
-                            if (item.size) {
-                                items.sizes[`${item.size}`] = "";
-                            }
-                        });
-                });
+            // element.params &&
+            //     element.params.forEach((param) => {
+            //         if (param.color) {
+            //             items.colors[`id_${param.color}`] = "";
+            //         }
+            //         param.sizes &&
+            //             param.sizes.forEach((item) => {
+            //                 if (item.size) {
+            //                     items.sizes[`id_${item.size}`] = "";
+            //                 }
+            //             });
+            //     });
 
             if (
                 (page - 1) * limit <= index &&
