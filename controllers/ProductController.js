@@ -261,16 +261,18 @@ exports.filter = async (req, res) => {
     .exec(async (err, data) => {
         if (err) return res.status(400).json({ success: false, err });
         const resData = [];
-        for (let index = page*size; index < page*size+size; index++) {
+        for (let index = (page-1)*size; index < (page-1)*size+size; index++) {
             resData.push(data[index]);
         }
-        
+        console.log("DATA___________", resData)
         res.status(200).json({
             success: true,
             data: resData,
             num
         });
     });
+    0  - 9
+    10 - 19
 
 };
 exports.getAll = async (req, res) => {
