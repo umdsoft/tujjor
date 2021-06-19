@@ -220,43 +220,43 @@ exports.filter = async (req, res) => {
             },
         },
         ...aggregateEnd,
-        {
-            $project: {
-                _id: 0,
-                name: 1,
-                category: 1,
-                shop: 1,
-                slug: 1,
-                param: {
-                    $let: {
-                        vars: {
-                            param: { $arrayElemAt: ["$params", 0] },
-                        },
-                        in: {
-                            $let: {
-                                vars: {
-                                    sizes: "$$param.sizes",
-                                    images: "$$param.images",
-                                },
-                                in: {
-                                    sizes: { $arrayElemAt: ["$$sizes", 0] },
-                                    images: { $arrayElemAt: ["$$images", 0] },
-                                },
-                            },
-                        },
-                    },
-                },
-            },
-        },
-        {
-            $project: {
-                name: 1,
-                category: 1,
-                slug: 1,
-                price: "$param.sizes.price",
-                image: "$param.images.image",
-            },
-        },
+        // {
+        //     $project: {
+        //         _id: 0,
+        //         name: 1,
+        //         category: 1,
+        //         shop: 1,
+        //         slug: 1,
+        //         param: {
+        //             $let: {
+        //                 vars: {
+        //                     param: { $arrayElemAt: ["$params", 0] },
+        //                 },
+        //                 in: {
+        //                     $let: {
+        //                         vars: {
+        //                             sizes: "$$param.sizes",
+        //                             images: "$$param.images",
+        //                         },
+        //                         in: {
+        //                             sizes: { $arrayElemAt: ["$$sizes", 0] },
+        //                             images: { $arrayElemAt: ["$$images", 0] },
+        //                         },
+        //                     },
+        //                 },
+        //             },
+        //         },
+        //     },
+        // },
+        // {
+        //     $project: {
+        //         name: 1,
+        //         category: 1,
+        //         slug: 1,
+        //         price: "$param.sizes.price",
+        //         image: "$param.images.image",
+        //     },
+        // },
     ]).exec(async (err, data) => {
         if (err) return res.status(400).json({ success: false, err });
         const resData = [];
