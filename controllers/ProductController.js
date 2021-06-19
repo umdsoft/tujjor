@@ -272,10 +272,10 @@ exports.filter = async (req, res) => {
     ]).exec(async (err, data) => {
         if (err) return res.status(400).json({ success: false, err });
         const resData = [];
-        let items = {};
+        let items = { brands: [], colors: [], sizes: [] };
         data.forEach((element, index) => {
-            if (element.brand && element.brand.name) {
-                items.brands[`id_${element.brand.name}`] = "";
+            if (element.brand && element.brand._id) {
+                items.brands.push(element.brand._id);
             }
             // element.params &&
             //     element.params.forEach((param) => {
