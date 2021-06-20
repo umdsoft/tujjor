@@ -7,19 +7,21 @@ const ProductSchema = new mongoose.Schema(
         },
         category: {
             type: mongoose.Schema.ObjectId,
-            ref: "category",
+            ref: "Category",
             required: true,
         },
-        shop: { type: mongoose.Schema.ObjectId, ref: "shop", required: true },
-        brand: { type: mongoose.Schema.ObjectId, ref: "brand", required: true },
+        shop: { type: mongoose.Schema.ObjectId, ref: "Shop", required: true },
+        brand: { type: mongoose.Schema.ObjectId, ref: "Brand", required: true },
         description: {
             uz: { type: String, index: true },
             ru: { type: String, index: true },
         },
+        image: { type: String, required: true },
         article: { type: String, index: true, unique: true, required: true },
         slug: { type: String, index: true, unique: true, required: true },
         tags: { type: Array, index: true },
     },
     { timestamps: true }
 );
-module.exports = mongoose.model("product", ProductSchema);
+
+module.exports = mongoose.model("Product", ProductSchema);

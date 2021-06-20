@@ -5,7 +5,7 @@ const BrandSchema = new mongoose.Schema(
         image: { type: String, required: true },
         category: {
             type: mongoose.Schema.ObjectId,
-            ref: "category",
+            ref: "Category",
             required: true,
         },
         slug: { type: String, required: true, unique: true },

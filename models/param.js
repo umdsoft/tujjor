@@ -1,10 +1,10 @@
 const mongoose = require("mongoose");
 const ParamSchema = new mongoose.Schema({
-    color: { type: String, index: true, required: true },
+    image: { type: String, required: true },
     productId: {
         type: mongoose.Schema.ObjectId,
-        ref: "product",
+        ref: "Product",
         required: true,
     },
 });
-module.exports = mongoose.model("param", ParamSchema);
+module.exports = mongoose.model("Param", ParamSchema);

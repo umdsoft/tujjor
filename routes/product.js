@@ -7,7 +7,7 @@ const { validateFile } = require("../middleware/errorFileUpload");
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        cb(null, "./public/uploads/productImages");
+        cb(null, "./public/temp");
     },
     filename: function (req, file, cb) {
         cb(null, `${md5(Date.now())}${path.extname(file.originalname)}`);
@@ -21,8 +21,18 @@ router.get("/:slug", ProductController.getOne);
 router.post("/filter", ProductController.filter);
 
 //create
-router.post("/create", ProductController.create);
-router.post("/param/create", ProductController.createParam);
+router.post(
+    "/create",
+    upload.single("image"),
+    validateFile,
+    ProductController.create
+);
+router.post(
+    "/param/create",
+    upload.single("image"),
+    validateFile,
+    ProductController.createParam
+);
 router.post("/size/create", ProductController.createSize);
 router.post(
     "/image/create",

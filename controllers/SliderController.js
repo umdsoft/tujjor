@@ -1,117 +1,152 @@
-const Slider = require('../models/slider');
-const sharp = require('sharp');
+const Slider = require("../models/slider");
+const sharp = require("sharp");
 const fs = require("fs");
 const path = require("path");
 
 exports.create = async (req, res) => {
-    const {filename} = req.file;
-       
-        await sharp(path.join(path.dirname(__dirname) + `/public/uploads/temp/${filename}`) )
-            .jpeg({
-                quality: 70
-            })
-            .toFile(path.join(path.dirname(__dirname) + `/public/uploads/sliders/${filename}`), (err)=>{
-                if(err) {
-                    console.log(err)
+    const { filename } = req.file;
+
+    await sharp(path.join(path.dirname(__dirname) + `/public/temp/${filename}`))
+        .jpeg({
+            quality: 70,
+        })
+        .toFile(
+            path.join(
+                path.dirname(__dirname) + `/public/uploads/sliders/${filename}`
+            ),
+            (err) => {
+                if (err) {
+                    console.log(err);
                 }
-                fs.unlink(path.join(path.dirname(__dirname) + `/public/uploads/temp/${filename}`),(err)=>{
-                    if(err) console.log(err)
-                })
-            })
+                fs.unlink(
+                    path.join(
+                        path.dirname(__dirname) + `/public/temp/${filename}`
+                    ),
+                    (err) => {
+                        if (err) console.log(err);
+                    }
+                );
+            }
+        );
     const slider = new Slider({
-        image: `/uploads/sliders/${filename}`
+        image: `/uploads/sliders/${filename}`,
     });
-    slider.save()
-    .then(data => {
-        res.status(200).json({success: true, data});
-    }).catch(err => {
-        res.status(500).json({
-            message: err.message || "Something wrong while creating the slider."
+    slider
+        .save()
+        .then((data) => {
+            res.status(200).json({ success: true, data });
+        })
+        .catch((err) => {
+            res.status(500).json({
+                message:
+                    err.message || "Something wrong while creating the slider.",
+            });
         });
-    });
 };
 
 exports.getAll = (req, res) => {
     Slider.find()
-    .then(data => {
-        res.status(200).json({success: true, data});
-    }).catch(err => {
-        res.status(500).json({
-            message: err.message || "Something wrong while retrieving slider."
+        .then((data) => {
+            res.status(200).json({ success: true, data });
+        })
+        .catch((err) => {
+            res.status(500).json({
+                message:
+                    err.message || "Something wrong while retrieving slider.",
+            });
         });
-    });
 };
 
 exports.edit = async (req, res) => {
-    const {filename} = req.file;
-    const img = { image: `/uploads/sliders/${filename}` }
-    await Slider.findById({_id: req.params.id },async (err,data)=> {
-        if (err) return res.status(200).json({success: false, err});
+    const { filename } = req.file;
+    const img = { image: `/uploads/sliders/${filename}` };
+    await Slider.findById({ _id: req.params.id }, async (err, data) => {
+        if (err) return res.status(200).json({ success: false, err });
         fs.unlink(
             path.join(path.dirname(__dirname) + `/public${data.image}`),
             (err) => {
-                if (err) return res.status(400).json({success: false, err});
+                if (err) return res.status(400).json({ success: false, err });
             }
+        );
+        await sharp(
+            path.join(path.dirname(__dirname) + `/public/temp/${filename}`)
         )
-        await sharp(path.join(path.dirname(__dirname) + `/public/uploads/temp/${filename}`) )
             .jpeg({
-                quality: 70
+                quality: 70,
             })
-            .toFile(path.join(path.dirname(__dirname) + `/public/uploads/sliders/${filename}`), (err)=>{
-                if(err) {
-                    console.log(err)
+            .toFile(
+                path.join(
+                    path.dirname(__dirname) +
+                        `/public/uploads/sliders/${filename}`
+                ),
+                (err) => {
+                    if (err) {
+                        console.log(err);
+                    }
+                    fs.unlink(
+                        path.join(
+                            path.dirname(__dirname) + `/public/temp/${filename}`
+                        ),
+                        (err) => {
+                            if (err) console.log(err);
+                        }
+                    );
                 }
-                fs.unlink(path.join(path.dirname(__dirname) + `/public/uploads/temp/${filename}`),(err)=>{
-                    if(err) console.log(err)
-                })
-            })
-    })
-    await Slider.findByIdAndUpdate({_id: req.params.id},{$set: {...req.body, ...img}})
-    .then(data => {
-        if(!data) {
-            return res.status(404).json({
-                message: "Slider not found with id " + req.params.id
-            });
-        }
-        res.status(200).json({success: true});
-    }).catch(err => {
-        if(err.kind === 'ObjectId') {
-            return res.status(404).json({
-                message: "Slider not found with id " + req.params.id
-            });                
-        }
-        return res.status(500).json({
-            message: "Something wrong updating note with id " + req.params.id
-        });
+            );
     });
+    await Slider.findByIdAndUpdate(
+        { _id: req.params.id },
+        { $set: { ...req.body, ...img } }
+    )
+        .then((data) => {
+            if (!data) {
+                return res.status(404).json({
+                    message: "Slider not found with id " + req.params.id,
+                });
+            }
+            res.status(200).json({ success: true });
+        })
+        .catch((err) => {
+            if (err.kind === "ObjectId") {
+                return res.status(404).json({
+                    message: "Slider not found with id " + req.params.id,
+                });
+            }
+            return res.status(500).json({
+                message:
+                    "Something wrong updating note with id " + req.params.id,
+            });
+        });
 };
 
 exports.delete = (req, res) => {
     Slider.findByIdAndRemove(req.params.id)
-    .then(slider => {
-        if(!slider) {
-            return res.status(404).json({
-                success: false,
-                message: "Slider not found with id " + req.params.id
-            });
-        }
-        fs.unlink(
-            path.join(path.dirname(__dirname), `/public${slider.image}`),
-            (err) => {
-                if (err) return res.status(400).json({success: false, err});
+        .then((slider) => {
+            if (!slider) {
+                return res.status(404).json({
+                    success: false,
+                    message: "Slider not found with id " + req.params.id,
+                });
             }
-        )
-        res.json({message: "Slider deleted successfully!"});
-    }).catch(err => {
-        if(err.kind === 'ObjectId' || err.name === 'NotFound') {
-            return res.status(404).json({
+            fs.unlink(
+                path.join(path.dirname(__dirname), `/public${slider.image}`),
+                (err) => {
+                    if (err)
+                        return res.status(400).json({ success: false, err });
+                }
+            );
+            res.json({ message: "Slider deleted successfully!" });
+        })
+        .catch((err) => {
+            if (err.kind === "ObjectId" || err.name === "NotFound") {
+                return res.status(404).json({
+                    success: false,
+                    message: "Slider not found with id " + req.params.id,
+                });
+            }
+            return res.status(500).json({
                 success: false,
-                message: "Slider not found with id " + req.params.id
-            });                
-        }
-        return res.status(500).json({
-            success: false,
-            message: "Could not delete slider with id " + req.params.id
+                message: "Could not delete slider with id " + req.params.id,
+            });
         });
-    });
 };

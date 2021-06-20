@@ -1,10 +1,38 @@
 const mongoose = require("mongoose");
+const sharp = require("sharp");
+const path = require("path");
+const fs = require("fs");
 const Product = require("../models/product");
 const Param = require("../models/param");
 const Size = require("../models/size");
 const ProductImage = require("../models/productImage");
 const { getSlug } = require("../utils");
-exports.create = (req, res) => {
+exports.create = async (req, res) => {
+    const { filename } = req.file;
+    await sharp(path.join(path.dirname(__dirname) + `/public/temp/${filename}`))
+        .resize(500, 600)
+        .jpeg({
+            quality: 65,
+        })
+        .toFile(
+            path.join(
+                path.dirname(__dirname) +
+                    `/public/uploads/products/cards/${filename}`
+            ),
+            (err) => {
+                if (err) {
+                    console.log(err);
+                }
+                fs.unlink(
+                    path.join(
+                        path.dirname(__dirname) + `/public/temp/${filename}`
+                    ),
+                    (err) => {
+                        if (err) console.log(err);
+                    }
+                );
+            }
+        );
     const product = new Product({
         name: {
             uz: req.body.name.uz,
@@ -17,6 +45,7 @@ exports.create = (req, res) => {
             uz: req.body.description?.uz || "",
             ru: req.body.description?.ru || "",
         },
+        image: `/uploads/products/cards/${filename}`,
         article: req.body.article,
         tags: req.body.tags || "",
         slug: getSlug(req.body.name.ru),
@@ -24,7 +53,10 @@ exports.create = (req, res) => {
     product
         .save()
         .then((data) => {
-            res.status(200).json({ success: true, data: { _id: data._id } });
+            res.status(200).json({
+                success: true,
+                data: { _id: data._id },
+            });
         })
         .catch((err) => {
             res.status(500).json({
@@ -33,10 +65,36 @@ exports.create = (req, res) => {
                     "Something wrong while creating the product.",
             });
         });
+    console.log("ERROR ", err);
 };
-exports.createParam = (req, res) => {
+exports.createParam = async (req, res) => {
+    const { filename } = req.file;
+    await sharp(path.join(path.dirname(__dirname) + `/public/temp/${filename}`))
+        .resize(50, 50)
+        .jpeg({
+            quality: 40,
+        })
+        .toFile(
+            path.join(
+                path.dirname(__dirname) +
+                    `/public/uploads/products/colors/${filename}`
+            ),
+            (err) => {
+                if (err) {
+                    console.log(err);
+                }
+                fs.unlink(
+                    path.join(
+                        path.dirname(__dirname) + `/public/temp/${filename}`
+                    ),
+                    (err) => {
+                        if (err) console.log(err);
+                    }
+                );
+            }
+        );
     const param = new Param({
-        color: req.body.color,
+        image: `/uploads/products/colors/${filename}`,
         productId: req.body.productId,
     });
     param
@@ -70,11 +128,55 @@ exports.createSize = (req, res) => {
             });
         });
 };
-exports.createImage = (req, res) => {
+exports.createImage = async (req, res) => {
+    const { filename } = req.file;
+    await sharp(path.join(path.dirname(__dirname) + `/public/temp/${filename}`))
+        .resize(500, 600)
+        .jpeg({
+            quality: 95,
+        })
+        .toFile(
+            path.join(
+                path.dirname(__dirname) + `/public/uploads/products/${filename}`
+            ),
+            async (err) => {
+                await sharp(
+                    path.join(
+                        path.dirname(__dirname) + `/public/temp/${filename}`
+                    )
+                )
+                    .resize(50, 50)
+                    .jpeg({
+                        quality: 50,
+                    })
+                    .toFile(
+                        path.join(
+                            path.dirname(__dirname) +
+                                `/public/uploads/products/smalls/${filename}`
+                        ),
+                        (err) => {
+                            if (err) {
+                                console.log(err);
+                            }
+                            fs.unlink(
+                                path.join(
+                                    path.dirname(__dirname) +
+                                        `/public/temp/${filename}`
+                                ),
+                                (err) => {
+                                    if (err) console.log(err);
+                                }
+                            );
+                        }
+                    );
+            }
+        );
+
     const image = new ProductImage({
         paramId: req.body.paramId,
         productId: req.body.productId,
-        image: `/uploads/productImages/${req.file.filename}`,
+        image: `/uploads/products/${filename}`,
+        smallImage: `/uploads/products/smalls/${filename}`,
     });
 
     image
@@ -331,24 +433,10 @@ exports.getAll = async (req, res) => {
             },
         },
         {
-            $lookup: {
-                from: "productimages",
-                let: { productId: "$_id" },
-                pipeline: [
-                    {
-                        $match: {
-                            $expr: { $eq: ["$productId", "$$productId"] },
-                        },
-                    },
-                    { $project: { image: 1, _id: 0 } },
-                ],
-                as: "images",
-            },
-        },
-        {
             $project: {
                 _id: 0,
                 name: 1,
+                image: 1,
                 category: 1,
                 slug: 1,
                 price: {
@@ -357,14 +445,6 @@ exports.getAll = async (req, res) => {
                             size: { $arrayElemAt: ["$sizes", 0] },
                         },
                         in: "$$size.price",
-                    },
-                },
-                image: {
-                    $let: {
-                        vars: {
-                            image: { $arrayElemAt: ["$images", 0] },
-                        },
-                        in: "$$image.image",
                     },
                 },
             },
@@ -531,19 +611,13 @@ exports.delete = (req, res) => {
                     message: "Product not found with id " + req.params.id,
                 });
             }
-            res.json({ message: "Product deleted successfully!" });
-
-            await Size.deleteMany({ productId: _id }).exec((err, data) => {
-                console.log("size", err, data);
-            });
-            await ProductImage.deleteMany({ productId: _id }).exec(
-                (err, data) => {
-                    console.log("productImage", err, data);
+            fs.unlink(
+                path.join(path.dirname(__dirname) + `/public${product.image}`),
+                (err) => {
+                    if (err) console.log(err);
                 }
             );
-            await Param.deleteMany({ productId: _id }).exec((err, data) => {
-                console.log("param", err, data);
-            });
+            res.json({ message: "Product deleted successfully!" });
         })
         .catch((err) => {
             if (err.kind === "ObjectId" || err.name === "NotFound") {
@@ -588,7 +662,6 @@ exports.deleteSize = async (req, res) => {
         data: [],
     });
 };
-
 exports.deleteImage = async (req, res) => {
     await ProductImage.findOne({ _id: req.params.id }, async (err, data) => {
         if (err) throw console.log(err);
