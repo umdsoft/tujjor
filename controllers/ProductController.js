@@ -334,7 +334,7 @@ exports.filter = async (req, res) => {
             },
         },
         ...aggregateEnd,
-        { $addToSet: { brands: "$brand._id" } },
+        // { $addToSet: { brands: "$brand._id" } },
         {
             $project: {
                 // _id: 0,
