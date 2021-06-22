@@ -377,15 +377,18 @@ exports.filter = async (req, res) => {
         if (err) return res.status(400).json({ success: false, err });
         let resData = [];
         let brands = [];
-        data.forEach((key) => {
+        data.forEach((key, index) => {
             console.log(brands.indexOf(key.brand._id), key.brand._id);
             if (brands.indexOf(key.brand._id) === -1) {
                 brands.push(key.brand._id);
             }
+            if (index >= (page - 1) * limit && index < page * limit) {
+                resData.push(key);
+            }
         });
         res.status(200).json({
             success: true,
-            data: data,
+            data: resData,
             brands,
         });
     });
