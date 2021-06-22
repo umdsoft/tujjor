@@ -336,7 +336,7 @@ exports.filter = async (req, res) => {
         ...aggregateEnd,
         {
             $group: {
-                _id: true,
+                _id: { $not: { $_id: "" } },
                 brands: { $addToSet: "$brand._id" },
             },
         },
@@ -387,6 +387,7 @@ exports.filter = async (req, res) => {
         res.status(200).json({
             success: true,
             data: resData,
+            num,
         });
     });
 };
