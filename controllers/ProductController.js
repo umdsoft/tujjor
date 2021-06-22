@@ -335,14 +335,13 @@ exports.filter = async (req, res) => {
         },
         ...aggregateEnd,
         {
-            $group: {
-                _id: null,
+            $project: {
+                name: 1,
+                category: 1,
+                shop: 1,
+                brand: 1,
                 brands: { $addToSet: "$brand._id" },
-                name: "$name",
-                category: "$category",
-                shop: "$shop",
-                brand: "$brand",
-                slug: "$slug",
+                slug: 1,
                 param: {
                     $let: {
                         vars: {
