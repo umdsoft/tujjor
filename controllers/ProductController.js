@@ -384,11 +384,9 @@ exports.filter = async (req, res) => {
         // },
     ]).exec(async (err, data) => {
         if (err) return res.status(400).json({ success: false, err });
-        const resData = [];
-
         res.status(200).json({
             success: true,
-            data: resData,
+            data: data,
             num,
         });
     });
