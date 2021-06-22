@@ -375,9 +375,18 @@ exports.filter = async (req, res) => {
         },
     ]).exec(async (err, data) => {
         if (err) return res.status(400).json({ success: false, err });
+        let resData = [];
+        let brands = [];
+        data.forEach((key) => {
+            console.log(brands.indexOf(key.brand._id), key.brand._id);
+            if (brands.indexOf(key.brand._id) === -1) {
+                brands.push(key.brand._id);
+            }
+        });
         res.status(200).json({
             success: true,
             data: data,
+            brands,
         });
     });
 };
