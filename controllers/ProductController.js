@@ -42,8 +42,8 @@ exports.create = async (req, res) => {
         category: req.body.category,
         brand: req.body.brand,
         description: {
-            uz: req.body.description?.uz || "",
-            ru: req.body.description?.ru || "",
+            uz: req.body.description.uz || "",
+            ru: req.body.description.ru || "",
         },
         image: `/uploads/products/cards/${filename}`,
         article: req.body.article,
@@ -334,6 +334,7 @@ exports.filter = async (req, res) => {
             },
         },
         ...aggregateEnd,
+        { $addToSet: { brands: "$brand._id" } },
         {
             $project: {
                 // _id: 0,
@@ -341,6 +342,7 @@ exports.filter = async (req, res) => {
                 category: 1,
                 shop: 1,
                 brand: 1,
+                brands: 1,
                 slug: 1,
                 param: {
                     $let: {
@@ -368,6 +370,7 @@ exports.filter = async (req, res) => {
                 name: 1,
                 category: 1,
                 brand: 1,
+                brands: 1,
                 slug: 1,
                 price: "$param.sizes.price",
                 image: "$param.images.image",

@@ -19,8 +19,8 @@ exports.create = async (req, res) => {
             ? `/uploads/shops/${req.files.image[0].filename}`
             : "",
         description: {
-            uz: req.body.description?.uz || "",
-            ru: req.body.description?.ru || "",
+            uz: req.body.description.uz || "",
+            ru: req.body.description.ru || "",
         },
         category: req.body.category || "Not selected",
         slug: req.body.shopName ? getSlug(req.body.shopName) : "",

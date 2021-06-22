@@ -56,13 +56,13 @@ exports.loginAdmin = async (req, res) => {
     await User.findOne({ phone: req.body.phone }, (err, user) => {
         if (err) return res.send(err);
         if (!user || user.role != "admin") {
-            return res.json({
+            return res.status(401).json({
                 success: false,
                 data: "phone or password wrong",
             });
         }
         if (!bcrypt.compareSync(req.body.password, user.password)) {
-            return res.json({
+            return res.status(401).json({
                 success: false,
                 data: "phone or password wrong",
             });
@@ -80,13 +80,13 @@ exports.loginSeller = async (req, res) => {
     await User.findOne({ phone: req.body.phone }, (err, user) => {
         if (err) return res.send(err);
         if (!user || user.role != "seller") {
-            return res.json({
+            return res.status(401).json({
                 success: false,
                 data: "phone or password wrong",
             });
         }
         if (!bcrypt.compareSync(req.body.password, user.password)) {
-            return res.json({
+            return res.status(401).json({
                 success: false,
                 data: "phone or password wrong",
             });
@@ -104,13 +104,13 @@ exports.loginClient = async (req, res) => {
     await User.findOne({ phone: req.body.phone }, (err, user) => {
         if (err) return res.send(err);
         if (!user) {
-            return res.json({
+            return res.status(401).json({
                 success: false,
                 data: "phone or password wrong1",
             });
         }
         if (!bcrypt.compareSync(req.body.password, user.password)) {
-            return res.json({
+            return res.status(401).json({
                 success: false,
                 data: "phone or password wrong2",
             });
