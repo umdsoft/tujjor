@@ -334,7 +334,7 @@ exports.filter = async (req, res) => {
             },
         },
         ...aggregateEnd,
-        // { $addToSet: { brands: "$brand._id" } },
+        { $addToSet: { brand: "$brand._id" } },
         {
             $project: {
                 // _id: 0,
@@ -379,24 +379,11 @@ exports.filter = async (req, res) => {
     ]).exec(async (err, data) => {
         if (err) return res.status(400).json({ success: false, err });
         const resData = [];
-        let brand = [];
-        data.forEach((element, index) => {
-            brand.push(element.brand._id);
-            if (
-                (page - 1) * limit <= index &&
-                index < (page - 1) * limit + limit
-            ) {
-                if (element) {
-                    resData.push(element);
-                }
-            }
-        });
 
         res.status(200).json({
             success: true,
             data: resData,
             num,
-            brands: brand,
         });
     });
 };
