@@ -338,30 +338,30 @@ exports.filter = async (req, res) => {
             $group: {
                 _id: null,
                 brands: { $addToSet: "$brand._id" },
-                name: "$name",
-                category: "$category",
-                shop: "$shop",
-                brand: "$brand",
-                slug: "$slug",
-                param: {
-                    $let: {
-                        vars: {
-                            param: { $arrayElemAt: ["$params", 0] },
-                        },
-                        in: {
-                            $let: {
-                                vars: {
-                                    sizes: "$$param.sizes",
-                                    images: "$$param.images",
-                                },
-                                in: {
-                                    sizes: { $arrayElemAt: ["$$sizes", 0] },
-                                    images: { $arrayElemAt: ["$$images", 0] },
-                                },
-                            },
-                        },
-                    },
-                },
+                name: { $first: "$name" },
+                category: { $first: "$category" },
+                shop: { $first: "$shop" },
+                brand: { $first: "$brand" },
+                slug: { $first: "$slug" },
+                // param: {
+                //     $let: {
+                //         vars: {
+                //             param: { $arrayElemAt: ["$params", 0] },
+                //         },
+                //         in: {
+                //             $let: {
+                //                 vars: {
+                //                     sizes: "$$param.sizes",
+                //                     images: "$$param.images",
+                //                 },
+                //                 in: {
+                //                     sizes: { $arrayElemAt: ["$$sizes", 0] },
+                //                     images: { $arrayElemAt: ["$$images", 0] },
+                //                 },
+                //             },
+                //         },
+                //     },
+                // },
             },
         },
         // {
