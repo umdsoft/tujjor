@@ -339,9 +339,9 @@ exports.filter = async (req, res) => {
                 _id: null,
                 brands: { $addToSet: "$brand._id" },
                 name: "$name",
-                category: "cate$gory",
+                category: "$category",
                 shop: "$shop",
-                brand: "b$rand",
+                brand: "$brand",
                 slug: "$slug",
                 param: {
                     $let: {
@@ -392,17 +392,17 @@ exports.filter = async (req, res) => {
         //         },
         //     },
         // },
-        {
-            $project: {
-                name: 1,
-                category: 1,
-                brand: 1,
-                brands: 1,
-                slug: 1,
-                price: "$param.sizes.price",
-                image: "$param.images.image",
-            },
-        },
+        // {
+        //     $project: {
+        //         name: 1,
+        //         category: 1,
+        //         brand: 1,
+        //         brands: 1,
+        //         slug: 1,
+        //         price: "$param.sizes.price",
+        //         image: "$param.images.image",
+        //     },
+        // },
     ]).exec(async (err, data) => {
         if (err) return res.status(400).json({ success: false, err });
         res.status(200).json({
