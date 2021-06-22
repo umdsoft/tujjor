@@ -198,7 +198,7 @@ exports.filter = async (req, res) => {
     if (page === 0 || limit === 0) {
         return res
             .status(400)
-            .json({ success: false, message: "page or limit 0 fa teng" });
+            .json({ success: false, message: "page or limit" });
     }
     let aggregateStart = [];
     let aggregateEnd = [];
@@ -395,7 +395,7 @@ exports.filter = async (req, res) => {
             success: true,
             data: resData,
             brands,
-            num: Math.floor(data.length / limit),
+            num: Math.ceil(data.length / limit),
         });
     });
 };
