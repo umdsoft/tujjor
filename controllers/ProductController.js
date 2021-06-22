@@ -338,39 +338,18 @@ exports.filter = async (req, res) => {
             $group: {
                 _id: null,
                 brands: { $addToSet: "$brand._id" },
-                name: { $first: "$name" },
-                category: { $first: "$category" },
-                shop: { $first: "$shop" },
-                brand: { $first: "$brand" },
-                slug: { $first: "$slug" },
-                // param: {
-                //     $let: {
-                //         vars: {
-                //             param: { $arrayElemAt: ["$params", 0] },
-                //         },
-                //         in: {
-                //             $let: {
-                //                 vars: {
-                //                     sizes: "$$param.sizes",
-                //                     images: "$$param.images",
-                //                 },
-                //                 in: {
-                //                     sizes: { $arrayElemAt: ["$$sizes", 0] },
-                //                     images: { $arrayElemAt: ["$$images", 0] },
-                //                 },
-                //             },
-                //         },
-                //     },
-                // },
+                slug: { $push: "$slug" },
             },
         },
+        { $unwind: "$slug" },
         // {
         //     $project: {
-        // name: 1,
-        // category: 1,
-        // shop: 1,
-        // brand: 1,
-        // slug: 1,
+        //         _id: 0,
+        //         name: 1,
+        //         category: 1,
+        //         shop: 1,
+        //         brand: 1,
+        //         slug: 1,
         //         param: {
         //             $let: {
         //                 vars: {
@@ -405,9 +384,11 @@ exports.filter = async (req, res) => {
         // },
     ]).exec(async (err, data) => {
         if (err) return res.status(400).json({ success: false, err });
+        const resData = [];
+
         res.status(200).json({
             success: true,
-            data: data,
+            data: resData,
             num,
         });
     });
