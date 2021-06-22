@@ -337,7 +337,7 @@ exports.filter = async (req, res) => {
         {
             $group: {
                 _id: null,
-                brands: { addToSet: "$brand._id" },
+                brands: { $addToSet: "$brand._id" },
             },
         },
         // {
