@@ -386,7 +386,7 @@ exports.filter = async (req, res) => {
 
         res.status(200).json({
             success: true,
-            data: resData,
+            data: data,
             num,
         });
     });
