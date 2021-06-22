@@ -195,6 +195,11 @@ exports.createImage = async (req, res) => {
 exports.filter = async (req, res) => {
     const page = parseInt(req.query.page);
     const limit = parseInt(req.query.limit);
+    if (page === 0 || limit === 0) {
+        return res
+            .status(400)
+            .json({ success: false, message: "page or limit 0 fa teng" });
+    }
     let aggregateStart = [];
     let aggregateEnd = [];
 
@@ -390,6 +395,7 @@ exports.filter = async (req, res) => {
             success: true,
             data: resData,
             brands,
+            num: Math.floor(data.length / limit),
         });
     });
 };
