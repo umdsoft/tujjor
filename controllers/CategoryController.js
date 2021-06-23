@@ -83,13 +83,11 @@ exports.getOne = async (req, res) => {
     if (!req.params.id) {
         res.status(400).json({ success: false, message: "Required" });
     }
+    console.log();
     await Category.find().exec((error, categories) => {
         if (error) res.status(400).json({ error });
         if (categories) {
-            const categoryList = getCategoriesCreate(
-                categories,
-                req.params._id
-            );
+            const categoryList = getCategoriesCreate(categories, req.params.id);
             res.status(200).json({ success: true, data: categoryList });
         }
     });
