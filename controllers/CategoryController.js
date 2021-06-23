@@ -22,6 +22,24 @@ function createCategories(categories, parentId = null) {
     }
     return categoryList;
 }
+function getCategoriesCreate(categories, parentId) {
+    const categoryList = [];
+    let category;
+    category = categories.filter((cat) => cat.parentId == parentId);
+    for (let cate of category) {
+        categoryList.push({
+            _id: cate._id,
+            name: {
+                uz: cate.name.uz,
+                ru: cate.name.ru,
+            },
+            parentId: cate.parentId,
+            slug: cate.slug,
+            children: createCategories(categories, cate._id),
+        });
+    }
+    return categoryList;
+}
 const deleteCategory = async (parentId) => {
     let item = await Category.find({ parentId });
     if (item.length) {
@@ -61,12 +79,19 @@ exports.getAll = async (req, res, next) => {
         }
     });
 };
-exports.getOne = (req, res) => {
-    Category.findOne({ slug: req.params.slug }, (err, data) => {
-        if (err) {
-            return res.status(400).json({ success: false, err });
+exports.getOne = async (req, res) => {
+    if (!req.params._id) {
+        res.status(400).json({ success: false, message: "Required" });
+    }
+    await Category.find().exec((error, categories) => {
+        if (error) res.status(400).json({ error });
+        if (categories) {
+            const categoryList = getCategoriesCreate(
+                categories,
+                req.params._id
+            );
+            res.status(200).json({ success: true, data: categoryList });
         }
-        res.status(200).json({ success: true, data });
     });
 };
 exports.delete = async (req, res) => {

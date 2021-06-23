@@ -53,7 +53,6 @@ exports.getContract = async (req, res) => {
             .select({ __v: 0 }),
     });
 };
-
 exports.getOne = async (req, res) => {
     await Shop.findOne({ user: req.params.user })
         .select({ user: 0, __v: 0 })
