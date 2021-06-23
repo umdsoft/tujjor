@@ -80,7 +80,7 @@ exports.getAll = async (req, res, next) => {
     });
 };
 exports.getOne = async (req, res) => {
-    if (!req.params._id) {
+    if (!req.params.id) {
         res.status(400).json({ success: false, message: "Required" });
     }
     await Category.find().exec((error, categories) => {
