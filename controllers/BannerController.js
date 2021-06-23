@@ -1,6 +1,4 @@
 const Banner = require('../models/banner');
-const fs = require("fs");
-const path = require("path");
 const { deleteFile } = require('../utils');
 
 exports.create = (req, res) => {
@@ -54,12 +52,7 @@ exports.editImage = async (req, res) => {
     const img = { image: `/uploads/brands/${req.file.filename}` }
     await Banner.findById({_id: req.params.id },async (err,data)=> {
         if (err) return res.status(200).json({success: false, err});
-        fs.unlink(
-            path.join(path.dirname(__dirname) + `/public${data.image}`),
-            (err) => {
-                if (err) return res.status(400).json({success: false, err});
-            }
-        )
+        deleteFile(`/public${data.image}`);
     })
     await Brand.findByIdAndUpdate({_id: req.params.id},{$set: img})
     .exec((err,data)=>{
@@ -76,12 +69,7 @@ exports.delete = (req, res) => {
                 message: "Banner not found with id " + req.params.id
             });
         }
-        fs.unlink(
-            path.join(path.dirname(__dirname), `/public${banner.image}`),
-            (err) => {
-                if (err) return res.status(400).json({success: false, err});
-            }
-        )
+        deleteFile(`/public${banner.image}`)
         res.json({message: "Banner deleted successfully!"});
     }).catch(err => {
         if(err.kind === 'ObjectId' || err.name === 'NotFound') {

@@ -1,12 +1,11 @@
 const mongoose = require("mongoose");
 const sharp = require("sharp");
 const path = require("path");
-const fs = require("fs");
 const Product = require("../models/product");
 const Param = require("../models/param");
 const Size = require("../models/size");
 const ProductImage = require("../models/productImage");
-const { getSlug } = require("../utils");
+const { getSlug, deleteFile } = require("../utils");
 exports.create = async (req, res) => {
     const { filename } = req.file;
     await sharp(path.join(path.dirname(__dirname) + `/public/temp/${filename}`))
@@ -23,32 +22,25 @@ exports.create = async (req, res) => {
                 if (err) {
                     console.log(err);
                 }
-                fs.unlink(
-                    path.join(
-                        path.dirname(__dirname) + `/public/temp/${filename}`
-                    ),
-                    (err) => {
-                        if (err) console.log(err);
-                    }
-                );
+                deleteFile(`/public/temp/${filename}`);
             }
         );
     const product = new Product({
         name: {
-            uz: req.body.name.uz,
-            ru: req.body.name.ru,
+            uz: req.body.name ? req.body.name.uz : "",
+            ru: req.body.name ? req.body.name.ru : "",
         },
         shop: req.body.shop,
         category: req.body.category,
         brand: req.body.brand,
         description: {
-            uz: req.body.description.uz || "",
-            ru: req.body.description.ru || "",
+            uz: req.body.description ? req.body.description.uz : "",
+            ru: req.body.description ? req.body.description.ru : "",
         },
         image: `/uploads/products/cards/${filename}`,
         article: req.body.article,
         tags: req.body.tags || "",
-        slug: getSlug(req.body.name.ru),
+        slug: getSlug(req.body.name ? req.body.name.ru : ""),
     });
     product
         .save()
@@ -83,14 +75,7 @@ exports.createParam = async (req, res) => {
                 if (err) {
                     console.log(err);
                 }
-                fs.unlink(
-                    path.join(
-                        path.dirname(__dirname) + `/public/temp/${filename}`
-                    ),
-                    (err) => {
-                        if (err) console.log(err);
-                    }
-                );
+                deleteFile(`/public/temp/${filename}`);
             }
         );
     const param = new Param({
@@ -158,15 +143,7 @@ exports.createImage = async (req, res) => {
                             if (err) {
                                 console.log(err);
                             }
-                            fs.unlink(
-                                path.join(
-                                    path.dirname(__dirname) +
-                                        `/public/temp/${filename}`
-                                ),
-                                (err) => {
-                                    if (err) console.log(err);
-                                }
-                            );
+                            deleteFile(`/public/temp/${filename}`);
                         }
                     );
             }
@@ -198,7 +175,7 @@ exports.filter = async (req, res) => {
     if (page === 0 || limit === 0) {
         return res
             .status(400)
-            .json({ success: false, message: "page or limit" });
+            .json({ success: false, message: "Error page or limit" });
     }
     let aggregateStart = [];
     let aggregateEnd = [];
@@ -613,12 +590,7 @@ exports.delete = (req, res) => {
                     message: "Product not found with id " + req.params.id,
                 });
             }
-            fs.unlink(
-                path.join(path.dirname(__dirname) + `/public${product.image}`),
-                (err) => {
-                    if (err) console.log(err);
-                }
-            );
+            deleteFile(`/public${product.image}`);
             res.json({ message: "Product deleted successfully!" });
         })
         .catch((err) => {
@@ -667,12 +639,7 @@ exports.deleteSize = async (req, res) => {
 exports.deleteImage = async (req, res) => {
     await ProductImage.findOne({ _id: req.params.id }, async (err, data) => {
         if (err) throw console.log(err);
-        fs.unlink(
-            path.join(path.dirname(__dirname) + `/public${data.image}`),
-            (err) => {
-                if (err) throw console.log(err);
-            }
-        );
+        deleteFile(`/public${data.image}`);
         await ProductImage.findByIdAndDelete({ _id: data._id });
         res.status(200).json({
             success: true,

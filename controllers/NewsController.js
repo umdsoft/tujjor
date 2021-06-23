@@ -1,7 +1,5 @@
 const News = require('../models/news');
-const { getSlug } = require('../utils');
-const fs = require('fs');
-const path = require('path');
+const { getSlug, deleteFile } = require('../utils');
 
 exports.create = (req, res) => {
     const filePath = req.file.mimetype.startsWith('video') ? 'videos' : 'images';
@@ -52,12 +50,7 @@ exports.editFile = async (req, res) => {
     }
     await News.findOne({_id: req.params.id },async (err,data)=> {
         if (err) return res.status(200).json({success: false, err});
-        fs.unlink(
-            path.join(path.dirname(__dirname)+`/public${data.file}`),
-            (err) => {
-                if (err) return res.status(400).json({success: false, err});
-            }
-        )
+        deleteFile(`/public${data.file}`)
     })
     
     News.updateOne({_id: req.params.id},{$set: file})
@@ -72,12 +65,7 @@ exports.delete = async (req, res) => {
         if(!data) {
             return res.status(404).json({success: false, message: "News not found with id "+ req.params.id})
         }
-        fs.unlink(
-            path.join(path.dirname(__dirname)+`/public${data.file}`),
-            (err) => {
-                if (err) return res.status(400).json({success: false, err});
-            }
-        )
+        deleteFile(`/public${data.file}`);
         await News.findByIdAndDelete({_id: data._id})
         res.status(200).json({success: true, data: [] })
     })

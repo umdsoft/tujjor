@@ -1,3 +1,5 @@
+const fs = require('fs');
+const path = require('path');
 const transliterate = (text)=> {
     return text.replace(/\u042A/g, '')
         .replace(/\u0451/g, 'yo')
@@ -37,15 +39,20 @@ const transliterate = (text)=> {
         .replace(/\u044E/g, 'yu');
 };
 exports.getSlug = (str)=> {
+    if(!(str && str.length)){
+        return ""
+    }
     let start = Date.now().toString().slice(7);
     
     return `${start}-${transliterate(str.toLowerCase()).split(' ').join('-')}`
 }
 
-const fs = require('fs');
-const path = require('path');
-
-
 exports.deleteFile = (url) =>{
-    fs.unlink(path.join(path.dirname(__dirname) + url),err=>{})
+    fs.unlink(path.join(path.dirname(__dirname) + url),err=>{
+        if(err){
+            console.log(err)
+        }  else {
+            console.log("Deleted ...");
+        }
+    })
 }

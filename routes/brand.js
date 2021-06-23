@@ -7,7 +7,7 @@ const { validateFile } = require('../middleware/errorFileUpload');
 
 const storage = multer.diskStorage({
     destination: function (req,file,cb) {
-        cb(null, './public/uploads/brands');
+        cb(null, './public/temp');
     },
     filename: function (req,file,cb) {
         cb(null, `${md5(Date.now())}${path.extname(file.originalname)}`);

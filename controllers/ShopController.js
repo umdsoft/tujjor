@@ -1,6 +1,5 @@
 const Shop = require("../models/shop");
 const User = require("../models/user");
-const fs = require("fs");
 const path = require("path");
 const { getSlug, deleteFile } = require("../utils");
 
@@ -19,8 +18,8 @@ exports.create = async (req, res) => {
             ? `/uploads/shops/${req.files.image[0].filename}`
             : "",
         description: {
-            uz: req.body.description.uz || "",
-            ru: req.body.description.ru || "",
+            uz: req.body.description ? req.body.description.uz : "",
+            ru: req.body.description ? req.body.description.ru : "",
         },
         category: req.body.category || "Not selected",
         slug: req.body.shopName ? getSlug(req.body.shopName) : "",
@@ -34,10 +33,7 @@ exports.create = async (req, res) => {
         .catch((err) => {
             Object.keys(req.files).forEach((key) => {
                 deleteFile(
-                    path.join(
-                        path.dirname(__dirname) +
-                            `/public/uploads/shops/${req.files[key][0].filename}`
-                    )
+                    `/public/uploads/shops/${req.files[key][0].filename}`
                 );
             });
             res.status(400).json({ success: false, err });
@@ -116,12 +112,7 @@ exports.edit = async (req, res) => {
     const img = { image: `/uploads/shops/${req.file.filename}` };
     await Shop.findOne({ _id: req.params.id }, async (err, data) => {
         if (err) return res.status(200).json({ success: false, err });
-        fs.unlink(
-            path.join(path.dirname(__dirname) + `/public${data.image}`),
-            (err) => {
-                if (err) return res.status(400).json({ success: false, err });
-            }
-        );
+        deleteFile(`/public${data.image}`);
     });
     await Shop.updateOne(
         { _id: req.params.id },

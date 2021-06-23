@@ -23,8 +23,8 @@ router.post("/filter", ProductController.filter);
 //create
 router.post(
     "/create",
-    upload.single("image"),
-    validateFile,
+    // upload.single("image"),
+    // validateFile,
     ProductController.create
 );
 router.post(

@@ -1,11 +1,10 @@
 const Slider = require("../models/slider");
 const sharp = require("sharp");
-const fs = require("fs");
 const path = require("path");
+const { deleteFile } = require("../utils");
 
 exports.create = async (req, res) => {
     const { filename } = req.file;
-
     await sharp(path.join(path.dirname(__dirname) + `/public/temp/${filename}`))
         .jpeg({
             quality: 70,
@@ -18,14 +17,7 @@ exports.create = async (req, res) => {
                 if (err) {
                     console.log(err);
                 }
-                fs.unlink(
-                    path.join(
-                        path.dirname(__dirname) + `/public/temp/${filename}`
-                    ),
-                    (err) => {
-                        if (err) console.log(err);
-                    }
-                );
+                deleteFile(`/public/temp/${filename}`)
             }
         );
     const slider = new Slider({
@@ -62,12 +54,7 @@ exports.edit = async (req, res) => {
     const img = { image: `/uploads/sliders/${filename}` };
     await Slider.findById({ _id: req.params.id }, async (err, data) => {
         if (err) return res.status(200).json({ success: false, err });
-        fs.unlink(
-            path.join(path.dirname(__dirname) + `/public${data.image}`),
-            (err) => {
-                if (err) return res.status(400).json({ success: false, err });
-            }
-        );
+        deleteFile(`/public${data.image}`)
         await sharp(
             path.join(path.dirname(__dirname) + `/public/temp/${filename}`)
         )
@@ -83,14 +70,7 @@ exports.edit = async (req, res) => {
                     if (err) {
                         console.log(err);
                     }
-                    fs.unlink(
-                        path.join(
-                            path.dirname(__dirname) + `/public/temp/${filename}`
-                        ),
-                        (err) => {
-                            if (err) console.log(err);
-                        }
-                    );
+                    deleteFile(`/public/temp/${filename}`)
                 }
             );
     });
@@ -128,13 +108,7 @@ exports.delete = (req, res) => {
                     message: "Slider not found with id " + req.params.id,
                 });
             }
-            fs.unlink(
-                path.join(path.dirname(__dirname), `/public${slider.image}`),
-                (err) => {
-                    if (err)
-                        return res.status(400).json({ success: false, err });
-                }
-            );
+            deleteFile(`/public${slider.image}`)
             res.json({ message: "Slider deleted successfully!" });
         })
         .catch((err) => {

@@ -1,13 +1,31 @@
 const Brand = require("../models/brand");
-const { getSlug } = require("../utils");
-const fs = require("fs");
+const sharp = require("sharp");
 const path = require("path");
-exports.create = (req, res) => {
+const { getSlug, deleteFile } = require("../utils");
+exports.create = async (req, res) => {
+    const { filename } = req.file;
+    await sharp(path.join(path.dirname(__dirname) + `/public/temp/${filename}`))
+        .resize(150, 150)
+        .jpeg({
+            quality: 60,
+        })
+        .toFile(
+            path.join(
+                path.dirname(__dirname) +
+                    `/public/uploads/brands/${filename}`
+            ),
+            (err) => {
+                if (err) {
+                    console.log(err);
+                }
+                deleteFile(`/public/temp/${filename}`)
+            }
+        );
     const brand = new Brand({
         name: req.body.name,
         slug: getSlug(req.body.name),
         category: req.body.category,
-        image: `/uploads/brands/${req.file.filename}`,
+        image: `/uploads/brands/${filename}`,
     });
     brand
         .save()
@@ -15,6 +33,7 @@ exports.create = (req, res) => {
             return res.status(200).json({ success: true, data: brand });
         })
         .catch((err) => {
+            deleteFile(`/public/uploads/brands/${filename}`)
             return res.status(400).json({ success: false, err });
         });
 };
@@ -50,12 +69,7 @@ exports.editImage = async (req, res) => {
     const img = { image: `/uploads/brands/${req.file.filename}` };
     await Brand.findById({ _id: req.params.id }, async (err, data) => {
         if (err) return res.status(200).json({ success: false, err });
-        fs.unlink(
-            path.join(path.dirname(__dirname) + `/public${data.image}`),
-            (err) => {
-                if (err) return res.status(400).json({ success: false, err });
-            }
-        );
+        deleteFile(`/public${data.image}`)
     });
     Brand.findByIdAndUpdate({ _id: req.params.id }, { $set: img }).exec(
         (err, data) => {
@@ -69,12 +83,7 @@ exports.delete = async (req, res) => {
         if (err) {
             res.status(400).json({ success: false, err });
         }
-        fs.unlink(
-            path.join(path.dirname(__dirname), `/public${data.image}`),
-            (err) => {
-                if (err) return res.status(400).json({ success: false, err });
-            }
-        );
+        deleteFile(`/public${data.image}`)
     });
     await Brand.findByIdAndDelete({ _id: req.params.id }, (err, data) => {
         if (err) return res.status(400).json({ success: false, err });
