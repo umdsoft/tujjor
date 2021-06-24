@@ -306,6 +306,7 @@ exports.filter = async (req, res) => {
                                         count: 1,
                                     },
                                 },
+                                { $sort: { price: 1 } },
                             ],
                             as: "sizes",
                         },
@@ -416,6 +417,9 @@ exports.getAll = async (req, res) => {
                         },
                     },
                     { $project: { price: 1, _id: 0 } },
+                    {
+                        $sort: { price: 1 },
+                    },
                 ],
                 as: "sizes",
             },
@@ -442,7 +446,6 @@ exports.getAll = async (req, res) => {
         res.status(200).json({ success: true, data, num });
     });
 };
-
 exports.getOne = async (req, res) => {
     await Product.aggregate([
         { $match: { slug: req.params.slug } },
@@ -567,7 +570,6 @@ exports.getOne = async (req, res) => {
         res.status(200).json({ success: true, data });
     });
 };
-
 exports.edit = (req, res) => {
     Product.findByIdAndUpdate({ _id: req.params.id }, { $set: req.body })
         .then((data) => {
@@ -590,7 +592,6 @@ exports.edit = (req, res) => {
             });
         });
 };
-
 exports.delete = (req, res) => {
     Product.findByIdAndRemove({ _id: req.params.id })
         .then(async (product) => {
@@ -613,7 +614,6 @@ exports.delete = (req, res) => {
             });
         });
 };
-
 exports.editParam = async (req, res) => {
     await Param.updateOne({ _id: req.params.id }, { $set: req.body }).exec(
         (err, data) => {
@@ -622,7 +622,6 @@ exports.editParam = async (req, res) => {
         }
     );
 };
-
 exports.editSize = async (req, res) => {
     await Size.updateOne({ _id: req.params.id }, { $set: req.body }).exec(
         (err, data) => {
