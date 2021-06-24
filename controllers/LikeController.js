@@ -1,6 +1,5 @@
 const Like = require("../models/like");
-const Param = require("../models/param");
-
+const mongoose = require("mongoose");
 exports.create = (req, res) => {
     const like = new Like({
         product: req.body.product,
@@ -16,7 +15,7 @@ exports.create = (req, res) => {
 };
 exports.getAll = async (req, res) => {
     Like.aggregate([
-        { $match: { user: req.params.user } },
+        { $match: { user: mongoose.Types.ObjectId(req.params.user) } },
         {
             $lookup: {
                 from: "sizes",
@@ -34,7 +33,40 @@ exports.getAll = async (req, res) => {
             },
         },
         {
+            $lookup: {
+                from: "products",
+                let: { product: "$product" },
+                pipeline: [
+                    {
+                        $match: {
+                            $expr: { $eq: ["$_id", "$$product"] },
+                        },
+                    },
+                    { $project: { image: 1, name: 1, category: 1, _id: 0 } },
+                    {
+                        $lookup: {
+                            from: "categories",
+                            let: { category: "$category" },
+                            pipeline: [
+                                {
+                                    $match: {
+                                        $expr: { $eq: ["$_id", "$$category"] },
+                                    },
+                                },
+                                { $project: { name: 1, _id: 0 } },
+                            ],
+                            as: "category",
+                        },
+                    },
+                    { $unwind: "$category" },
+                ],
+                as: "product",
+            },
+        },
+        { $unwind: "$product" },
+        {
             $project: {
+                product: 1,
                 price: {
                     $let: {
                         vars: {
@@ -47,9 +79,7 @@ exports.getAll = async (req, res) => {
                 },
             },
         },
-    ]);
-
-    Like.find({ user: req.params.user }, (err, data) => {
+    ]).exec((err, data) => {
         if (err) {
             return res.status(400).json({ success: false, err });
         }

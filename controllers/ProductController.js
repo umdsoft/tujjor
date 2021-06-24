@@ -317,13 +317,11 @@ exports.filter = async (req, res) => {
         ...aggregateEnd,
         {
             $project: {
-                _id: 0,
                 name: 1,
                 category: 1,
                 shop: 1,
                 brand: 1,
                 slug: 1,
-                params: 1,
                 param: {
                     $let: {
                         vars: {
@@ -352,7 +350,6 @@ exports.filter = async (req, res) => {
                 brand: 1,
                 brands: 1,
                 slug: 1,
-                params: 1,
                 price: "$param.sizes.price",
                 image: "$param.images.image",
             },
@@ -361,21 +358,21 @@ exports.filter = async (req, res) => {
         if (err) return res.status(400).json({ success: false, err });
         let resData = [];
         let brands = [];
-        let sizes = [];
+        // let sizes = [];
         data.forEach((key, index) => {
             console.log(brands.indexOf(key.brand._id), key.brand._id);
             if (brands.indexOf(key.brand._id) === -1) {
                 brands.push(key.brand._id);
             }
-            key.params &&
-                key.params.forEach((param) => {
-                    param.sizes &&
-                        param.sizes.forEach((size) => {
-                            if (sizes.indexOf(size.size) === -1) {
-                                sizes.push(size.size);
-                            }
-                        });
-                });
+            // key.params &&
+            //     key.params.forEach((param) => {
+            //         param.sizes &&
+            //             param.sizes.forEach((size) => {
+            //                 if (sizes.indexOf(size.size) === -1) {
+            //                     sizes.push(size.size);
+            //                 }
+            //             });
+            //     });
             if (index >= (page - 1) * limit && index < page * limit) {
                 resData.push(key);
             }
@@ -535,7 +532,7 @@ exports.getOne = async (req, res) => {
                                     },
                                 },
                             ],
-                            as: "productImages",
+                            as: "images",
                         },
                     },
                     {
