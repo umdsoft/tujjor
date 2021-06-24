@@ -30,7 +30,7 @@ exports.getAll = async (req, res) => {
             },
             {
                 path: "product",
-                select: "-_id -__v",
+                select: "name image category -_id",
             },
         ])
         .exec((err, data) => {
