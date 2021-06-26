@@ -23,5 +23,11 @@ const ProductSchema = new mongoose.Schema(
     },
     { timestamps: true }
 );
-
+ProductSchema.pre("findByIdAndRemove", async function (next) {
+    console.log("Working");
+    await this.model("Param").remove({ productId: this._id });
+    await this.model("Size").remove({ productId: this._id });
+    await this.model("productImages").remove({ productId: this._id });
+    next();
+});
 module.exports = mongoose.model("Product", ProductSchema);
