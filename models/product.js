@@ -19,7 +19,7 @@ const ProductSchema = new mongoose.Schema(
         image: { type: String, required: true },
         article: { type: String, index: true, unique: true, required: true },
         slug: { type: String, index: true, unique: true, required: true },
-        tags: { type: Array, index: true },
+        tags: [{ type: mongoose.Schema.ObjectId, ref: "Tag" }],
     },
     { timestamps: true }
 );
