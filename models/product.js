@@ -23,21 +23,25 @@ const ProductSchema = new mongoose.Schema(
     },
     { timestamps: true }
 );
-ProductSchema.post("findByIdAndRemove", async function (next) {
-    console.log("Working findByIdAndRemove");
-    await this.model("Param").remove({ productId: this._id });
-    await this.model("Size").remove({ productId: this._id });
-    await this.model("productImages").remove({ productId: this._id });
-    next();
-});
-ProductSchema.post("remove", async function (next) {
+ProductSchema.post(
+    "findByIdAndRemove",
+    { document: true },
+    async function (next) {
+        console.log("Working findByIdAndRemove");
+        await this.model("Param").remove({ productId: this._id });
+        await this.model("Size").remove({ productId: this._id });
+        await this.model("productImages").remove({ productId: this._id });
+        next();
+    }
+);
+ProductSchema.post("remove", { document: true }, async function (next) {
     console.log("Working remove");
     await this.model("Param").remove({ productId: this._id });
     await this.model("Size").remove({ productId: this._id });
     await this.model("productImages").remove({ productId: this._id });
     next();
 });
-ProductSchema.post("deleteOne", async function (next) {
+ProductSchema.post("deleteOne", { document: true }, async function (next) {
     console.log("Working deleteOne");
     await this.model("Param").remove({ productId: this._id });
     await this.model("Size").remove({ productId: this._id });
