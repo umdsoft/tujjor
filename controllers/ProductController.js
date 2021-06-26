@@ -583,7 +583,7 @@ exports.edit = (req, res) => {
         });
 };
 exports.delete = (req, res) => {
-    Product.findByIdAndRemove({ _id: req.params.id })
+    Product.deleteOne({ _id: req.params.id })
         .then(async (product) => {
             if (!product) {
                 return res.status(404).json({

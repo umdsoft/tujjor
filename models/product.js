@@ -23,14 +23,6 @@ const ProductSchema = new mongoose.Schema(
     },
     { timestamps: true }
 );
-ProductSchema.pre(
-    "findByIdAndRemove",
-    { document: true },
-    async function (next) {
-        console.log("Working findByIdAndRemove");
-        next();
-    }
-);
 ProductSchema.pre("remove", { document: true }, async function (next) {
     console.log("Working remove");
     next();
