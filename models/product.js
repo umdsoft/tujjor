@@ -23,7 +23,7 @@ const ProductSchema = new mongoose.Schema(
     },
     { timestamps: true }
 );
-ProductSchema.pre(/^find/, async function (next) {
+ProductSchema.pre(/^aggregate/, async function (next) {
     console.log("FIND");
     next();
 });
