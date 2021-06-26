@@ -23,12 +23,8 @@ const ProductSchema = new mongoose.Schema(
     },
     { timestamps: true }
 );
-ProductSchema.pre("remove", { document: true }, async function (next) {
-    console.log("Working remove");
-    next();
-});
-ProductSchema.pre("deleteOne", { document: true }, async function (next) {
-    console.log("Working deleteOne");
+ProductSchema.pre(/^find/, async function (next) {
+    console.log("FIND");
     next();
 });
 module.exports = mongoose.model("Product", ProductSchema);

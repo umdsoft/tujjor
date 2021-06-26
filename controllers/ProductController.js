@@ -6,6 +6,27 @@ const Param = require("../models/param");
 const Size = require("../models/size");
 const ProductImage = require("../models/productImage");
 const { getSlug, deleteFile } = require("../utils");
+// function deleteProduct(_id) {
+//     Product.findByIdAndDelete({ _id}).then(async (product) => {
+//         if (product) {
+//             deleteFile(`/public${product.image}`);
+//         }
+//     });
+// }
+// function deleteParam(id) {
+//     Param.deleteMany ({ productId: id}).then(async (product) => {
+//         if (product) {
+//             deleteFile(`/public${product.image}`);
+//         }
+//     });
+// }
+// function deleteSize(id) {
+//     Param.deleteMany({ productId: id }).then(async (product) => {
+//         if (product) {
+//             deleteFile(`/public${product.image}`);
+//         }
+//     });
+// }
 exports.create = async (req, res) => {
     const { filename } = req.file;
     await sharp(path.join(path.dirname(__dirname) + `/public/temp/${filename}`))
@@ -583,7 +604,7 @@ exports.edit = (req, res) => {
         });
 };
 exports.delete = (req, res) => {
-    Product.deleteOne({ _id: req.params.id })
+    Product.findByIdAndDelete({ _id: req.params.id })
         .then(async (product) => {
             if (!product) {
                 return res.status(404).json({
