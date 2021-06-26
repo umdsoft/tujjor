@@ -14,7 +14,7 @@ CategorySchema.pre("remove", async function (next) {
     await this.model("Product").remove({ category: this._id });
     next();
 });
-ProductSchema.pre(/^find/, async function (next) {
+CategorySchema.pre(/^find/, async function (next) {
     console.log("FIND ________________________ ");
     next();
 });
