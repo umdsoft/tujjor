@@ -419,9 +419,9 @@ exports.filter = async (req, res) => {
                 resData.push({
                     _id: key._id,
                     name: key.name,
-                    category: key.ategory,
+                    category: key.category,
                     image: key.image,
-                    price: key.prce,
+                    price: key.price,
                     slug: key.slug,
                 });
             }
