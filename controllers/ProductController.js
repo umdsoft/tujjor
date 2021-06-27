@@ -395,7 +395,6 @@ exports.filter = async (req, res) => {
                 name: 1,
                 category: 1,
                 image: 1,
-                shop: 1,
                 brand: 1,
                 slug: 1,
                 price: {
@@ -412,21 +411,10 @@ exports.filter = async (req, res) => {
         if (err) return res.status(400).json({ success: false, err });
         let resData = [];
         let brands = [];
-        // let sizes = [];
         data.forEach((key, index) => {
-            console.log(brands.indexOf(key.brand._id), key.brand._id);
-            if (brands.indexOf(key.brand._id) === -1) {
-                brands.push(key.brand._id);
+            if (brands.indexOf(key.brand._id.toString()) === -1) {
+                brands.push(key.brand._id.toString());
             }
-            // key.params &&
-            //     key.params.forEach((param) => {
-            //         param.sizes &&
-            //             param.sizes.forEach((size) => {
-            //                 if (sizes.indexOf(size.size) === -1) {
-            //                     sizes.push(size.size);
-            //                 }
-            //             });
-            //     });
             if (index >= (page - 1) * limit && index < page * limit) {
                 resData.push(key);
             }
@@ -550,74 +538,74 @@ exports.getOne = async (req, res) => {
             },
         },
         { $unwind: "$shop" },
-        {
-            $lookup: {
-                from: "params",
-                let: { productId: "$_id" },
-                pipeline: [
-                    {
-                        $match: {
-                            $expr: {
-                                $eq: ["$productId", "$$productId"],
-                            },
-                        },
-                    },
-                    {
-                        $project: {
-                            slug: 0,
-                            __v: 0,
-                            productId: 0,
-                        },
-                    },
+        // {
+        //     $lookup: {
+        //         from: "params",
+        //         let: { productId: "$_id" },
+        //         pipeline: [
+        //             {
+        //                 $match: {
+        //                     $expr: {
+        //                         $eq: ["$productId", "$$productId"],
+        //                     },
+        //                 },
+        //             },
+        //             {
+        //                 $project: {
+        //                     slug: 0,
+        //                     __v: 0,
+        //                     productId: 0,
+        //                 },
+        //             },
 
-                    {
-                        $lookup: {
-                            from: "productimages",
-                            let: { paramId: "$_id" },
-                            pipeline: [
-                                {
-                                    $match: {
-                                        $expr: {
-                                            $eq: ["$paramId", "$$paramId"],
-                                        },
-                                    },
-                                },
-                                {
-                                    $project: {
-                                        image: 1,
-                                    },
-                                },
-                            ],
-                            as: "images",
-                        },
-                    },
-                    {
-                        $lookup: {
-                            from: "sizes",
-                            let: { paramId: "$_id" },
-                            pipeline: [
-                                {
-                                    $match: {
-                                        $expr: {
-                                            $eq: ["$paramId", "$$paramId"],
-                                        },
-                                    },
-                                },
-                                {
-                                    $project: {
-                                        price: 1,
-                                        size: 1,
-                                        count: 1,
-                                    },
-                                },
-                            ],
-                            as: "sizes",
-                        },
-                    },
-                ],
-                as: "params",
-            },
-        },
+        //             {
+        //                 $lookup: {
+        //                     from: "productimages",
+        //                     let: { paramId: "$_id" },
+        //                     pipeline: [
+        //                         {
+        //                             $match: {
+        //                                 $expr: {
+        //                                     $eq: ["$paramId", "$$paramId"],
+        //                                 },
+        //                             },
+        //                         },
+        //                         {
+        //                             $project: {
+        //                                 image: 1,
+        //                             },
+        //                         },
+        //                     ],
+        //                     as: "images",
+        //                 },
+        //             },
+        //             {
+        //                 $lookup: {
+        //                     from: "sizes",
+        //                     let: { paramId: "$_id" },
+        //                     pipeline: [
+        //                         {
+        //                             $match: {
+        //                                 $expr: {
+        //                                     $eq: ["$paramId", "$$paramId"],
+        //                                 },
+        //                             },
+        //                         },
+        //                         {
+        //                             $project: {
+        //                                 price: 1,
+        //                                 size: 1,
+        //                                 count: 1,
+        //                             },
+        //                         },
+        //                     ],
+        //                     as: "sizes",
+        //                 },
+        //             },
+        //         ],
+        //         as: "params",
+        //     },
+        // },
     ]).exec((err, data) => {
         if (err) return res.status(400).json({ success: false, err });
         res.status(200).json({ success: true, data });
