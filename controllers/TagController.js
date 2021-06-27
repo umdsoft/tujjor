@@ -2,7 +2,7 @@ const Tag = require("../models/tag");
 
 exports.create = (req, res) => {
     const tag = new Tag({
-        name: req.body.tag,
+        name: req.body.name,
     });
     tag.save()
         .then(() => {
