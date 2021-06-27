@@ -416,7 +416,14 @@ exports.filter = async (req, res) => {
                 brands.push(key.brand._id.toString());
             }
             if (index >= (page - 1) * limit && index < page * limit) {
-                resData.push(key);
+                resData.push({
+                    _id: key._id,
+                    name: key.name,
+                    category: key.ategory,
+                    image: key.image,
+                    price: key.prce,
+                    slug: key.slug,
+                });
             }
         });
         res.status(200).json({
@@ -470,7 +477,7 @@ exports.getAll = async (req, res) => {
                 _id: 0,
                 name: 1,
                 image: 1,
-                category: 1,
+                category: "$category.name",
                 slug: 1,
                 price: {
                     $let: {
