@@ -1,11 +1,15 @@
 const mongoose = require("mongoose");
-const sharp = require("sharp");
-const path = require("path");
+
 const Product = require("../models/product");
 const Param = require("../models/param");
 const Size = require("../models/size");
 const ProductImage = require("../models/productImage");
 const { getSlug, deleteFile } = require("../utils");
+const {
+    sharpFrontImage,
+    sharpParamImage,
+    sharpProductImage,
+} = require("../utils/product");
 // function deleteProduct(_id) {
 //     Product.findByIdAndDelete({ _id}).then(async (product) => {
 //         if (product) {
@@ -27,25 +31,11 @@ const { getSlug, deleteFile } = require("../utils");
 //         }
 //     });
 // }
+
+//create
 exports.create = async (req, res) => {
     const { filename } = req.file;
-    await sharp(path.join(path.dirname(__dirname) + `/public/temp/${filename}`))
-        .resize(500, 600)
-        .jpeg({
-            quality: 65,
-        })
-        .toFile(
-            path.join(
-                path.dirname(__dirname) +
-                    `/public/uploads/products/cards/${filename}`
-            ),
-            (err) => {
-                if (err) {
-                    console.log(err);
-                }
-                deleteFile(`/public/temp/${filename}`);
-            }
-        );
+    sharpFrontImage(filename);
     const product = new Product({
         name: {
             uz: req.body.name ? req.body.name.uz : "",
@@ -78,27 +68,10 @@ exports.create = async (req, res) => {
                     "Something wrong while creating the product.",
             });
         });
-    console.log("ERROR ", err);
 };
 exports.createParam = async (req, res) => {
     const { filename } = req.file;
-    await sharp(path.join(path.dirname(__dirname) + `/public/temp/${filename}`))
-        .resize(50, 50)
-        .jpeg({
-            quality: 40,
-        })
-        .toFile(
-            path.join(
-                path.dirname(__dirname) +
-                    `/public/uploads/products/colors/${filename}`
-            ),
-            (err) => {
-                if (err) {
-                    console.log(err);
-                }
-                deleteFile(`/public/temp/${filename}`);
-            }
-        );
+    sharpParamImage(filename);
     const param = new Param({
         image: `/uploads/products/colors/${filename}`,
         productId: req.body.productId,
@@ -136,42 +109,9 @@ exports.createSize = (req, res) => {
 };
 exports.createImage = async (req, res) => {
     const { filename } = req.file;
-    await sharp(path.join(path.dirname(__dirname) + `/public/temp/${filename}`))
-        .resize(500, 600)
-        .jpeg({
-            quality: 95,
-        })
-        .toFile(
-            path.join(
-                path.dirname(__dirname) + `/public/uploads/products/${filename}`
-            ),
-            async (err) => {
-                await sharp(
-                    path.join(
-                        path.dirname(__dirname) + `/public/temp/${filename}`
-                    )
-                )
-                    .resize(50, 50)
-                    .jpeg({
-                        quality: 50,
-                    })
-                    .toFile(
-                        path.join(
-                            path.dirname(__dirname) +
-                                `/public/uploads/products/smalls/${filename}`
-                        ),
-                        (err) => {
-                            if (err) {
-                                console.log(err);
-                            }
-                            deleteFile(`/public/temp/${filename}`);
-                        }
-                    );
-            }
-        );
+    sharpProductImage(filename);
 
     const image = new ProductImage({
-        paramId: req.body.paramId,
         productId: req.body.productId,
         image: `/uploads/products/${filename}`,
         smallImage: `/uploads/products/smalls/${filename}`,
@@ -189,6 +129,108 @@ exports.createImage = async (req, res) => {
             });
         });
 };
+
+//Edit
+exports.edit = (req, res) => {
+    const { filename } = req.file;
+    sharpFrontImage(filename);
+    Product.findByIdAndUpdate(
+        { _id: req.params.id },
+        { $set: { ...req.body, image: `/uploads/products/cards/${filename}` } }
+    )
+        .then((data) => {
+            if (!data) {
+                return res.status(404).json({
+                    message: "Product not found with id " + req.params.id,
+                });
+            }
+            res.status(200).json({ success: true });
+        })
+        .catch((err) => {
+            if (err.kind === "ObjectId") {
+                return res.status(404).json({
+                    message: "Product not found with id " + req.params.id,
+                });
+            }
+            return res.status(500).json({
+                message:
+                    "Something wrong updating note with id " + req.params.id,
+            });
+        });
+};
+
+exports.editParam = async (req, res) => {
+    const { filename } = req.file;
+    sharpParamImage(filename);
+    await Param.updateOne(
+        { _id: req.params.id },
+        { $set: { image: `/uploads/products/colors/${filename}` } },
+        { new: true }
+    ).exec((err, data) => {
+        if (err) return res.status(400).json({ success: false, data: err });
+        deleteFile(`public${data.image}`);
+        return res.status(200).json({ success: true, data: data });
+    });
+};
+exports.editSize = async (req, res) => {
+    await Size.updateOne({ _id: req.params.id }, { $set: req.body }).exec(
+        (err, data) => {
+            if (err) return res.status(400).json({ success: false, data: err });
+            return res.status(200).json({ success: true, data: data });
+        }
+    );
+};
+
+// Delete
+exports.delete = (req, res) => {
+    Product.findByIdAndDelete({ _id: req.params.id })
+        .then(async (product) => {
+            if (!product) {
+                return res.status(404).json({
+                    message: "Product not found with id " + req.params.id,
+                });
+            }
+            deleteFile(`/public${product.image}`);
+            res.json({ message: "Product deleted successfully!" });
+        })
+        .catch((err) => {
+            if (err.kind === "ObjectId" || err.name === "NotFound") {
+                return res.status(404).json({
+                    message: "Product not found with id " + req.params.id,
+                });
+            }
+            return res.status(500).json({
+                message: "Could not delete product with id " + req.params.id,
+            });
+        });
+};
+exports.deleteParam = async (req, res) => {
+    await Param.findByIdAndDelete({ _id: req.params.id });
+    res.status(200).json({
+        success: true,
+        data: [],
+    });
+};
+exports.deleteSize = async (req, res) => {
+    await Size.findByIdAndDelete({ _id: req.params.id });
+    res.status(200).json({
+        success: true,
+        data: [],
+    });
+};
+exports.deleteImage = async (req, res) => {
+    await ProductImage.findOne({ _id: req.params.id }, async (err, data) => {
+        if (err) throw console.log(err);
+        deleteFile(`/public${data.image}`);
+        await ProductImage.findByIdAndDelete({ _id: data._id });
+        res.status(200).json({
+            success: true,
+            data: [],
+        });
+    });
+};
+
+// Get
 //price , category, brand, color, size, tags,
 exports.filter = async (req, res) => {
     const page = parseInt(req.query.page);
@@ -579,90 +621,5 @@ exports.getOne = async (req, res) => {
     ]).exec((err, data) => {
         if (err) return res.status(400).json({ success: false, err });
         res.status(200).json({ success: true, data });
-    });
-};
-exports.edit = (req, res) => {
-    Product.findByIdAndUpdate({ _id: req.params.id }, { $set: req.body })
-        .then((data) => {
-            if (!data) {
-                return res.status(404).json({
-                    message: "Product not found with id " + req.params.id,
-                });
-            }
-            res.status(200).json({ success: true });
-        })
-        .catch((err) => {
-            if (err.kind === "ObjectId") {
-                return res.status(404).json({
-                    message: "Product not found with id " + req.params.id,
-                });
-            }
-            return res.status(500).json({
-                message:
-                    "Something wrong updating note with id " + req.params.id,
-            });
-        });
-};
-exports.delete = (req, res) => {
-    Product.findByIdAndDelete({ _id: req.params.id })
-        .then(async (product) => {
-            if (!product) {
-                return res.status(404).json({
-                    message: "Product not found with id " + req.params.id,
-                });
-            }
-            deleteFile(`/public${product.image}`);
-            res.json({ message: "Product deleted successfully!" });
-        })
-        .catch((err) => {
-            if (err.kind === "ObjectId" || err.name === "NotFound") {
-                return res.status(404).json({
-                    message: "Product not found with id " + req.params.id,
-                });
-            }
-            return res.status(500).json({
-                message: "Could not delete product with id " + req.params.id,
-            });
-        });
-};
-exports.editParam = async (req, res) => {
-    await Param.updateOne({ _id: req.params.id }, { $set: req.body }).exec(
-        (err, data) => {
-            if (err) return res.status(400).json({ success: false, data: err });
-            return res.status(200).json({ success: true, data: data });
-        }
-    );
-};
-exports.editSize = async (req, res) => {
-    await Size.updateOne({ _id: req.params.id }, { $set: req.body }).exec(
-        (err, data) => {
-            if (err) return res.status(400).json({ success: false, data: err });
-            return res.status(200).json({ success: true, data: data });
-        }
-    );
-};
-exports.deleteParam = async (req, res) => {
-    await Param.findByIdAndDelete({ _id: req.params.id });
-    res.status(200).json({
-        success: true,
-        data: [],
-    });
-};
-exports.deleteSize = async (req, res) => {
-    await Size.findByIdAndDelete({ _id: req.params.id });
-    res.status(200).json({
-        success: true,
-        data: [],
-    });
-};
-exports.deleteImage = async (req, res) => {
-    await ProductImage.findOne({ _id: req.params.id }, async (err, data) => {
-        if (err) throw console.log(err);
-        deleteFile(`/public${data.image}`);
-        await ProductImage.findByIdAndDelete({ _id: data._id });
-        res.status(200).json({
-            success: true,
-            data: [],
-        });
     });
 };

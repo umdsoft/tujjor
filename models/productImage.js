@@ -1,6 +1,5 @@
 const mongoose = require("mongoose");
 const ProductImageSchema = new mongoose.Schema({
-    paramId: { type: mongoose.Schema.ObjectId, ref: "Param", required: true },
     productId: {
         type: mongoose.Schema.ObjectId,
         ref: "Product",

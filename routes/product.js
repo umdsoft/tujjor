@@ -42,8 +42,18 @@ router.post(
 );
 
 //update
-router.put("/:id", ProductController.edit);
-router.put("/param/:id", ProductController.editParam);
+router.put(
+    "/:id",
+    upload.single("image"),
+    validateFile,
+    ProductController.edit
+);
+router.put(
+    "/param/:id",
+    upload.single("image"),
+    validateFile,
+    ProductController.editParam
+);
 router.put("/size/:id", ProductController.editSize);
 
 //delete
