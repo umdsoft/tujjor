@@ -437,12 +437,9 @@ exports.filter = async (req, res) => {
 exports.getAll = async (req, res) => {
     const page = parseInt(req.query.page);
     const limit = parseInt(req.query.limit);
-    const num = await Product.countDocuments();
     await Product.aggregate([
         { $match: { shop: mongoose.Types.ObjectId(req.params.shop) } },
         { $sort: { createdAt: -1 } },
-        { $skip: (page - 1) * limit },
-        { $limit: limit },
         {
             $lookup: {
                 from: "categories",
@@ -490,9 +487,15 @@ exports.getAll = async (req, res) => {
                 },
             },
         },
+        {
+            $facet: {
+                metadata: [{ $group: { _id: null, count: { $sum: 1 } } }],
+                data: [{ $skip: (page - 1) * limit }, { $limit: limit }],
+            },
+        },
     ]).exec((err, data) => {
         if (err) return res.status(400).json({ success: false, err });
-        res.status(200).json({ success: true, data, num });
+        res.status(200).json({ success: true, data, num: Product.count({}) });
     });
 };
 exports.getOne = async (req, res) => {
