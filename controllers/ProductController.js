@@ -266,14 +266,20 @@ exports.filter = async (req, res) => {
             },
         });
     }
-    if (req.body.start && req.body.end) {
+    if (req.body.start) {
         aggregateEnd.push({
             $match: {
                 "$sizes.&.price": {
-                    $and: {
-                        $gte: req.body.start,
-                        $lte: req.body.end,
-                    },
+                    $gte: req.body.start,
+                },
+            },
+        });
+    }
+    if (req.body.end) {
+        aggregateEnd.push({
+            $match: {
+                "$sizes.&.price": {
+                    $lte: req.body.end,
                 },
             },
         });
