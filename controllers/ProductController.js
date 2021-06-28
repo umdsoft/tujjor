@@ -497,54 +497,54 @@ exports.getAll = async (req, res) => {
 exports.getOne = async (req, res) => {
     await Product.aggregate([
         { $match: { slug: req.params.slug } },
-        {
-            $lookup: {
-                from: "brands",
-                let: { brand: "$brand" },
-                pipeline: [
-                    { $match: { $expr: { $eq: ["$_id", "$$brand"] } } },
-                    { $project: { name: 1, slug: 1, _id: 1 } },
-                ],
-                as: "brand",
-            },
-        },
-        { $unwind: "$brand" },
-        {
-            $lookup: {
-                from: "categories",
-                let: { category: "$category" },
-                pipeline: [
-                    { $match: { $expr: { $eq: ["$_id", "$$category"] } } },
-                    { $project: { __v: 0, createdAt: 0, updatedAt: 0 } },
-                ],
-                as: "category",
-            },
-        },
-        { $unwind: "$category" },
-        {
-            $lookup: {
-                from: "shops",
-                let: { shop: "$shop" },
-                pipeline: [
-                    { $match: { $expr: { $eq: ["$_id", "$$shop"] } } },
-                    {
-                        $project: {
-                            shopName: 1,
-                        },
-                    },
-                ],
-                as: "shop",
-            },
-        },
-        {
-            $project: {
-                slug: 0,
-                createdAt: 0,
-                updatedAt: 0,
-                __v: 0,
-            },
-        },
-        { $unwind: "$shop" },
+        // {
+        //     $lookup: {
+        //         from: "brands",
+        //         let: { brand: "$brand" },
+        //         pipeline: [
+        //             { $match: { $expr: { $eq: ["$_id", "$$brand"] } } },
+        //             { $project: { name: 1, slug: 1, _id: 1 } },
+        //         ],
+        //         as: "brand",
+        //     },
+        // },
+        // { $unwind: "$brand" },
+        // {
+        //     $lookup: {
+        //         from: "categories",
+        //         let: { category: "$category" },
+        //         pipeline: [
+        //             { $match: { $expr: { $eq: ["$_id", "$$category"] } } },
+        //             { $project: { __v: 0, createdAt: 0, updatedAt: 0 } },
+        //         ],
+        //         as: "category",
+        //     },
+        // },
+        // { $unwind: "$category" },
+        // {
+        //     $lookup: {
+        //         from: "shops",
+        //         let: { shop: "$shop" },
+        //         pipeline: [
+        //             { $match: { $expr: { $eq: ["$_id", "$$shop"] } } },
+        //             {
+        //                 $project: {
+        //                     shopName: 1,
+        //                 },
+        //             },
+        //         ],
+        //         as: "shop",
+        //     },
+        // },
+        // {
+        //     $project: {
+        //         slug: 0,
+        //         createdAt: 0,
+        //         updatedAt: 0,
+        //         __v: 0,
+        //     },
+        // },
+        // { $unwind: "$shop" },
         // {
         //     $lookup: {
         //         from: "params",
