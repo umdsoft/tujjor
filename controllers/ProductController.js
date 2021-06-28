@@ -439,6 +439,7 @@ exports.getAll = async (req, res) => {
     const limit = parseInt(req.query.limit);
     const num = await Product.countDocuments();
     await Product.aggregate([
+        { $match: { shop: mongoose.Types.ObjectId(req.params.shop) } },
         { $sort: { createdAt: -1 } },
         { $skip: (page - 1) * limit },
         { $limit: limit },
@@ -546,6 +547,9 @@ exports.getOne = async (req, res) => {
                         $match: {
                             $expr: { $eq: ["$productId", "$$productId"] },
                         },
+                    },
+                    {
+                        $project: { productId: 0 },
                     },
                 ],
                 as: "images",
