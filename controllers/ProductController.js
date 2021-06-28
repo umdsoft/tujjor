@@ -495,7 +495,7 @@ exports.getAll = async (req, res) => {
         },
     ]).exec((err, data) => {
         if (err) return res.status(400).json({ success: false, err });
-        res.status(200).json({ success: true, data, num: Product.count({}) });
+        res.status(200).json({ success: true, data });
     });
 };
 exports.getOne = async (req, res) => {
