@@ -267,25 +267,20 @@ exports.filter = async (req, res) => {
             },
         });
     }
-    if (req.body.start) {
-        const start = parseInt(req.body.start);
-        console.log(typeof start);
+    if (req.body.start && req.body.start != 0) {
         aggregateEnd.push({
             $match: {
                 price: {
-                    $gte: start,
+                    $gte: parseInt(req.body.start),
                 },
             },
         });
     }
-    if (req.body.end) {
-        const end = parseInt(req.body.end);
+    if (req.body.end && req.body.end != 0) {
         aggregateEnd.push({
             $match: {
                 price: {
-                    price: {
-                        $lte: end,
-                    },
+                    $lte: parseInt(req.body.end),
                 },
             },
         });
