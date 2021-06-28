@@ -272,7 +272,7 @@ exports.filter = async (req, res) => {
         console.log(typeof start);
         aggregateEnd.push({
             $match: {
-                "$sizes.price": {
+                price: {
                     $gte: start,
                 },
             },
@@ -282,7 +282,7 @@ exports.filter = async (req, res) => {
         const end = parseInt(req.body.end);
         aggregateEnd.push({
             $match: {
-                "$sizes.price": {
+                price: {
                     price: {
                         $lte: end,
                     },
@@ -334,7 +334,6 @@ exports.filter = async (req, res) => {
                 as: "sizes",
             },
         },
-        ...aggregateEnd,
         {
             $project: {
                 name: 1,
@@ -352,6 +351,7 @@ exports.filter = async (req, res) => {
                 },
             },
         },
+        ...aggregateEnd,
     ]).exec(async (err, data) => {
         if (err) return res.status(400).json({ success: false, err });
         let resData = [];
