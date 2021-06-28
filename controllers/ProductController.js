@@ -489,7 +489,7 @@ exports.getAll = async (req, res) => {
         },
         {
             $facet: {
-                count: [{ $group: { _id: null, count: { $sum: 1 } } }],
+                count: { $group: { _id: null, count: { $sum: 1 } } },
                 data: [{ $skip: (page - 1) * limit }, { $limit: limit }],
             },
         },
