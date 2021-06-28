@@ -269,6 +269,7 @@ exports.filter = async (req, res) => {
     }
     if (req.body.start) {
         const start = parseInt(req.body.start);
+        console.log(typeof start);
         aggregateEnd.push({
             $match: {
                 "sizes.price": {
