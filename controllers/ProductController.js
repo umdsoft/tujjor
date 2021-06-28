@@ -538,6 +538,21 @@ exports.getOne = async (req, res) => {
         },
         { $unwind: "$shop" },
         {
+            $lookup: {
+                from: "productimages",
+                let: { productId: "$_id" },
+                pipeline: [
+                    {
+                        $match: {
+                            $expr: { $eq: ["$productId", "$$productId"] },
+                        },
+                    },
+                ],
+                as: "images",
+            },
+        },
+        { $unwind: "$images" },
+        {
             $project: {
                 slug: 0,
                 createdAt: 0,
@@ -545,74 +560,52 @@ exports.getOne = async (req, res) => {
                 __v: 0,
             },
         },
-        // {
-        //     $lookup: {
-        //         from: "params",
-        //         let: { productId: "$_id" },
-        //         pipeline: [
-        //             {
-        //                 $match: {
-        //                     $expr: {
-        //                         $eq: ["$productId", "$$productId"],
-        //                     },
-        //                 },
-        //             },
-        //             {
-        //                 $project: {
-        //                     slug: 0,
-        //                     __v: 0,
-        //                     productId: 0,
-        //                 },
-        //             },
-
-        //             {
-        //                 $lookup: {
-        //                     from: "productimages",
-        //                     let: { paramId: "$_id" },
-        //                     pipeline: [
-        //                         {
-        //                             $match: {
-        //                                 $expr: {
-        //                                     $eq: ["$paramId", "$$paramId"],
-        //                                 },
-        //                             },
-        //                         },
-        //                         {
-        //                             $project: {
-        //                                 image: 1,
-        //                             },
-        //                         },
-        //                     ],
-        //                     as: "images",
-        //                 },
-        //             },
-        //             {
-        //                 $lookup: {
-        //                     from: "sizes",
-        //                     let: { paramId: "$_id" },
-        //                     pipeline: [
-        //                         {
-        //                             $match: {
-        //                                 $expr: {
-        //                                     $eq: ["$paramId", "$$paramId"],
-        //                                 },
-        //                             },
-        //                         },
-        //                         {
-        //                             $project: {
-        //                                 price: 1,
-        //                                 size: 1,
-        //                                 count: 1,
-        //                             },
-        //                         },
-        //                     ],
-        //                     as: "sizes",
-        //                 },
-        //             },
-        //         ],
-        //         as: "params",
-        //     },
-        // },
+        {
+            $lookup: {
+                from: "params",
+                let: { productId: "$_id" },
+                pipeline: [
+                    {
+                        $match: {
+                            $expr: {
+                                $eq: ["$productId", "$$productId"],
+                            },
+                        },
+                    },
+                    {
+                        $project: {
+                            slug: 0,
+                            __v: 0,
+                            productId: 0,
+                        },
+                    },
+                    {
+                        $lookup: {
+                            from: "sizes",
+                            let: { paramId: "$_id" },
+                            pipeline: [
+                                {
+                                    $match: {
+                                        $expr: {
+                                            $eq: ["$paramId", "$$paramId"],
+                                        },
+                                    },
+                                },
+                                {
+                                    $project: {
+                                        price: 1,
+                                        size: 1,
+                                        count: 1,
+                                    },
+                                },
+                            ],
+                            as: "sizes",
+                        },
+                    },
+                ],
+                as: "params",
+            },
+        },
     ]).exec((err, data) => {
         if (err) return res.status(400).json({ success: false, err });
         res.status(200).json({ success: true, data });
