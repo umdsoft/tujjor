@@ -266,12 +266,13 @@ exports.filter = async (req, res) => {
             },
         });
     }
-    if (req.body.size) {
+    if (req.body.start && req.body.end) {
         aggregateEnd.push({
             $match: {
-                params: {
-                    $elemMatch: {
-                        sizes: { $elemMatch: { size: req.body.size } },
+                "$sizes.&.price": {
+                    $and: {
+                        $gte: req.body.start,
+                        $lte: req.body.end,
                     },
                 },
             },
@@ -321,75 +322,6 @@ exports.filter = async (req, res) => {
                 as: "sizes",
             },
         },
-        // {
-        //     $lookup: {
-        //         from: "params",
-        //         let: { productId: "$_id" },
-        //         pipeline: [
-        //             {
-        //                 $match: {
-        //                     $expr: {
-        //                         $eq: ["$productId", "$$productId"],
-        //                     },
-        //                 },
-        //             },
-        //             {
-        //                 $project: {
-        //                     slug: 0,
-        //                     __v: 0,
-        //                     productId: 0,
-        //                 },
-        //             },
-
-        //             {
-        //                 $lookup: {
-        //                     from: "productimages",
-        //                     let: { paramId: "$_id" },
-        //                     pipeline: [
-        //                         {
-        //                             $match: {
-        //                                 $expr: {
-        //                                     $eq: ["$paramId", "$$paramId"],
-        //                                 },
-        //                             },
-        //                         },
-        //                         {
-        //                             $project: {
-        //                                 image: 1,
-        //                             },
-        //                         },
-        //                     ],
-        //                     as: "images",
-        //                 },
-        //             },
-        //             {
-        //                 $lookup: {
-        //                     from: "sizes",
-        //                     let: { paramId: "$_id" },
-        //                     pipeline: [
-        //                         {
-        //                             $match: {
-        //                                 $expr: {
-        //                                     $eq: ["$paramId", "$$paramId"],
-        //                                 },
-        //                             },
-        //                         },
-        //                         {
-        //                             $project: {
-        //                                 price: 1,
-        //                                 size: 1,
-        //                                 count: 1,
-        //                             },
-        //                         },
-        //                         { $sort: { price: 1 } },
-        //                     ],
-        //                     as: "sizes",
-        //                 },
-        //             },
-        //         ],
-        //         as: "params",
-        //     },
-        // },
         ...aggregateEnd,
         {
             $project: {
