@@ -438,7 +438,7 @@ exports.getAll = async (req, res) => {
     const page = parseInt(req.query.page);
     const limit = parseInt(req.query.limit);
     await Product.aggregate([
-        { $match: { shop: mongoose.Types.ObjectId(req.params.shop) } },
+        { $match: { shop: mongoose.Types.ObjectId(req.query.shop) } },
         { $sort: { createdAt: -1 } },
         {
             $lookup: {
