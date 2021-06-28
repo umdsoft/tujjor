@@ -269,8 +269,12 @@ exports.filter = async (req, res) => {
     if (req.body.start) {
         aggregateEnd.push({
             $match: {
-                "$sizes.&.price": {
-                    $gte: req.body.start,
+                sizes: {
+                    $elemMatch: {
+                        price: {
+                            $gte: req.body.start,
+                        },
+                    },
                 },
             },
         });
@@ -278,8 +282,12 @@ exports.filter = async (req, res) => {
     if (req.body.end) {
         aggregateEnd.push({
             $match: {
-                "$sizes.&.price": {
-                    $lte: req.body.end,
+                sizes: {
+                    $elemMatch: {
+                        price: {
+                            $lte: req.body.end,
+                        },
+                    },
                 },
             },
         });
