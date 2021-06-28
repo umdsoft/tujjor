@@ -268,7 +268,7 @@ exports.filter = async (req, res) => {
         });
     }
     if (req.body.start) {
-        const start = parseInt(req.query.start);
+        const start = parseInt(req.body.start);
         aggregateEnd.push({
             $match: {
                 sizes: {
@@ -282,7 +282,7 @@ exports.filter = async (req, res) => {
         });
     }
     if (req.body.end) {
-        const end = parseInt(req.query.end);
+        const end = parseInt(req.body.end);
         aggregateEnd.push({
             $match: {
                 "sizes.price": {
