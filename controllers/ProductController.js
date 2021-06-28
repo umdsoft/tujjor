@@ -236,6 +236,7 @@ exports.deleteImage = async (req, res) => {
 exports.filter = async (req, res) => {
     const page = parseInt(req.query.page);
     const limit = parseInt(req.query.limit);
+
     if (page === 0 || limit === 0) {
         return res
             .status(400)
@@ -267,12 +268,13 @@ exports.filter = async (req, res) => {
         });
     }
     if (req.body.start) {
+        const start = parseInt(req.query.start);
         aggregateEnd.push({
             $match: {
                 sizes: {
                     $elemMatch: {
                         price: {
-                            $gte: req.body.start,
+                            $gte: start,
                         },
                     },
                 },
@@ -280,13 +282,12 @@ exports.filter = async (req, res) => {
         });
     }
     if (req.body.end) {
+        const end = parseInt(req.query.end);
         aggregateEnd.push({
             $match: {
-                sizes: {
-                    $elemMatch: {
-                        price: {
-                            $lte: req.body.end,
-                        },
+                "sizes.price": {
+                    price: {
+                        $lte: end,
                     },
                 },
             },
