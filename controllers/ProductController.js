@@ -503,12 +503,16 @@ exports.getAll = async (req, res) => {
                         in: "$$count.count",
                     },
                 },
-                data: { $arrayElemAt: ["$data", 0] },
+                data: 1,
             },
         },
     ]).exec((err, data) => {
         if (err) return res.status(400).json({ success: false, err });
-        res.status(200).json({ success: true, data });
+        res.status(200).json({
+            success: true,
+            data: data[0].data,
+            count: data[0].count,
+        });
     });
 };
 exports.getOne = async (req, res) => {
