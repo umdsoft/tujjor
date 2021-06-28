@@ -489,8 +489,14 @@ exports.getAll = async (req, res) => {
         },
         {
             $facet: {
-                metadata: [{ $group: { _id: null, count: { $sum: 1 } } }],
+                count: [{ $group: { _id: null, count: { $sum: 1 } } }],
                 data: [{ $skip: (page - 1) * limit }, { $limit: limit }],
+            },
+        },
+        {
+            $project: {
+                count: "$count.count",
+                data: 1,
             },
         },
     ]).exec((err, data) => {
