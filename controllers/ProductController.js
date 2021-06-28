@@ -551,7 +551,6 @@ exports.getOne = async (req, res) => {
                 as: "images",
             },
         },
-        { $unwind: "$images" },
         {
             $project: {
                 slug: 0,
