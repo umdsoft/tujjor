@@ -521,30 +521,30 @@ exports.getOne = async (req, res) => {
             },
         },
         { $unwind: "$category" },
-        // {
-        //     $lookup: {
-        //         from: "shops",
-        //         let: { shop: "$shop" },
-        //         pipeline: [
-        //             { $match: { $expr: { $eq: ["$_id", "$$shop"] } } },
-        //             {
-        //                 $project: {
-        //                     shopName: 1,
-        //                 },
-        //             },
-        //         ],
-        //         as: "shop",
-        //     },
-        // },
-        // {
-        //     $project: {
-        //         slug: 0,
-        //         createdAt: 0,
-        //         updatedAt: 0,
-        //         __v: 0,
-        //     },
-        // },
-        // { $unwind: "$shop" },
+        {
+            $lookup: {
+                from: "shops",
+                let: { shop: "$shop" },
+                pipeline: [
+                    { $match: { $expr: { $eq: ["$_id", "$$shop"] } } },
+                    {
+                        $project: {
+                            shopName: 1,
+                        },
+                    },
+                ],
+                as: "shop",
+            },
+        },
+        { $unwind: "$shop" },
+        {
+            $project: {
+                slug: 0,
+                createdAt: 0,
+                updatedAt: 0,
+                __v: 0,
+            },
+        },
         // {
         //     $lookup: {
         //         from: "params",
