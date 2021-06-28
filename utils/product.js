@@ -3,9 +3,9 @@ const path = require("path");
 const { deleteFile } = require(".");
 exports.sharpProductImage = async (filename) => {
     await sharp(path.join(path.dirname(__dirname) + `/public/temp/${filename}`))
-        .resize(500, 600)
+        .resize(500, 450)
         .jpeg({
-            quality: 95,
+            quality: 100,
         })
         .toFile(
             path.join(
@@ -14,9 +14,9 @@ exports.sharpProductImage = async (filename) => {
             (err) => {}
         );
     await sharp(path.join(path.dirname(__dirname) + `/public/temp/${filename}`))
-        .resize(50, 50)
+        .resize(100, 100)
         .jpeg({
-            quality: 50,
+            quality: 75,
         })
         .toFile(
             path.join(
@@ -33,9 +33,9 @@ exports.sharpProductImage = async (filename) => {
 };
 exports.sharpParamImage = async (filename) => {
     await sharp(path.join(path.dirname(__dirname) + `/public/temp/${filename}`))
-        .resize(50, 50)
+        .resize(100, 100)
         .jpeg({
-            quality: 40,
+            quality: 50,
         })
         .toFile(
             path.join(
@@ -52,9 +52,9 @@ exports.sharpParamImage = async (filename) => {
 };
 exports.sharpFrontImage = async (filename) => {
     await sharp(path.join(path.dirname(__dirname) + `/public/temp/${filename}`))
-        .resize(500, 600)
+        .resize(222, 222)
         .jpeg({
-            quality: 65,
+            quality: 60,
         })
         .toFile(
             path.join(

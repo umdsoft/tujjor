@@ -473,7 +473,6 @@ exports.getAll = async (req, res) => {
         },
         {
             $project: {
-                _id: 0,
                 name: 1,
                 image: 1,
                 category: "$category.name",
