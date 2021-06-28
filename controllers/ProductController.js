@@ -271,12 +271,8 @@ exports.filter = async (req, res) => {
         const start = parseInt(req.body.start);
         aggregateEnd.push({
             $match: {
-                sizes: {
-                    $elemMatch: {
-                        price: {
-                            $gte: start,
-                        },
-                    },
+                "sizes.price": {
+                    $gte: start,
                 },
             },
         });
