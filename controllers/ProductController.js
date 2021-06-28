@@ -503,7 +503,7 @@ exports.getAll = async (req, res) => {
                         in: "$$count.count",
                     },
                 },
-                data: 1,
+                data: { $arrayElemAt: ["$data", 0] },
             },
         },
     ]).exec((err, data) => {
