@@ -52,6 +52,7 @@ exports.create = async (req, res) => {
         article: req.body.article,
         tags: req.body.tags || "",
         slug: getSlug(req.body.name ? req.body.name.ru : ""),
+        status: 0,
     });
     product
         .save()

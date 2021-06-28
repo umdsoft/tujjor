@@ -20,6 +20,7 @@ const ProductSchema = new mongoose.Schema(
         article: { type: String, index: true, unique: true, required: true },
         slug: { type: String, index: true, unique: true, required: true },
         tags: [{ type: mongoose.Schema.ObjectId, ref: "Tag" }],
+        status: { type: Number, required: true, enum: [0, 1] },
     },
     { timestamps: true }
 );
