@@ -493,7 +493,6 @@ exports.getAll = async (req, res) => {
                 data: [{ $skip: (page - 1) * limit }, { $limit: limit }],
             },
         },
-        { $unwind: "$count" },
         {
             $project: {
                 count: "$count.count",
