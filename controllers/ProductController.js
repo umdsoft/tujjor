@@ -495,7 +495,7 @@ exports.getAll = async (req, res) => {
         },
         {
             $project: {
-                allCount: {
+                count: {
                     $let: {
                         vars: {
                             count: { $arrayElemAt: ["$count", 0] },
