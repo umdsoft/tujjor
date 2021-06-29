@@ -430,7 +430,7 @@ exports.filter = async (req, res) => {
             success: true,
             data: data[0].data,
             brands: data[0].brands,
-            count: Math.ceil(data[0].counr / limit),
+            count: Math.ceil(data[0].count / limit),
         });
     });
 };
