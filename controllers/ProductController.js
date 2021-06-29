@@ -321,6 +321,8 @@ exports.filter = async (req, res) => {
                 });
                 break;
             }
+            default: {
+            }
         }
     }
     await Product.aggregate([
