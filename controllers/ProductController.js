@@ -286,7 +286,7 @@ exports.filter = async (req, res) => {
         });
     }
     if (req.body.sort) {
-        switch (x) {
+        switch (req.body.sort) {
             case "new": {
                 aggregateStart.push({
                     $sort: {
