@@ -421,8 +421,8 @@ exports.filter = async (req, res) => {
                         in: "$$brands.brands",
                     },
                 },
-                "data.name": 1,
-                "data.brand": 0,
+                "$data.name": 1,
+                "$data.brand": 0,
             },
         },
     ]).exec(async (err, data) => {
