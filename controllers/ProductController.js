@@ -387,6 +387,36 @@ exports.filter = async (req, res) => {
             },
         },
         ...aggregateEnd,
+        {
+            $facet: {
+                brands: [
+                    {
+                        $group: {
+                            _id: null,
+                            brands: {
+                                $addToSet: "$brand._id",
+                            },
+                        },
+                    },
+                ],
+                count: [{ $group: { _id: null, count: { $sum: 1 } } }],
+                data: [{ $skip: (page - 1) * limit }, { $limit: limit }],
+            },
+        },
+        {
+            $project: {
+                count: {
+                    $let: {
+                        vars: {
+                            count: { $arrayElemAt: ["$count", 0] },
+                        },
+                        in: "$$count.count",
+                    },
+                },
+                brands: 1,
+                data: 1,
+            },
+        },
     ]).exec(async (err, data) => {
         if (err) return res.status(400).json({ success: false, err });
         let resData = [];
