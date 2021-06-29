@@ -62,6 +62,8 @@ exports.createParam = async (req, res) => {
             res.status(200).json({ success: true, data: { _id: data._id } });
         })
         .catch((err) => {
+            deleteFile(`/public/temp/${filename}`);
+            deleteFile(`/public/uploads/products/colors/${filename}`);
             res.status(500).json({
                 message:
                     err.message || "Something wrong while creating the param.",
