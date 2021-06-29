@@ -10,6 +10,7 @@ const storage = multer.diskStorage({
         cb(null, "./public/temp");
     },
     filename: function (req, file, cb) {
+        console.log("FILE ", file);
         cb(null, `${md5(Date.now())}${path.extname(file.originalname)}`);
     },
 });
