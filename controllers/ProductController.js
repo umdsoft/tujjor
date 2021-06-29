@@ -400,11 +400,16 @@ exports.filter = async (req, res) => {
                     },
                 ],
                 count: [{ $group: { _id: null, count: { $sum: 1 } } }],
-                data: [{ $skip: (page - 1) * limit }, { $limit: limit }],
+                data: [
+                    { $skip: (page - 1) * limit },
+                    { $limit: limit },
+                    { $project: { brand: 0 } },
+                ],
             },
         },
         {
             $project: {
+                data: 1,
                 count: {
                     $let: {
                         vars: {
@@ -427,10 +432,9 @@ exports.filter = async (req, res) => {
         if (err) return res.status(400).json({ success: false, err });
         res.status(200).json({
             success: true,
-            data,
-            // data: data[0].data,
-            // brands: data[0].brands,
-            // count: Math.ceil(data[0].count / limit),
+            data: data[0].data,
+            brands: data[0].brands,
+            count: Math.ceil(data[0].count / limit),
         });
     });
 };
