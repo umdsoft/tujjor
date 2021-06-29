@@ -427,8 +427,8 @@ exports.filter = async (req, res) => {
                             temp: "$data",
                         },
                         in: {
-                            _id: "$data._id",
-                            brand: "$data.name",
+                            _id: "$$temp._id",
+                            brand: "$$temp.name",
                         },
                     },
                 },
