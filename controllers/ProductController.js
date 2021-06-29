@@ -428,9 +428,9 @@ exports.filter = async (req, res) => {
         if (err) return res.status(400).json({ success: false, err });
         res.status(200).json({
             success: true,
-            data: data.data,
-            brands: data.brands,
-            count: Math.ceil(data.counr / limit),
+            data: data[0].data[0],
+            brands: data[0].brands,
+            count: Math.ceil(data[0].counr / limit),
         });
     });
 };
