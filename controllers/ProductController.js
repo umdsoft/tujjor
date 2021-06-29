@@ -419,28 +419,26 @@ exports.filter = async (req, res) => {
         },
     ]).exec(async (err, data) => {
         if (err) return res.status(400).json({ success: false, err });
-        let resData = [];
-        let brands = [];
-        data.forEach((key, index) => {
-            if (brands.indexOf(key.brand._id.toString()) === -1) {
-                brands.push(key.brand._id.toString());
-            }
-            if (index >= (page - 1) * limit && index < page * limit) {
-                resData.push({
-                    _id: key._id,
-                    name: key.name,
-                    category: key.category,
-                    image: key.image,
-                    price: key.price,
-                    slug: key.slug,
-                });
-            }
-        });
+        // let resData = [];
+        // let brands = [];
+        // data.forEach((key, index) => {
+        //     if (brands.indexOf(key.brand._id.toString()) === -1) {
+        //         brands.push(key.brand._id.toString());
+        //     }
+        //     if (index >= (page - 1) * limit && index < page * limit) {
+        //         resData.push({
+        //             _id: key._id,
+        //             name: key.name,
+        //             category: key.category,
+        //             image: key.image,
+        //             price: key.price,
+        //             slug: key.slug,
+        //         });
+        //     }
+        // });
         res.status(200).json({
             success: true,
-            data: resData,
-            brands,
-            num: Math.ceil(data.length / limit),
+            data,
         });
     });
 };
