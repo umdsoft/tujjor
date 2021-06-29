@@ -413,7 +413,14 @@ exports.filter = async (req, res) => {
                         in: "$$count.count",
                     },
                 },
-                brands: 1,
+                brands: {
+                    $let: {
+                        vars: {
+                            brands: { $arrayElemAt: ["$brands", 0] },
+                        },
+                        in: "$$brands.brands",
+                    },
+                },
                 data: 1,
             },
         },
