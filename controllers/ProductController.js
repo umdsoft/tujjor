@@ -285,6 +285,44 @@ exports.filter = async (req, res) => {
             },
         });
     }
+    if (req.body.sort) {
+        switch (x) {
+            case "new": {
+                aggregateStart.push({
+                    $sort: {
+                        createdAt: -1,
+                    },
+                });
+                break;
+            }
+            case "popular": {
+                aggregateEnd.push({
+                    $sort: {
+                        count: -1,
+                    },
+                });
+                break;
+            }
+
+            case "priceUp": {
+                aggregateEnd.push({
+                    $sort: {
+                        price: -1,
+                    },
+                });
+                break;
+            }
+
+            case "priceDown": {
+                aggregateEnd.push({
+                    $sort: {
+                        price: 1,
+                    },
+                });
+                break;
+            }
+        }
+    }
     await Product.aggregate([
         ...aggregateStart,
         {
