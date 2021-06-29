@@ -421,7 +421,17 @@ exports.filter = async (req, res) => {
                         in: "$$brands.brands",
                     },
                 },
-                "data.brand": 0,
+                data: {
+                    $let: {
+                        vars: {
+                            temp: "$data",
+                        },
+                        in: {
+                            _id: data.id,
+                            brand: data.brand,
+                        },
+                    },
+                },
             },
         },
     ]).exec(async (err, data) => {
