@@ -10,27 +10,6 @@ const {
     sharpParamImage,
     sharpProductImage,
 } = require("../utils/product");
-// function deleteProduct(_id) {
-//     Product.findByIdAndDelete({ _id}).then(async (product) => {
-//         if (product) {
-//             deleteFile(`/public${product.image}`);
-//         }
-//     });
-// }
-// function deleteParam(id) {
-//     Param.deleteMany ({ productId: id}).then(async (product) => {
-//         if (product) {
-//             deleteFile(`/public${product.image}`);
-//         }
-//     });
-// }
-// function deleteSize(id) {
-//     Param.deleteMany({ productId: id }).then(async (product) => {
-//         if (product) {
-//             deleteFile(`/public${product.image}`);
-//         }
-//     });
-// }
 
 //create
 exports.create = async (req, res) => {
@@ -192,6 +171,9 @@ exports.delete = (req, res) => {
                 });
             }
             deleteFile(`/public${product.image}`);
+            Param.delete(product._id);
+            Size.deleteByProduct(product._id);
+            ProductImage.delete(product._id);
             res.json({ message: "Product deleted successfully!" });
         })
         .catch((err) => {
@@ -206,7 +188,9 @@ exports.delete = (req, res) => {
         });
 };
 exports.deleteParam = async (req, res) => {
-    await Param.findByIdAndDelete({ _id: req.params.id });
+    await Param.findByIdAndDelete({ _id: req.params.id }).then((param) => {
+        Size.deleteByProduct(req.params.id);
+    });
     res.status(200).json({
         success: true,
         data: [],
@@ -220,14 +204,14 @@ exports.deleteSize = async (req, res) => {
     });
 };
 exports.deleteImage = async (req, res) => {
-    await ProductImage.findOne({ _id: req.params.id }, async (err, data) => {
-        if (err) throw console.log(err);
-        deleteFile(`/public${data.image}`);
-        await ProductImage.findByIdAndDelete({ _id: data._id });
-        res.status(200).json({
-            success: true,
-            data: [],
-        });
+    await ProductImage.findByIdAndDelete({ _id: req.params.id }).then(
+        (image) => {
+            deleteFile(`/public${image.image}`);
+        }
+    );
+    res.status(200).json({
+        success: true,
+        data: [],
     });
 };
 

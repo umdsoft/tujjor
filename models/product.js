@@ -24,4 +24,13 @@ const ProductSchema = new mongoose.Schema(
     },
     { timestamps: true }
 );
+ProductSchema.delete = (id) => {
+    Product.findByIdAndDelete({ shop: id }).then(async (product) => {
+        if (product) {
+            deleteFile(`/public${product.image}`);
+        } else {
+            this.delete(id);
+        }
+    });
+};
 module.exports = mongoose.model("Product", ProductSchema);
