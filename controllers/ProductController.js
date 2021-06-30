@@ -167,6 +167,7 @@ exports.editSize = async (req, res) => {
 exports.delete = (req, res) => {
     Product.findByIdAndDelete({ _id: req.params.id })
         .then(async (product) => {
+            console.log("Product Delete ... ", product);
             if (!product) {
                 return res.status(404).json({
                     message: "Product not found with id " + req.params.id,
@@ -179,14 +180,8 @@ exports.delete = (req, res) => {
             res.json({ message: "Product deleted successfully!" });
         })
         .catch((err) => {
-            if (err.kind === "ObjectId" || err.name === "NotFound") {
-                return res.status(404).json({
-                    message: "Product not found with id " + req.params.id,
-                });
-            }
-            return res.status(500).json({
-                message: "Could not delete product with id " + req.params.id,
-            });
+            console.log("Product Delete Error ... ", err);
+            res.status(500).json({ message: err });
         });
 };
 exports.deleteParam = async (req, res) => {
