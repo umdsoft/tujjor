@@ -12,7 +12,8 @@ const {
 } = require("../utils/product");
 
 const deleteParam = (id) => {
-    Param.findByIdAndDelete({ _id: id }).then((param) => {
+    Param.findByIdAndDelete({ productId: id }).then((param) => {
+        console.log("DELETE Param Success");
         if (param) {
             deleteFile(`/public${param.image}`);
         } else {
@@ -195,7 +196,6 @@ exports.editSize = async (req, res) => {
 exports.delete = (req, res) => {
     Product.findByIdAndDelete({ _id: req.params.id })
         .then((product) => {
-            console.log("Product Delete ... ", product);
             if (!product) {
                 return res.status(404).json({
                     message: "Product not found with id " + req.params.id,
