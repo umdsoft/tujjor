@@ -13,6 +13,7 @@ const OrderSchema = new mongoose.Schema(
         },
         orderId: {
             type: Number,
+            unique: true,
             required: true,
         },
         address: {
@@ -58,6 +59,13 @@ const OrderSchema = new mongoose.Schema(
                     ref: "Size",
                     required: true,
                 },
+                shop: {
+                    type: mongoose.Schema.ObjectId,
+                    ref: "Shop",
+                    required: true,
+                },
+                account: { type: String, required: true },
+                name: { type: String, required: true },
                 amount: { type: Number, required: true },
             },
         ],

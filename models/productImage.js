@@ -9,6 +9,7 @@ const ProductImageSchema = new mongoose.Schema({
     smallImage: { type: String, required: true },
 });
 ProductImageSchema.deleteImage = (id) => {
+    console.log("DELETE IMAGE .....");
     this.findByIdAndDelete({ productId: id }).then((image) => {
         if (image) {
             deleteFile(`/public${image.image}`);

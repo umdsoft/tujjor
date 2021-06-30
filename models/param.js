@@ -8,6 +8,7 @@ const ParamSchema = new mongoose.Schema({
     },
 });
 ParamSchema.delete = (id) => {
+    console.log("DELETE Param .....");
     this.findByIdAndDelete({ _id: id }).then((param) => {
         if (param) {
             deleteFile(`/public${param.image}`);
