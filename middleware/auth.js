@@ -15,7 +15,6 @@ exports.protectClient = async (req, res, next) => {
         //  verify token
         const decoded = JWT.verify(token, process.env.JWT_SECRET);
         let user = await User.findById(decoded.id);
-        console.log(user);
         if (!!user) {
             req.user = user._id;
             next();

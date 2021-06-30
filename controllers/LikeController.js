@@ -97,13 +97,13 @@ exports.delete = async (req, res) => {
     });
 };
 exports.deleteAll = async (req, res) => {
-    console.log(req.user);
-    await Like.deleteMany({ user: req.user }, (err, data) => {
-        if (err) {
-            return res
-                .status(400)
-                .json({ success: false, message: "Not found" });
-        }
-        res.status(200).json({ success: true });
-    });
+    console.log(req);
+    // await Like.deleteMany({ user: req.user }, (err, data) => {
+    //     if (err) {
+    //         return res
+    //             .status(400)
+    //             .json({ success: false, message: "Not found" });
+    //     }
+    //     res.status(200).json({ success: true });
+    // });
 };
