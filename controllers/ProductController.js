@@ -248,7 +248,7 @@ exports.filter = async (req, res) => {
                         },
                     },
                     {
-                        "band.name": {
+                        "brand.name": {
                             $regex: `.*${req.body.search}.*`,
                             $options: "i",
                         },
