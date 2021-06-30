@@ -22,7 +22,6 @@ const deleteParam = (id) => {
         }
         if (param) {
             deleteFile(`/public${param.image}`);
-        } else {
             deleteParam(id);
         }
     });
@@ -52,10 +51,8 @@ const deleteImage = (id) => {
             console.log(err);
             return;
         }
-        console.log(image);
         if (image) {
             deleteFile(`/public${image.image}`);
-        } else {
             deleteImage(id);
         }
     });
@@ -67,10 +64,8 @@ const deleteFooterImage = (id) => {
             console.log(err);
             return;
         }
-        console.log(image);
         if (image) {
             deleteFile(`/public${image.image}`);
-        } else {
             deleteFooterImage(id);
         }
     });
