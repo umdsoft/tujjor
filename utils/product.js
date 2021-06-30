@@ -69,3 +69,19 @@ exports.sharpFrontImage = async (filename) => {
             }
         );
 };
+exports.sharpFooterImage = async (filename) => {
+    await sharp(path.join(path.dirname(__dirname) + `/public/temp/${filename}`))
+        .resize({ with: 1200 })
+        .toFile(
+            path.join(
+                path.dirname(__dirname) +
+                    `/public/uploads/products/footer/${filename}`
+            ),
+            (err) => {
+                if (err) {
+                    console.log(err);
+                }
+                deleteFile(`/public/temp/${filename}`);
+            }
+        );
+};

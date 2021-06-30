@@ -3,8 +3,8 @@ const Order = require("../models/order");
 const Shop = require("../models/shop");
 
 exports.create = async (req, res) => {
-    const token = req.headers.authorization;
-    const user = jwt.decode(token.slice(7));
+    // const token = req.headers.authorization;
+    // const user = jwt.decode(token.slice(7));
 
     const count = Order.countDocuments() + 1;
     const product = [];
@@ -18,7 +18,7 @@ exports.create = async (req, res) => {
             });
         });
     const order = new Order({
-        user: user.id,
+        user: req.body.user,
         amount: req.body.amount,
         orderId: count,
         address: {

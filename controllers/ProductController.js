@@ -4,11 +4,13 @@ const Product = require("../models/product");
 const Param = require("../models/param");
 const Size = require("../models/size");
 const ProductImage = require("../models/productImage");
+const FooterImage = require("../models/footerImage");
 const { getSlug, deleteFile } = require("../utils");
 const {
     sharpFrontImage,
     sharpParamImage,
     sharpProductImage,
+    sharpFooterImage,
 } = require("../utils/product");
 
 const deleteParam = (id) => {
@@ -32,6 +34,15 @@ const deleteImage = (id) => {
             deleteFile(`/public${image.image}`);
         } else {
             deleteImage(id);
+        }
+    });
+};
+const deleteFooterImage = (id) => {
+    FooterImage.findOneAndDelete({ productId: id }).then((image) => {
+        if (image) {
+            deleteFile(`/public${image.image}`);
+        } else {
+            deleteFooterImage(id);
         }
     });
 };
@@ -137,6 +148,27 @@ exports.createImage = async (req, res) => {
         });
 };
 
+exports.createFooterImage = async (req, res) => {
+    const { filename } = req.file;
+    sharpFooterImage(filename);
+    const image = new FooterImage({
+        productId: req.body.productId,
+        image: `/uploads/products/footer/${filename}`,
+    });
+
+    image
+        .save()
+        .then(() => {
+            res.status(200).json({ success: true });
+        })
+        .catch((err) => {
+            res.status(500).json({
+                message:
+                    err.message || "Something wrong while creating the image.",
+            });
+        });
+};
+
 //Edit
 exports.edit = (req, res) => {
     const { filename } = req.file;
@@ -201,6 +233,7 @@ exports.delete = (req, res) => {
             deleteParam(product._id);
             deleteSizeByProduct(product._id);
             deleteImage(product._id);
+            deleteFooterImage(product._id);
             res.json({ message: "Product deleted successfully!" });
         })
         .catch((err) => {
@@ -226,6 +259,17 @@ exports.deleteSize = async (req, res) => {
 };
 exports.deleteImage = async (req, res) => {
     await ProductImage.findByIdAndDelete({ _id: req.params.id }).then(
+        (image) => {
+            deleteFile(`/public${image.image}`);
+        }
+    );
+    res.status(200).json({
+        success: true,
+        data: [],
+    });
+};
+exports.deleteFooterImage = async (req, res) => {
+    await FooterImage.findByIdAndDelete({ _id: req.params.id }).then(
         (image) => {
             deleteFile(`/public${image.image}`);
         }
@@ -648,6 +692,23 @@ exports.getOne = async (req, res) => {
                     },
                 ],
                 as: "images",
+            },
+        },
+        {
+            $lookup: {
+                from: "productimages",
+                let: { productId: "$_id" },
+                pipeline: [
+                    {
+                        $match: {
+                            $expr: { $eq: ["$productId", "$$productId"] },
+                        },
+                    },
+                    {
+                        $project: { productId: 0 },
+                    },
+                ],
+                as: "foterImages",
             },
         },
         {

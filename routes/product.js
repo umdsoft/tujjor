@@ -41,6 +41,12 @@ router.post(
     validateFile,
     ProductController.createImage
 );
+router.post(
+    "/footerimage/create",
+    upload.single("image"),
+    validateFile,
+    ProductController.createFooterImage
+);
 
 //update
 router.put(
@@ -60,6 +66,7 @@ router.put("/size/:id", ProductController.editSize);
 //delete
 router.delete("/:id", ProductController.delete);
 router.delete("/image/:id", ProductController.deleteImage);
+router.delete("/footerImage/:id", ProductController.deleteFooterImage);
 router.delete("/param/:id", ProductController.deleteParam);
 router.delete("/size/:id", ProductController.deleteSize);
 
