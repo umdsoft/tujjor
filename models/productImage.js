@@ -8,7 +8,7 @@ const ProductImageSchema = new mongoose.Schema({
     image: { type: String, required: true },
     smallImage: { type: String, required: true },
 });
-ProductImageSchema.deleteImage = (id) => {
+ProductImageSchema.methods.deleteImage = (id) => {
     console.log("DELETE IMAGE .....");
     this.findByIdAndDelete({ productId: id }).then((image) => {
         if (image) {

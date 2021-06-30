@@ -10,11 +10,11 @@ const SizeSchema = new mongoose.Schema({
     price: { type: Number, index: true, required: true },
     count: { type: Number, index: true, required: true },
 });
-SizeSchema.deleteByProduct = (id) => {
+SizeSchema.methods.deleteByProduct = (id) => {
     console.log("DELETE Size .....");
     this.deleteMany({ productId: id });
 };
-SizeSchema.deleteByParam = (id) => {
+SizeSchema.methods.deleteByParam = (id) => {
     console.log("DELETE Size .....");
     this.deleteMany({ paramId: id });
 };

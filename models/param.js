@@ -7,7 +7,7 @@ const ParamSchema = new mongoose.Schema({
         required: true,
     },
 });
-ParamSchema.delete = (id) => {
+ParamSchema.methods.delete = (id) => {
     console.log("DELETE Param .....");
     this.findByIdAndDelete({ _id: id }).then((param) => {
         if (param) {

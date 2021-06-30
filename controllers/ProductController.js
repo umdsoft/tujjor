@@ -166,7 +166,7 @@ exports.editSize = async (req, res) => {
 // Delete
 exports.delete = (req, res) => {
     Product.findByIdAndDelete({ _id: req.params.id })
-        .then(async (product) => {
+        .then((product) => {
             console.log("Product Delete ... ", product);
             if (!product) {
                 return res.status(404).json({
