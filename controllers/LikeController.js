@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 exports.create = (req, res) => {
     const like = new Like({
         product: req.body.product,
-        user: req.body.user,
+        user: req.user,
     });
     like.save()
         .then(() => {
