@@ -46,7 +46,7 @@ const deleteSizeByParam = (id) => {
 };
 const deleteImage = (id) => {
     ProductImage.findOneAndDelete({ productId: id }).exec((err, image) => {
-        console.log("DELETE Image", image.image);
+        console.log("DELETE Image", image);
         if (err) {
             console.log(err);
             return;
@@ -59,7 +59,7 @@ const deleteImage = (id) => {
 };
 const deleteFooterImage = (id) => {
     FooterImage.findOneAndDelete({ productId: id }).exec((err, image) => {
-        console.log("DELETE footerImage", image.image);
+        console.log("DELETE footerImage", image);
         if (err) {
             console.log(err);
             return;
