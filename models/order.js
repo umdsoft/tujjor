@@ -19,7 +19,7 @@ const OrderSchema = new mongoose.Schema(
         address: {
             region: {
                 type: mongoose.Schema.ObjectId,
-                ref: "City",
+                ref: "Region",
                 required: true,
             },
             district: {

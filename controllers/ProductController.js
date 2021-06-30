@@ -708,7 +708,7 @@ exports.getOne = async (req, res) => {
                         $project: { productId: 0 },
                     },
                 ],
-                as: "foterImages",
+                as: "footerImages",
             },
         },
         {
