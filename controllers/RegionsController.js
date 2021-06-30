@@ -1,5 +1,3 @@
-/** @format */
-
 const Region = require("../models/regions");
 const District = require("../models/district");
 
