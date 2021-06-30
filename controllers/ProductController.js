@@ -239,7 +239,7 @@ exports.filter = async (req, res) => {
                     { "name.ru": { $regex: `.*${req.body.search}.*` } },
                     { "description.uz": { $regex: `.*${req.body.search}.*` } },
                     { "description.ru": { $regex: `.*${req.body.search}.*` } },
-                    // { tags: { $regex: `.*${req.body.search}.*` } },
+                    { "tags.name": { $regex: `.*${req.body.search}.*` } },
                 ],
             },
         });
