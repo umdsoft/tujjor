@@ -456,7 +456,7 @@ exports.filter = async (req, res) => {
                 data: [
                     { $skip: (page - 1) * limit },
                     { $limit: limit },
-                    { $project: { brand: 0 } },
+                    // { $project: { brand: 1 } },
                 ],
             },
         },
