@@ -237,6 +237,8 @@ exports.filter = async (req, res) => {
                 $or: [
                     { "name.uz": { $regex: `.*${req.body.search}.*` } },
                     { "name.ru": { $regex: `.*${req.body.search}.*` } },
+                    { "category.name": { $regex: `.*${req.body.search}.*` } },
+                    { "category.name": { $regex: `.*${req.body.search}.*` } },
                     { "description.uz": { $regex: `.*${req.body.search}.*` } },
                     { "description.ru": { $regex: `.*${req.body.search}.*` } },
                     { "tags.name": { $regex: `.*${req.body.search}.*` } },
@@ -336,7 +338,6 @@ exports.filter = async (req, res) => {
             },
         },
         { $project: { "tags.__v": 0, "tags._id": 0 } },
-        ...aggregateSearch,
         {
             $lookup: {
                 from: "categories",
@@ -349,6 +350,7 @@ exports.filter = async (req, res) => {
             },
         },
         { $unwind: "$category" },
+        ...aggregateSearch,
         {
             $lookup: {
                 from: "brands",
