@@ -335,6 +335,7 @@ exports.filter = async (req, res) => {
                 as: "tags",
             },
         },
+        { $project: { "tags.__v": 0, _id: 0 } },
         ...aggregateSearch,
         {
             $lookup: {
