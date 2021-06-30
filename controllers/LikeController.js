@@ -15,7 +15,7 @@ exports.create = (req, res) => {
 };
 exports.getAll = async (req, res) => {
     Like.aggregate([
-        { $match: { user: mongoose.Types.ObjectId(req.params.user) } },
+        { $match: { user: mongoose.Types.ObjectId(req.user) } },
         {
             $lookup: {
                 from: "sizes",
