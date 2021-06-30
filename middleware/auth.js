@@ -1,7 +1,7 @@
 const JWT = require("jsonwebtoken");
 const User = require("../models/user");
 
-exports.protect = role = async (req, res, next) => {
+exports.protect = async (role, req, res, next) => {
     let token;
     if (req.headers.token && req.headers.token.startsWith("Bearer")) {
         token = req.headers.token.split(" ")[1];
