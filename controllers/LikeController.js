@@ -97,6 +97,7 @@ exports.delete = async (req, res) => {
     });
 };
 exports.deleteAll = async (req, res) => {
+    console.log(req.user);
     await Like.deleteMany({ user: req.user }, (err, data) => {
         if (err) {
             return res
