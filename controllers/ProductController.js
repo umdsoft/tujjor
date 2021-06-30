@@ -12,12 +12,12 @@ const {
 } = require("../utils/product");
 
 const deleteParam = (id) => {
-    Param.findByIdAndDelete({ productId: id }).then((param) => {
+    Param.findOneAndDelete({ productId: id }).then((param) => {
         console.log("DELETE Param Success");
         if (param) {
             deleteFile(`/public${param.image}`);
         } else {
-            this.delete(id);
+            this.deleteParam(id);
         }
     });
 };
@@ -31,11 +31,11 @@ const deleteSizeByParam = (id) => {
 };
 const deleteImage = (id) => {
     console.log("DELETE IMAGE .....");
-    ProductImage.findByIdAndDelete({ productId: id }).then((image) => {
+    ProductImage.findOneAndDelete({ productId: id }).then((image) => {
         if (image) {
             deleteFile(`/public${image.image}`);
         } else {
-            this.delete(id);
+            this.deleteImage(id);
         }
     });
 };
