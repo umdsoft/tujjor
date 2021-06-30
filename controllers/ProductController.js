@@ -11,6 +11,34 @@ const {
     sharpProductImage,
 } = require("../utils/product");
 
+const deleteParam = (id) => {
+    Param.findByIdAndDelete({ _id: id }).then((param) => {
+        if (param) {
+            deleteFile(`/public${param.image}`);
+        } else {
+            this.delete(id);
+        }
+    });
+};
+const deleteSizeByProduct = (id) => {
+    console.log("DELETE Size .....");
+    Size.deleteMany({ productId: id });
+};
+const deleteSizeByParam = (id) => {
+    console.log("DELETE Size .....");
+    Size.deleteMany({ paramId: id });
+};
+const deleteImage = (id) => {
+    console.log("DELETE IMAGE .....");
+    ProductImage.findByIdAndDelete({ productId: id }).then((image) => {
+        if (image) {
+            deleteFile(`/public${image.image}`);
+        } else {
+            this.delete(id);
+        }
+    });
+};
+
 //create
 exports.create = async (req, res) => {
     const { filename } = req.file;
@@ -174,9 +202,9 @@ exports.delete = (req, res) => {
                 });
             }
             deleteFile(`/public${product.image}`);
-            Param.delete(product._id);
-            Size.deleteByProduct(product._id);
-            ProductImage.delete(product._id);
+            deleteParam(product._id);
+            deleteSizeByProduct(product._id);
+            deleteImage(product._id);
             res.json({ message: "Product deleted successfully!" });
         })
         .catch((err) => {
@@ -186,7 +214,7 @@ exports.delete = (req, res) => {
 };
 exports.deleteParam = async (req, res) => {
     await Param.findByIdAndDelete({ _id: req.params.id }).then((param) => {
-        Size.deleteByProduct(req.params.id);
+        deleteSizeByParam(param._id);
     });
     res.status(200).json({
         success: true,
