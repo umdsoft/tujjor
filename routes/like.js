@@ -1,10 +1,10 @@
 const router = require("express").Router();
 const LikeController = require("../controllers/LikeController");
-const { protect } = require("../middleware/auth");
+const { protectClient } = require("../middleware/auth");
 
-router.post("/create", protect, LikeController.create);
-router.get("/", protect, LikeController.getAll);
-router.delete("/:id", protect, LikeController.delete);
-router.delete("/all", protect, LikeController.deleteAll);
+router.post("/create", protectClient, LikeController.create);
+router.get("/", protectClient, LikeController.getAll);
+router.delete("/:id", protectClient, LikeController.delete);
+router.delete("/all", protectClient, LikeController.deleteAll);
 
 module.exports = router;
