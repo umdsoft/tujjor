@@ -391,7 +391,6 @@ exports.filter = async (req, res) => {
             },
         },
         { $unwind: "$category" },
-        ...aggregateSearch,
         {
             $lookup: {
                 from: "brands",
@@ -404,6 +403,7 @@ exports.filter = async (req, res) => {
             },
         },
         { $unwind: "$brand" },
+        ...aggregateSearch,
         {
             $lookup: {
                 from: "sizes",
