@@ -237,8 +237,17 @@ exports.filter = async (req, res) => {
                 $or: [
                     { "name.uz": { $regex: `.*${req.body.search}.*` } },
                     { "name.ru": { $regex: `.*${req.body.search}.*` } },
-                    { "category.name": { $regex: `.*${req.body.search}.*` } },
-                    { "category.name": { $regex: `.*${req.body.search}.*` } },
+                    { "band.name": { $regex: `.*${req.body.search}.*` } },
+                    {
+                        "category.name.uz": {
+                            $regex: `.*${req.body.search}.*`,
+                        },
+                    },
+                    {
+                        "category.name.ru": {
+                            $regex: `.*${req.body.search}.*`,
+                        },
+                    },
                     { "description.uz": { $regex: `.*${req.body.search}.*` } },
                     { "description.ru": { $regex: `.*${req.body.search}.*` } },
                     { "tags.name": { $regex: `.*${req.body.search}.*` } },
@@ -387,7 +396,6 @@ exports.filter = async (req, res) => {
                 category: "$category.name",
                 image: 1,
                 brand: 1,
-                tags: 1,
                 slug: 1,
                 price: {
                     $let: {
