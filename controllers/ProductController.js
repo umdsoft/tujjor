@@ -52,7 +52,7 @@ const deleteImage = (id) => {
             return;
         }
         if (image) {
-            deleteFile(`/public${image.image}`);
+            deleteFile(`/public${image?.image}`);
             deleteImage(id);
         }
     });
@@ -65,7 +65,7 @@ const deleteFooterImage = (id) => {
             return;
         }
         if (image) {
-            deleteFile(`/public${image.image}`);
+            deleteFile(`/public${image?.image}`);
             deleteFooterImage(id);
         }
     });
@@ -284,7 +284,7 @@ exports.deleteSize = async (req, res) => {
 exports.deleteImage = async (req, res) => {
     await ProductImage.findByIdAndDelete({ _id: req.params.id }).then(
         (image) => {
-            deleteFile(`/public${image.image}`);
+            deleteFile(`/public${image?.image}`);
         }
     );
     res.status(200).json({
@@ -295,7 +295,7 @@ exports.deleteImage = async (req, res) => {
 exports.deleteFooterImage = async (req, res) => {
     await FooterImage.findByIdAndDelete({ _id: req.params.id }).then(
         (image) => {
-            deleteFile(`/public${image.image}`);
+            deleteFile(`/public${image?.image}`);
         }
     );
     res.status(200).json({
