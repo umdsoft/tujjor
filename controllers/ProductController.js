@@ -696,7 +696,7 @@ exports.getOne = async (req, res) => {
         },
         {
             $lookup: {
-                from: "productimages",
+                from: "footerimages",
                 let: { productId: "$_id" },
                 pipeline: [
                     {
