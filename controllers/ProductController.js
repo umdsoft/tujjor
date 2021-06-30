@@ -14,7 +14,9 @@ const {
 } = require("../utils/product");
 
 const deleteParam = (id) => {
-    Param.findOneAndDelete({ productId: id }).then((param) => {
+    Param.findOneAndDelete({ productId: id }).exec((err, data) => {
+        console.log("DELETE PARAM");
+        if (err) console.log(err);
         if (param) {
             deleteFile(`/public${param.image}`);
         } else {
@@ -23,13 +25,21 @@ const deleteParam = (id) => {
     });
 };
 const deleteSizeByProduct = (id) => {
-    Size.deleteMany({ productId: id });
+    console.log("DELETE Size");
+    Size.deleteMany({ productId: id }, (err, data) => {
+        if (err) console.log(err);
+    });
 };
 const deleteSizeByParam = (id) => {
-    Size.deleteMany({ paramId: id });
+    console.log("DELETE Size");
+    Size.deleteMany({ paramId: id }, (err, data) => {
+        if (err) console.log(err);
+    });
 };
 const deleteImage = (id) => {
-    ProductImage.findOneAndDelete({ productId: id }).then((image) => {
+    console.log("DELETE Image");
+    ProductImage.findOneAndDelete({ productId: id }).exec((err, image) => {
+        if (err) console.log(err);
         if (image) {
             deleteFile(`/public${image.image}`);
         } else {
@@ -38,6 +48,7 @@ const deleteImage = (id) => {
     });
 };
 const deleteFooterImage = (id) => {
+    console.log("DELETE footerImage");
     FooterImage.findOneAndDelete({ productId: id }).then((image) => {
         if (image) {
             deleteFile(`/public${image.image}`);
