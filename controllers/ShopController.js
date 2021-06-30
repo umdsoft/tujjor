@@ -1,6 +1,5 @@
 const Shop = require("../models/shop");
 const User = require("../models/user");
-const path = require("path");
 const { getSlug, deleteFile } = require("../utils");
 
 exports.create = async (req, res) => {

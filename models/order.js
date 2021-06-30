@@ -6,7 +6,6 @@ const OrderSchema = new mongoose.Schema(
             ref: "User",
             required: true,
         },
-        product: [],
         amount: {
             type: Number,
             index: true,
@@ -40,10 +39,28 @@ const OrderSchema = new mongoose.Schema(
         status: {
             type: Number,
             enum: [0, 1, 2, 3, 4, 5],
-            // 0 - Yangi , 1 - Jo`natishga tayyor , 2 - Toshkentga jo`natildi , 3 - Toshkentga keldi
-            // 4 - Yetkazildi , 5 - Bekor qilindi
             default: 0,
         },
+        product: [
+            {
+                productId: {
+                    type: mongoose.Schema.ObjectId,
+                    ref: "Product",
+                    required: true,
+                },
+                paramId: {
+                    type: mongoose.Schema.ObjectId,
+                    ref: "Param",
+                    required: true,
+                },
+                sizeId: {
+                    type: mongoose.Schema.ObjectId,
+                    ref: "Size",
+                    required: true,
+                },
+                amount: { type: Number, required: true },
+            },
+        ],
     },
     {
         timestamps: true,

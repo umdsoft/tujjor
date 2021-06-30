@@ -229,7 +229,21 @@ exports.filter = async (req, res) => {
             .json({ success: false, message: "Error page or limit" });
     }
     let aggregateStart = [];
+    let aggregateSearch = [];
     let aggregateEnd = [];
+    if (req.body.search && req.body.category.length) {
+        aggregateSearch.push({
+            $match: {
+                $or: [
+                    { "name.uz": { $regex: `.*${req.body.search}.*` } },
+                    { "name.ru": { $regex: `.*${req.body.search}.*` } },
+                    { "description.uz": { $regex: `.*${req.body.search}.*` } },
+                    { "description.ru": { $regex: `.*${req.body.search}.*` } },
+                    // { tags: { $regex: `.*${req.body.search}.*` } },
+                ],
+            },
+        });
+    }
 
     if (req.body.category && req.body.category.length) {
         aggregateStart.push({
@@ -315,6 +329,18 @@ exports.filter = async (req, res) => {
         ...aggregateStart,
         {
             $lookup: {
+                from: "tags",
+                let: { tag: "$tags" },
+                pipeline: [
+                    { $match: { $expr: { $eq: ["$_id", "$$tag"] } } },
+                    { $project: { name: 1, _id: 0 } },
+                ],
+                as: "tags",
+            },
+        },
+        ...aggregateSearch,
+        {
+            $lookup: {
                 from: "categories",
                 let: { category: "$category" },
                 pipeline: [
@@ -361,6 +387,7 @@ exports.filter = async (req, res) => {
                 category: "$category.name",
                 image: 1,
                 brand: 1,
+                tags: 1,
                 slug: 1,
                 price: {
                     $let: {
