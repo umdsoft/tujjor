@@ -15,8 +15,11 @@ const {
 
 const deleteParam = (id) => {
     Param.findOneAndDelete({ productId: id }).exec((err, param) => {
-        console.log("DELETE PARAM");
-        if (err) console.log(err);
+        console.log("DELETE PARAM", param);
+        if (err) {
+            console.log(err);
+            return;
+        }
         if (param) {
             deleteFile(`/public${param.image}`);
         } else {
@@ -25,21 +28,31 @@ const deleteParam = (id) => {
     });
 };
 const deleteSizeByProduct = (id) => {
-    console.log("DELETE Size");
     Size.deleteMany({ productId: id }, (err, data) => {
-        if (err) console.log(err);
+        console.log("DELETE Size", data);
+        if (err) {
+            console.log(err);
+            return;
+        }
     });
 };
 const deleteSizeByParam = (id) => {
-    console.log("DELETE Size");
     Size.deleteMany({ paramId: id }, (err, data) => {
-        if (err) console.log(err);
+        console.log("DELETE Size", data);
+        if (err) {
+            console.log(err);
+            return;
+        }
     });
 };
 const deleteImage = (id) => {
-    console.log("DELETE Image");
     ProductImage.findOneAndDelete({ productId: id }).exec((err, image) => {
-        if (err) console.log(err);
+        console.log("DELETE Image", image);
+        if (err) {
+            console.log(err);
+            return;
+        }
+        console.log(image);
         if (image) {
             deleteFile(`/public${image.image}`);
         } else {
@@ -48,8 +61,13 @@ const deleteImage = (id) => {
     });
 };
 const deleteFooterImage = (id) => {
-    console.log("DELETE footerImage");
-    FooterImage.findOneAndDelete({ productId: id }).then((image) => {
+    FooterImage.findOneAndDelete({ productId: id }).exec((err, image) => {
+        console.log("DELETE footerImage", image);
+        if (err) {
+            console.log(err);
+            return;
+        }
+        console.log(image);
         if (image) {
             deleteFile(`/public${image.image}`);
         } else {
