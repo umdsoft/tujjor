@@ -13,29 +13,25 @@ const {
 
 const deleteParam = (id) => {
     Param.findOneAndDelete({ productId: id }).then((param) => {
-        console.log("DELETE Param Success");
         if (param) {
             deleteFile(`/public${param.image}`);
         } else {
-            this.deleteParam(id);
+            deleteParam(id);
         }
     });
 };
 const deleteSizeByProduct = (id) => {
-    console.log("DELETE Size .....");
     Size.deleteMany({ productId: id });
 };
 const deleteSizeByParam = (id) => {
-    console.log("DELETE Size .....");
     Size.deleteMany({ paramId: id });
 };
 const deleteImage = (id) => {
-    console.log("DELETE IMAGE .....");
     ProductImage.findOneAndDelete({ productId: id }).then((image) => {
         if (image) {
             deleteFile(`/public${image.image}`);
         } else {
-            this.deleteImage(id);
+            deleteImage(id);
         }
     });
 };

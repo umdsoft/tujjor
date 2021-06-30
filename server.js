@@ -21,6 +21,7 @@ app.get("/", (req, res) => {
     res.send("Success working Server");
 });
 app.use("/api/like", require("./routes/like"));
+app.use("/api/order", require("./routes/order"));
 app.use("/api/tag", require("./routes/tag"));
 app.use("/api/basket", require("./routes/basket"));
 app.use("/api/category", require("./routes/category"));

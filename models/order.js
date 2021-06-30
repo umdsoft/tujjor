@@ -35,7 +35,7 @@ const OrderSchema = new mongoose.Schema(
         payed: {
             type: Number,
             enum: [0, 1],
-            required: true,
+            default: 0,
         },
         status: {
             type: Number,
@@ -64,8 +64,13 @@ const OrderSchema = new mongoose.Schema(
                     ref: "Shop",
                     required: true,
                 },
+
                 account: { type: String, required: true },
                 name: { type: String, required: true },
+                image: { type: String, required: true },
+                color: { type: String, required: true },
+                size: { type: String, required: true },
+                count: { type: Number, required: true },
                 amount: { type: Number, required: true },
             },
         ],
