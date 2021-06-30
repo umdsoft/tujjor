@@ -14,7 +14,7 @@ const {
 } = require("../utils/product");
 
 const deleteParam = (id) => {
-    Param.findOneAndDelete({ productId: id }).exec((err, data) => {
+    Param.findOneAndDelete({ productId: id }).exec((err, param) => {
         console.log("DELETE PARAM");
         if (err) console.log(err);
         if (param) {
