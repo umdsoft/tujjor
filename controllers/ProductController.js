@@ -235,22 +235,54 @@ exports.filter = async (req, res) => {
         aggregateSearch.push({
             $match: {
                 $or: [
-                    { "name.uz": { $regex: `.*${req.body.search}.*` } },
-                    { "name.ru": { $regex: `.*${req.body.search}.*` } },
-                    { "band.name": { $regex: `.*${req.body.search}.*` } },
+                    {
+                        "name.uz": {
+                            $regex: `.*${req.body.search}.*`,
+                            $options: "i",
+                        },
+                    },
+                    {
+                        "name.ru": {
+                            $regex: `.*${req.body.search}.*`,
+                            $options: "i",
+                        },
+                    },
+                    {
+                        "band.name": {
+                            $regex: `.*${req.body.search}.*`,
+                            $options: "i",
+                        },
+                    },
                     {
                         "category.name.uz": {
                             $regex: `.*${req.body.search}.*`,
+                            $options: "i",
                         },
                     },
                     {
                         "category.name.ru": {
                             $regex: `.*${req.body.search}.*`,
+                            $options: "i",
                         },
                     },
-                    { "description.uz": { $regex: `.*${req.body.search}.*` } },
-                    { "description.ru": { $regex: `.*${req.body.search}.*` } },
-                    { "tags.name": { $regex: `.*${req.body.search}.*` } },
+                    {
+                        "description.uz": {
+                            $regex: `.*${req.body.search}.*`,
+                            $options: "i",
+                        },
+                    },
+                    {
+                        "description.ru": {
+                            $regex: `.*${req.body.search}.*`,
+                            $options: "i",
+                        },
+                    },
+                    {
+                        "tags.name": {
+                            $regex: `.*${req.body.search}.*`,
+                            $options: "i",
+                        },
+                    },
                 ],
             },
         });
