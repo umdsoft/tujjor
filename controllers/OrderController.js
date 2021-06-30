@@ -9,7 +9,7 @@ exports.create = async (req, res) => {
     const count = Order.countDocuments() + 1;
     const product = [];
     req.body.product &&
-        req.body.product.forEach((element) => {
+        req.body.product.forEach(async (element) => {
             await Shop.findById({ _id: element.shop }).then((shop) => {
                 product.push({
                     ...element,
