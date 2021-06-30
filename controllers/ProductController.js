@@ -231,7 +231,7 @@ exports.filter = async (req, res) => {
     let aggregateStart = [];
     let aggregateSearch = [];
     let aggregateEnd = [];
-    if (req.body.search && req.body.category.length) {
+    if (req.body.search && req.body.search.length) {
         aggregateSearch.push({
             $match: {
                 $or: [
