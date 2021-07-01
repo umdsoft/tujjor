@@ -86,6 +86,14 @@ exports.getAll = async (req, res) => {
         return res.status(200).json({ success: true, data });
     });
 };
+exports.getAllById = async (req, res) => {
+    Like.find({ user: req.user }, { user: 0 }).exec((err, data) => {
+        if (err) {
+            return res.status(400).json({ success: false, err });
+        }
+        return res.status(200).json({ success: true, data });
+    });
+};
 exports.delete = async (req, res) => {
     await Like.findByIdAndDelete({ _id: req.params.id }, (err, data) => {
         if (err) {

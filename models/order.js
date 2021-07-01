@@ -11,6 +11,9 @@ const OrderSchema = new mongoose.Schema(
             index: true,
             required: true,
         },
+        paySystem: {
+            type: String,
+        },
         orderId: {
             type: Number,
             unique: true,
