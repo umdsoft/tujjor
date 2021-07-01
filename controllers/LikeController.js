@@ -87,7 +87,7 @@ exports.getAll = async (req, res) => {
     });
 };
 exports.getAllById = async (req, res) => {
-    Like.find({ user: req.user }, { user: 0 }).exec((err, data) => {
+    Like.find({ user: req.user }, { user: 0, __v: 0 }).exec((err, data) => {
         if (err) {
             return res.status(400).json({ success: false, err });
         }
