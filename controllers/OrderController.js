@@ -1,38 +1,38 @@
 const Order = require("../models/order");
 const Shop = require("../models/shop");
 
-exports.create = async (req, res) => {
-    let count = Order.countDocuments({}).id;
-    const product = [];
-    req.body.product &&
-        req.body.product.forEach(async (element) => {
-            await Shop.findById({ _id: element.shop }).then((shop) => {
-                product.push({
-                    ...element,
-                    account: shop.shopId,
+exports.create = (req, res) => {
+    Order.countDocuments({}, async (err, count) => {
+        const product = [];
+        req.body.product &&
+            req.body.product.forEach(async (element) => {
+                await Shop.findById({ _id: element.shop }).then((shop) => {
+                    product.push({
+                        ...element,
+                        account: shop.shopId,
+                    });
                 });
             });
+        const order = new Order({
+            user: req.user,
+            amount: req.body.amount,
+            orderId: count,
+            address: {
+                region: req.body.address ? req.body.address.region : "",
+                district: req.body.address ? req.body.address.district : "",
+                address: req.body.address ? req.body.address.address : "",
+            },
+            product,
         });
-
-    const order = new Order({
-        user: req.user,
-        amount: req.body.amount,
-        orderId: count,
-        address: {
-            region: req.body.address ? req.body.address.region : "",
-            district: req.body.address ? req.body.address.district : "",
-            address: req.body.address ? req.body.address.address : "",
-        },
-        product,
+        await order
+            .save()
+            .then(() => {
+                res.status(201).json({ success: true, data: order });
+            })
+            .catch((err) => {
+                res.status(400).json({ success: false, err });
+            });
     });
-    await order
-        .save()
-        .then(() => {
-            res.status(201).json({ success: true, data: order });
-        })
-        .catch((err) => {
-            res.status(400).json({ success: false, err });
-        });
 };
 
 exports.getAll = async (req, res) => {
