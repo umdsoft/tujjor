@@ -4,15 +4,15 @@ const Shop = require("../models/shop");
 exports.create = (req, res) => {
     Order.countDocuments({}, async (err, count) => {
         const product = [];
-        req.body.product &&
-            req.body.product.forEach(async (element) => {
-                await Shop.findById({ _id: element.shop }).then((shop) => {
-                    product.push({
-                        ...element,
-                        account: shop.shopId,
-                    });
-                });
-            });
+        // req.body.product &&
+        //     req.body.product.forEach(async (element) => {
+        //         await Shop.findById({ _id: element.shop }).then((shop) => {
+        //             product.push({
+        //                 ...element,
+        //                 account: shop.shopId,
+        //             });
+        //         });
+        //     });
         const order = new Order({
             user: req.user,
             amount: req.body.amount,
@@ -22,7 +22,7 @@ exports.create = (req, res) => {
                 district: req.body.address ? req.body.address.district : "",
                 address: req.body.address ? req.body.address.address : "",
             },
-            product,
+            product: req.body.product,
         });
         console.log(order);
         await order
