@@ -1,11 +1,7 @@
-const jwt = require("jsonwebtoken");
 const Order = require("../models/order");
 const Shop = require("../models/shop");
 
 exports.create = async (req, res) => {
-    // const token = req.headers.authorization;
-    // const user = jwt.decode(token.slice(7));
-
     const count = Order.countDocuments() + 1;
     const product = [];
     req.body.product &&
@@ -18,7 +14,7 @@ exports.create = async (req, res) => {
             });
         });
     const order = new Order({
-        user: req.body.user,
+        user: req.user,
         amount: req.body.amount,
         orderId: count,
         address: {
