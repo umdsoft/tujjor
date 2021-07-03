@@ -3,6 +3,7 @@ const Shop = require("../models/shop");
 
 exports.create = async (req, res) => {
     const count = Order.countDocuments() + 1;
+    console.log(count);
     const product = [];
     req.body.product &&
         req.body.product.forEach(async (element) => {
