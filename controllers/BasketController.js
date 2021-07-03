@@ -47,9 +47,27 @@ exports.getAll = async (req, res) => {
                     },
                     { $project: { size: 1, price: 1, count: 1, _id: 0 } },
                 ],
-                as: "param",
+                as: "size",
             },
         },
+        {
+            $lookup: {
+                from: "products",
+                let: { product: "$product" },
+                pipeline: [
+                    {
+                        $match: {
+                            $expr: { $eq: ["$_id", "$$product"] },
+                        },
+                    },
+                    { $project: { slug: 1, image: 1, _id: 0 } },
+                ],
+                as: "size",
+            },
+        },
+        { $unwind: "$param" },
+        { $unwind: "$size" },
+        { $unwind: "$prduct" },
     ]).exec((err, data) => {
         if (err) {
             return res.status(400).json({ success: false, err });
