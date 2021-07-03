@@ -62,15 +62,16 @@ exports.getAll = async (req, res) => {
                     },
                     { $project: { slug: 1, image: 1, _id: 0 } },
                 ],
-                as: "prduct",
+                as: "product",
             },
         },
         { $unwind: "$param" },
         { $unwind: "$size" },
-        { $unwind: "$prduct" },
+        { $unwind: "$product" },
         {
             $project: {
                 user: 0,
+                __v: 0,
             },
         },
     ]).exec((err, data) => {
