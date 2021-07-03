@@ -62,12 +62,9 @@ exports.getAll = async (req, res) => {
                     },
                     { $project: { slug: 1, image: 1, _id: 0 } },
                 ],
-                as: "size",
+                as: "product",
             },
         },
-        { $unwind: "$param" },
-        { $unwind: "$size" },
-        { $unwind: "$prduct" },
     ]).exec((err, data) => {
         if (err) {
             return res.status(400).json({ success: false, err });
