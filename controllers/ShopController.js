@@ -68,8 +68,21 @@ exports.getOne = async (req, res) => {
         });
 };
 exports.getOneAdmin = async (req, res) => {
-    await Shop.findById({ _id: req.params.id })
-        .select({ user: 0, __v: 0 })
+    // await Shop.findById({ _id: req.params.id })
+    // .select({ user: 0, __v: 0 })
+    Shop.aggregate([
+        {
+            $match: {
+                _id: mongoose.Types.ObjectId(req.params.id),
+            },
+        },
+        {
+            $project: {
+                user: 0,
+                __v: 0,
+            },
+        },
+    ])
         .then((data) => {
             if (!data) {
                 return res
