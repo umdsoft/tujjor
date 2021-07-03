@@ -62,7 +62,22 @@ exports.getAll = async (req, res) => {
                     },
                     { $project: { slug: 1, image: 1, _id: 0 } },
                 ],
-                as: "product",
+                as: "prduct",
+            },
+        },
+        { $unwind: "$param" },
+        { $unwind: "$size" },
+        { $unwind: "$prduct" },
+        {
+            $project: {
+                user: 0,
+                productImage: "$product.image",
+                slug: "$product.slug",
+                paramImage: "$param.image",
+                size: "$size.size",
+                price: "$size.price",
+                sizeCount: "$size.count",
+                count: 1,
             },
         },
     ]).exec((err, data) => {
