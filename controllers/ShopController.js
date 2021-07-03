@@ -1,4 +1,5 @@
 const Shop = require("../models/shop");
+const mongoose = require("mongoose");
 const User = require("../models/user");
 const { getSlug, deleteFile } = require("../utils");
 
