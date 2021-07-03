@@ -46,9 +46,7 @@ const OrderSchema = new mongoose.Schema(
             enum: [0, 1, 2, 3, 4, 5],
             default: 0,
         },
-        product: {
-            type: [
-                {
+        product: [{
                     productId: {
                         type: mongoose.Schema.ObjectId,
                         ref: "Product",
@@ -82,8 +80,7 @@ const OrderSchema = new mongoose.Schema(
                     count: { type: Number, required: true },
                     amount: { type: Number, required: true },
                 },
-            ],
-            required: true,
+            ]
         },
     },
     {
