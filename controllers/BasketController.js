@@ -71,13 +71,6 @@ exports.getAll = async (req, res) => {
         {
             $project: {
                 user: 0,
-                productImage: "$product.image",
-                slug: "$product.slug",
-                paramImage: "$param.image",
-                size: "$size.size",
-                price: "$size.price",
-                sizeCount: "$size.count",
-                count: 1,
             },
         },
     ]).exec((err, data) => {
