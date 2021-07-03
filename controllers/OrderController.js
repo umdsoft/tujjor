@@ -3,7 +3,7 @@ const Shop = require("../models/shop");
 
 exports.create = async (req, res) => {
     let count = 0;
-    Order.count({}, (err, c) => {
+    Order.countDocuments({}, (err, c) => {
         count = c + 1;
     });
     console.log(count);
