@@ -56,20 +56,17 @@ exports.getAll = async (req, res) => {
         }
         return res.status(200).json({ success: true, data });
     });
-    await Basket.find({ user: req.params.user }).populate([
-        {
-            path: "param",
-            select: "image -_id",
-        },
-        {
-            path: "size",
-            select: "size price count -_id",
-        },
-        {
-            path: "product",
-            select: "name image category -_id",
-        },
-    ]);
+};
+exports.getCount = async (req, res) => {
+    Basket.aggregate([
+        { $match: { user: mongoose.Types.ObjectId(req.user) } },
+        { $group: { _id: null, count: { $sum: 1 } } },
+    ]).exec((err, data) => {
+        if (err) {
+            return res.status(400).json({ success: false, err });
+        }
+        return res.status(200).json({ success: true, count: data });
+    });
 };
 exports.edit = async (req, res) => {
     await Basket.findByIdAndUpdate(

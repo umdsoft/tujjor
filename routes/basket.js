@@ -4,6 +4,7 @@ const { protectClient } = require("../middleware/auth");
 
 router.post("/create", protectClient, BasketController.create);
 router.get("/all", protectClient, BasketController.getAll);
+router.get("/count", protectClient, BasketController.getCount);
 router.put("/:id", protectClient, BasketController.edit);
 router.delete("/:id", protectClient, BasketController.delete);
 
