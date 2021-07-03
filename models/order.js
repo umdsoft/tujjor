@@ -75,7 +75,10 @@ const OrderSchema = new mongoose.Schema(
                     },
 
                     account: { type: String, required: true },
-                    name: { type: String, required: true },
+                    name: {
+                        uz: { type: String, required: true },
+                        ru: { type: String, required: true },
+                    },
                     image: { type: String, required: true },
                     color: { type: String, required: true },
                     size: { type: String, required: true },
