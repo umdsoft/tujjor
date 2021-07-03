@@ -2,11 +2,10 @@ const Order = require("../models/order");
 const Shop = require("../models/shop");
 
 exports.create = async (req, res) => {
-    let count = 0;
+    let count;
     Order.countDocuments({}, (err, c) => {
         count = c + 1;
     });
-    console.log(count);
     const product = [];
     req.body.product &&
         req.body.product.forEach(async (element) => {
@@ -17,6 +16,7 @@ exports.create = async (req, res) => {
                 });
             });
         });
+
     const order = new Order({
         user: req.user,
         amount: req.body.amount,
@@ -31,7 +31,7 @@ exports.create = async (req, res) => {
     await order
         .save()
         .then(() => {
-            res.status(201).json({ success: true, data: order });
+            res.status(201).json({ success: true, data: order, count });
         })
         .catch((err) => {
             res.status(400).json({ success: false, err });
