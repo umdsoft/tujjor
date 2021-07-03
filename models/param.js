@@ -5,6 +5,7 @@ const ParamSchema = new mongoose.Schema({
         type: mongoose.Schema.ObjectId,
         ref: "Product",
         required: true,
+        index: true,
     },
 });
 module.exports = mongoose.model("Param", ParamSchema);

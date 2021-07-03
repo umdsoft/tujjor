@@ -2,8 +2,18 @@ const mongoose = require("mongoose");
 const CategorySchema = new mongoose.Schema(
     {
         name: {
-            uz: { type: String, index: true, required: true, trim: true },
-            ru: { type: String, index: true, required: true, trim: true },
+            uz: {
+                type: String,
+                required: true,
+                trim: true,
+                index: true,
+            },
+            ru: {
+                type: String,
+                required: true,
+                trim: true,
+                index: true,
+            },
         },
         parentId: { type: String },
         slug: { type: String, index: true, required: true },

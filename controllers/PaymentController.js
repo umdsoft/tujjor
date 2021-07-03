@@ -66,6 +66,7 @@ exports.payme = async (req, res) => {
             { order: param.account.order },
             async (err, data) => {
                 if (!data) {
+                    const receivers = [];
                     await Order.findOne(
                         { orderId: param.account.order },
                         async (err, order) => {
@@ -84,6 +85,12 @@ exports.payme = async (req, res) => {
                                     BillingErrors.IncorrectAmount(),
                                     null
                                 );
+                            order.product.forEach((key) => {
+                                receivers.push({
+                                    id: key.account,
+                                    amount: key.amount,
+                                });
+                            });
                         }
                     );
                     const transaction = new Transaction({
@@ -97,6 +104,7 @@ exports.payme = async (req, res) => {
                         cancel_time: 0,
                         create_time: Date.now(),
                         order: parseInt(param.account.order),
+                        receivers,
                         time: param.time,
                     });
                     transaction
@@ -106,6 +114,7 @@ exports.payme = async (req, res) => {
                             return sendResponse(null, {
                                 transaction: transaction.transaction,
                                 state: transaction.state,
+                                receivers: transaction.receivers,
                                 create_time: transaction.create_time,
                                 perform_time: transaction.perform_time,
                                 cancel_time: transaction.cancel_time,
@@ -142,6 +151,7 @@ exports.payme = async (req, res) => {
                         } else {
                             return sendResponse(null, {
                                 state: data.state,
+                                receivers: data.receivers,
                                 create_time: data.create_time,
                                 transaction: data.transaction,
                                 perform_time: data.perform_time || 0,

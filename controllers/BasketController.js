@@ -2,7 +2,7 @@ const Basket = require("../models/basket");
 
 exports.create = (req, res) => {
     const basket = new Basket({
-        user: req.body.user,
+        user: req.user,
         param: req.body.param,
         size: req.body.size,
         product: req.body.product,
@@ -19,7 +19,7 @@ exports.create = (req, res) => {
 };
 exports.getAll = async (req, res) => {
     Basket.aggregate([
-        { $match: { user: mongoose.Types.ObjectId(req.params.user) } },
+        { $match: { user: mongoose.Types.ObjectId(req.user) } },
         {
             $lookup: {
                 from: "params",

@@ -1,9 +1,10 @@
 const router = require("express").Router();
 const BasketController = require("../controllers/BasketController");
+const { protectClient } = require("../middleware/auth");
 
-router.post("/create", BasketController.create);
-router.get("/:user", BasketController.getAll);
-router.put("/:id", BasketController.edit);
-router.delete("/:id", BasketController.delete);
+router.post("/create", protectClient, BasketController.create);
+router.get("/all", protectClient, BasketController.getAll);
+router.put("/:id", protectClient, BasketController.edit);
+router.delete("/:id", protectClient, BasketController.delete);
 
 module.exports = router;

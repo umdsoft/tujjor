@@ -5,6 +5,7 @@ const OrderSchema = new mongoose.Schema(
             type: mongoose.Schema.ObjectId,
             ref: "User",
             required: true,
+            index: true,
         },
         amount: {
             type: Number,
@@ -51,21 +52,25 @@ const OrderSchema = new mongoose.Schema(
                     type: mongoose.Schema.ObjectId,
                     ref: "Product",
                     required: true,
+                    index: true,
                 },
                 paramId: {
                     type: mongoose.Schema.ObjectId,
                     ref: "Param",
                     required: true,
+                    index: true,
                 },
                 sizeId: {
                     type: mongoose.Schema.ObjectId,
                     ref: "Size",
                     required: true,
+                    index: true,
                 },
                 shop: {
                     type: mongoose.Schema.ObjectId,
                     ref: "Shop",
                     required: true,
+                    index: true,
                 },
 
                 account: { type: String, required: true },
