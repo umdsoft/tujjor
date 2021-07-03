@@ -34,7 +34,7 @@ exports.create = async (req, res) => {
             res.status(201).json({ success: true, data: order, count });
         })
         .catch((err) => {
-            res.status(400).json({ success: false, err });
+            res.status(400).json({ success: false, err, count });
         });
 };
 
