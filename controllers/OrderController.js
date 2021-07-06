@@ -3,7 +3,7 @@ const Shop = require("../models/shop");
 
 exports.create = (req, res) => {
     Order.countDocuments({}, async (err, count) => {
-        const product = [];
+        let product = [];
         req.body.products &&
             req.body.products.forEach(async (element) => {
                 await Shop.findById({ _id: element.shop }).then((shop) => {
