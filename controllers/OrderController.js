@@ -6,6 +6,7 @@ exports.create = (req, res) => {
         let product = [];
         req.body.products &&
             req.body.products.forEach((element) => {
+                console.log(element);
                 Shop.findById({ _id: element.shop }).then((shop) => {
                     product.push({
                         ...element,
