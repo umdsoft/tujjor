@@ -14,14 +14,12 @@ exports.create = (req, res) => {
                 phone: req.body.address ? req.body.address.phone : null,
             },
             products: req.body.products
-                ? req.body.products.map(async (element) => {
-                      await Shop.findById({ _id: element.shop }).then(
-                          (shop) => {
-                              console.log(shop.shopId, element.name);
-                              const temp = { ...element, account: shop.shopId };
-                              return temp;
-                          }
-                      );
+                ? req.body.products.map((element) => {
+                      Shop.findById({ _id: element.shop }).then((shop) => {
+                          console.log(shop.shopId, element.name);
+                          const temp = { ...element, account: shop.shopId };
+                          return temp;
+                      });
                   })
                 : [],
         });
