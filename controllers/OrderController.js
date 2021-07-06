@@ -18,6 +18,7 @@ exports.create = (req, res) => {
                 ? req.body.products.map(async (element) => {
                       await Shop.findById({ _id: element.shop }).then(
                           (shop) => {
+                              console.log(shop, element);
                               return {
                                   ...element,
                                   account: shop.shopId,
