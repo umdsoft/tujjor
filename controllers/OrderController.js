@@ -13,6 +13,7 @@ exports.create = (req, res) => {
                 region: req.body.address ? req.body.address.region : "",
                 district: req.body.address ? req.body.address.district : "",
                 address: req.body.address ? req.body.address.address : "",
+                address: req.body.address ? req.body.address.phone : "",
             },
             products: req.body.product
                 ? req.body.product.forEach(async (element) => {
