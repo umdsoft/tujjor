@@ -72,13 +72,14 @@ exports.getAll = async (req, res) => {
                                 },
                                 {
                                     $project: {
-                                        name: 1,
+                                        name: "$shopName",
                                     },
                                 },
                             ],
                             as: "shop",
                         },
                     },
+                    { $unwind: "$shop" },
                     {
                         $project: {
                             name: 1,
