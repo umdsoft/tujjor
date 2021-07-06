@@ -3,16 +3,17 @@ const Shop = require("../models/shop");
 
 exports.create = (req, res) => {
     Order.countDocuments({}, async (err, count) => {
-        // const product = [];
-        // req.body.products &&
-        //     req.body.products.forEach(async (element) => {
-        //         await Shop.findById({ _id: element.shop }).then((shop) => {
-        //             product.push({
-        //                 ...element,
-        //                 account: shop.shopId,
-        //             });
-        //         });
-        //     });
+        const product = [];
+        req.body.products &&
+            req.body.products.forEach(async (element) => {
+                console.log(element);
+                await Shop.findById({ _id: element.shop }).then((shop) => {
+                    product.push({
+                        ...element,
+                        account: shop.shopId,
+                    });
+                });
+            });
         const order = new Order({
             user: req.user,
             amount: req.body.amount,
@@ -22,9 +23,8 @@ exports.create = (req, res) => {
                 district: req.body.address ? req.body.address.district : "",
                 address: req.body.address ? req.body.address.address : "",
             },
-            products: req.body.products,
+            products: [...product],
         });
-        console.log("____ORDER______ ", order);
         await order
             .save()
             .then(() => {
