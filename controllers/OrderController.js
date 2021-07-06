@@ -2,11 +2,11 @@ const Order = require("../models/order");
 const Shop = require("../models/shop");
 
 exports.create = (req, res) => {
-    Order.countDocuments({}, async (err, count) => {
+    Order.countDocuments({}, (err, count) => {
         let product = [];
         req.body.products &&
-            req.body.products.forEach(async (element) => {
-                await Shop.findById({ _id: element.shop }).then((shop) => {
+            req.body.products.forEach((element) => {
+                Shop.findById({ _id: element.shop }).then((shop) => {
                     product.push({
                         ...element,
                         account: shop.shopId,
@@ -26,7 +26,7 @@ exports.create = (req, res) => {
             },
             products: [...product],
         });
-        await order
+        order
             .save()
             .then(() => {
                 res.status(201).json({ success: true, data: order });
