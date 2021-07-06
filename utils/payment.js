@@ -17,7 +17,7 @@ exports.BillingErrors = {
     },
     YesTransaction: function () {
         return {
-            code: -31001,
+            code: -31099,
             message: "Kuting",
         };
     },
