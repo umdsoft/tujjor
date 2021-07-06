@@ -14,11 +14,13 @@ exports.create = (req, res) => {
                 phone: req.body.address ? req.body.address.phone : null,
             },
             products: req.body.products
-                ? req.body.products.map(async (element) => {
-                      let shop = await Shop.findById({ _id: element.shop });
-                      console.log(shop.shopId, element.name);
-                      return { ...element, account: shop.shopId };
-                  })
+                ? await Promise.all(
+                      req.body.products.map(async (element) => {
+                          let shop = await Shop.findById({ _id: element.shop });
+                          console.log(shop.shopId, element.name);
+                          return { ...element, account: shop.shopId };
+                      })
+                  )
                 : [],
         };
 
