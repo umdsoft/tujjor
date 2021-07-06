@@ -3,16 +3,16 @@ const Shop = require("../models/shop");
 
 exports.create = (req, res) => {
     Order.countDocuments({}, async (err, count) => {
-        const product = [];
-        req.body.products &&
-            req.body.products.forEach(async (element) => {
-                await Shop.findById({ _id: element.shop }).then((shop) => {
-                    product.push({
-                        ...element,
-                        account: shop.shopId,
-                    });
-                });
-            });
+        // const product = [];
+        // req.body.products &&
+        //     req.body.products.forEach(async (element) => {
+        //         await Shop.findById({ _id: element.shop }).then((shop) => {
+        //             product.push({
+        //                 ...element,
+        //                 account: shop.shopId,
+        //             });
+        //         });
+        //     });
         const order = new Order({
             user: req.user,
             amount: req.body.amount,
