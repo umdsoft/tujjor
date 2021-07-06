@@ -24,6 +24,7 @@ exports.create = (req, res) => {
             },
             products: [...product],
         });
+        console.log("____ORDER______ ", order);
         await order
             .save()
             .then(() => {
