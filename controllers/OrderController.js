@@ -22,7 +22,7 @@ exports.create = (req, res) => {
                 district: req.body.address ? req.body.address.district : "",
                 address: req.body.address ? req.body.address.address : "",
             },
-            products: req.body.products,
+            products: product,
         });
         await order
             .save()
