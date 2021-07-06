@@ -6,7 +6,6 @@ exports.create = (req, res) => {
         const product = [];
         req.body.products &&
             req.body.products.forEach(async (element) => {
-                console.log(element);
                 await Shop.findById({ _id: element.shop }).then((shop) => {
                     product.push({
                         ...element,
@@ -14,6 +13,7 @@ exports.create = (req, res) => {
                     });
                 });
             });
+        console.log(product);
         const order = new Order({
             user: req.user,
             amount: req.body.amount,
