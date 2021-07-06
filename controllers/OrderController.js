@@ -18,10 +18,8 @@ exports.create = (req, res) => {
                       await Shop.findById({ _id: element.shop }).then(
                           (shop) => {
                               console.log(shop.shopId, element.name);
-                              return {
-                                  ...element,
-                                  account: shop.shopId,
-                              };
+                              const temp = { ...element, account: shop.shopId };
+                              return temp;
                           }
                       );
                   })
