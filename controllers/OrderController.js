@@ -22,7 +22,7 @@ exports.create = (req, res) => {
                 district: req.body.address ? req.body.address.district : "",
                 address: req.body.address ? req.body.address.address : "",
             },
-            products: [...product],
+            products: req.body.products,
         });
         console.log("____ORDER______ ", order);
         await order
