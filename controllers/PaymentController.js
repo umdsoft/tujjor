@@ -2,8 +2,7 @@ const { BillingErrors, RPCErrors } = require("../utils/payment");
 const Order = require("../models/order");
 const Transaction = require("../models/transaction");
 exports.payme = async (req, res) => {
-    const PAYCOM_PASSWORD = "mHREqn4VDwXv1yhVsdKYIivkuBKZwdvkDoet";
-    // const PAYCOM_PASSWORD = 'AQJGVcQsuJJsEOerSMHcaWt77vEqcGH51HN#';
+    const PAYCOM_PASSWORD = "zBnGw3@28ByVqDM?ib7ojWN9PCvuI3%PW&AG";
 
     if (req.method !== "POST") {
         return sendResponse(RPCErrors.TransportError(), null);

@@ -3,7 +3,7 @@ const Shop = require("../models/shop");
 
 exports.create = (req, res) => {
     Order.countDocuments({}, async (err, count) => {
-        let order = {
+        await new Order({
             user: req.user,
             amount: req.body.amount,
             orderId: count,
@@ -17,16 +17,11 @@ exports.create = (req, res) => {
                 ? await Promise.all(
                       req.body.products.map(async (element) => {
                           let shop = await Shop.findById({ _id: element.shop });
-                          console.log(shop.shopId, element.name);
                           return { ...element, account: shop.shopId };
                       })
                   )
                 : [],
-        };
-
-        console.log(order);
-
-        await new Order(order)
+        })
             .save()
             .then(() => {
                 res.status(201).json({ success: true, data: order });
