@@ -3,8 +3,7 @@ const Shop = require("../models/shop");
 
 exports.create = (req, res) => {
     Order.countDocuments({}, async (err, count) => {
-        const product = [];
-
+        console.log(req.body.products);
         const order = new Order({
             user: req.user,
             amount: req.body.amount,
