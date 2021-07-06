@@ -15,13 +15,13 @@ exports.create = (req, res) => {
                 phone: req.body.address ? req.body.address.phone : null,
             },
             products: req.body.products
-                ? req.body.products.forEach(async (element) => {
+                ? req.body.products.map(async (element) => {
                       await Shop.findById({ _id: element.shop }).then(
                           (shop) => {
-                              product.push({
+                              return {
                                   ...element,
                                   account: shop.shopId,
-                              });
+                              };
                           }
                       );
                   })
