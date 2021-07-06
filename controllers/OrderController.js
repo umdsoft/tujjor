@@ -19,9 +19,10 @@ exports.create = (req, res) => {
             amount: req.body.amount,
             orderId: count,
             address: {
-                region: req.body.address ? req.body.address.region : "",
-                district: req.body.address ? req.body.address.district : "",
-                address: req.body.address ? req.body.address.address : "",
+                region: req.body.address ? req.body.address.region : null,
+                district: req.body.address ? req.body.address.district : null,
+                address: req.body.address ? req.body.address.address : null,
+                phone: req.body.address ? req.body.address.phone : null,
             },
             products: [...product],
         });
