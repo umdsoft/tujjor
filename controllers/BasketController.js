@@ -60,7 +60,16 @@ exports.getAll = async (req, res) => {
                             $expr: { $eq: ["$_id", "$$product"] },
                         },
                     },
-                    { $project: { slug: 1, image: 1, shop: 1, _id: 1 } },
+                    {
+                        $project: {
+                            name: 1,
+                            description: 1,
+                            slug: 1,
+                            image: 1,
+                            shop: 1,
+                            _id: 1,
+                        },
+                    },
                 ],
                 as: "product",
             },
