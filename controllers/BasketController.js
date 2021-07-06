@@ -61,6 +61,25 @@ exports.getAll = async (req, res) => {
                         },
                     },
                     {
+                        $lookup: {
+                            from: "shops",
+                            let: { shop: "$shop" },
+                            pipeline: [
+                                {
+                                    $match: {
+                                        $expr: { $eq: ["$_id", "$$shop"] },
+                                    },
+                                },
+                                {
+                                    $project: {
+                                        name: 1,
+                                    },
+                                },
+                            ],
+                            as: "shop",
+                        },
+                    },
+                    {
                         $project: {
                             name: 1,
                             description: 1,
