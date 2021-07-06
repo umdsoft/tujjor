@@ -15,8 +15,8 @@ exports.create = (req, res) => {
                 address: req.body.address ? req.body.address.address : null,
                 phone: req.body.address ? req.body.address.phone : null,
             },
-            products: req.body.product
-                ? req.body.product.forEach(async (element) => {
+            products: req.body.products
+                ? req.body.products.forEach(async (element) => {
                       await Shop.findById({ _id: element.shop }).then(
                           (shop) => {
                               product.push({
