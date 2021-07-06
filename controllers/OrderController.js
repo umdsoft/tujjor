@@ -3,15 +3,15 @@ const Shop = require("../models/shop");
 
 exports.create = (req, res) => {
     Order.countDocuments({}, (err, count) => {
-        let product = [];
-        req.body.products &&
-            req.body.products.forEach((element) => {
+        let product =
+            req.body.products &&
+            req.body.products.map((element) => {
                 console.log(element);
                 Shop.findById({ _id: element.shop }).then((shop) => {
-                    product.push({
+                    return {
                         ...element,
                         account: shop.shopId,
-                    });
+                    };
                 });
             });
         console.log(product);
