@@ -3,7 +3,6 @@ const Shop = require("../models/shop");
 
 exports.create = (req, res) => {
     Order.countDocuments({}, async (err, count) => {
-        console.log(req.body.products);
         const order = new Order({
             user: req.user,
             amount: req.body.amount,
@@ -18,7 +17,7 @@ exports.create = (req, res) => {
                 ? req.body.products.map(async (element) => {
                       await Shop.findById({ _id: element.shop }).then(
                           (shop) => {
-                              console.log(shop, { ...element });
+                              console.log(shop.shopId, element.name);
                               return {
                                   ...element,
                                   account: shop.shopId,
@@ -28,6 +27,7 @@ exports.create = (req, res) => {
                   })
                 : [],
         });
+        console.log(order);
         await order
             .save()
             .then(() => {
