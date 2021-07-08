@@ -33,7 +33,7 @@ exports.payme = async (req, res) => {
     }
 
     async function CreateTransaction(params) {
-        await Transaction.findOne({ tid: params.id }, (err, data) => {
+        await Transaction.findOne({ tid: params.id }, async (err, data) => {
             const receivers = [];
             if (err || !data) {
                 await Order.findOne(
