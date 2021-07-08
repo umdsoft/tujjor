@@ -16,6 +16,8 @@ exports.payme = async (req, res) => {
         CheckPerformTransaction(body.params);
     } else if (body.method === "CreateTransaction") {
         CreateTransaction(body.params);
+    } else if (body.method === "PerformTransaction") {
+        PerformTransaction(body.params);
     }
     async function CheckPerformTransaction(params) {
         await Order.findOne({ orderId: params.account.order }, (err, data) => {
@@ -122,6 +124,99 @@ exports.payme = async (req, res) => {
                 }
             }
         });
+    }
+    async function PerformTransaction(params) {
+        await Transaction.findOne(
+            { tid: params.id },
+            async (err, transaction) => {
+                if (!transaction)
+                    return sendResponse(Errors.TransactionNotFound, null);
+                if (transaction.state === 1) {
+                    if (transaction.time > Date.now()) {
+                        await Transaction.updateOne(
+                            { tid: params.id },
+                            {
+                                $set: {
+                                    state: -1,
+                                    reason: 4,
+                                },
+                            }
+                        );
+                    }
+                    // const order = await Order.findOne({
+                    //     orderId: transaction.order,
+                    // });
+                    // const journal = new Journal({
+                    //     system: "payme",
+                    //     amount: transaction.amount,
+                    //     order: order._id,
+                    // });
+                    // await journal.save();
+                    // order.product.forEach(async (element) => {
+                    //     let params = await params.findById({
+                    //         _id: element.params,
+                    //     });
+                    //     let temp = [];
+                    //     params.size.forEach((key) => {
+                    //         if (key.size == element.ss) {
+                    //             temp.push({
+                    //                 size: key.size,
+                    //                 status: key.status,
+                    //                 num:
+                    //                     parseInt(key.num) -
+                    //                     parseInt(element.num),
+                    //             });
+                    //         } else {
+                    //             temp.push(key);
+                    //         }
+                    //     });
+                    //     params.size = temp;
+                    //     await params.findByIdAndUpdate(
+                    //         { _id: element.params },
+                    //         { $set: params }
+                    //     );
+                    // });
+                    await Order.updateOne(
+                        { orderId: transaction.order },
+                        {
+                            $set: {
+                                payed: 1,
+                                paySystem: "payme",
+                            },
+                        }
+                    );
+                    await Transaction.updateOne(
+                        { tid: transaction.tid },
+                        {
+                            $set: {
+                                state: 2,
+                                perform_time: Date.now(),
+                            },
+                        }
+                    );
+                    const tt = await Transaction.findOne({
+                        tid: transaction.tid,
+                    });
+                    return sendResponse(null, {
+                        transaction: transaction.transaction,
+                        perform_time: tt.perform_time,
+                        state: 2,
+                    });
+                }
+                if (transaction.state === 2) {
+                    return sendResponse(null, {
+                        transaction: transaction.transaction,
+                        perform_time: transaction.perform_time,
+                        state: transaction.state,
+                    });
+                } else {
+                    return sendResponse(
+                        Errors.UnexpectedTransactionState,
+                        null
+                    );
+                }
+            }
+        );
     }
     function sendResponse(error, result) {
         res.writeHead(200, {
