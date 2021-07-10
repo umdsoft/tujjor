@@ -23,7 +23,7 @@ module.exports = {
     // },
     TransactionNotFound: {
         code: -31001,
-        message: "Транзакция не найденна",
+        message: "Транзакция не найдена.",
         data: null,
     },
     UnexpectedTransactionState: {
