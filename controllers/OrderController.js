@@ -26,7 +26,7 @@ exports.create = (req, res) => {
                 : [],
         })
             .save()
-            .then(() => {
+            .then((order) => {
                 res.status(201).json({ success: true, data: order });
             })
             .catch((err) => {
