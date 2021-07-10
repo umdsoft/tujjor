@@ -30,7 +30,9 @@ exports.payme = async (req, res) => {
             if (data.amount * 100 !== params.amount) {
                 return sendResponse(Errors.IncorrectAmount, null);
             }
-            return "success";
+            return sendResponse(null, {
+                allow: true,
+            });
         });
     }
 
