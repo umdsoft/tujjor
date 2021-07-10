@@ -18,6 +18,8 @@ exports.payme = async (req, res) => {
         CreateTransaction(body.params);
     } else if (body.method === "PerformTransaction") {
         PerformTransaction(body.params);
+    } else if (body.method === "CheckTransaction") {
+        CheckTransaction(body.params);
     }
     async function CheckPerformTransaction(params) {
         await Order.findOne({ orderId: params.account.order }, (err, data) => {
@@ -220,6 +222,21 @@ exports.payme = async (req, res) => {
                 }
             }
         );
+    }
+
+    async function CheckTransaction(params) {
+        await Transaction.findOne({ tid: params.id }, (err, data) => {
+            if (err || !data)
+                return sendResponse(Errors.TransactionNotFound, null);
+            return sendResponse(null, {
+                create_time: data.create_time,
+                perform_time: data.perform_time || 0,
+                cancel_time: data.cancel_time || 0,
+                transaction: data.transaction,
+                state: data.state,
+                reason: data.reason || null,
+            });
+        });
     }
     function sendResponse(error, result) {
         res.writeHead(200, {
