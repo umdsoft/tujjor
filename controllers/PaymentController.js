@@ -116,7 +116,7 @@ exports.payme = async (req, res) => {
                             transaction: data.transaction,
                             perform_time: data.perform_time || 0,
                             cancel_time: data.cancel_time || 0,
-                            receivers: receivers,
+                            receivers: data.receivers,
                         });
                     }
                 } else {
