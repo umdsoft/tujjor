@@ -24,9 +24,7 @@ exports.statShop = async (req, res) => {
                 pipeline: [
                     {
                         $match: {
-                            $expr: {
-                                $eq: ["$_id", "&&shop"],
-                            },
+                            $expr: { $eq: ["$_id", "$$shop"] },
                         },
                     },
                 ],
@@ -35,9 +33,7 @@ exports.statShop = async (req, res) => {
         },
         {
             $project: {
-                shop: "$shop.shopName",
-                amount: 1,
-                count: 1,
+                _id: 0,
             },
         },
     ]).exec((err, data) => {
