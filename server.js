@@ -20,6 +20,7 @@ app.use(cors());
 app.get("/", (req, res) => {
     res.send("Success working Server");
 });
+app.use("/api/stat", require("./routes/statistic"));
 app.use("/api/payme", require("./routes/payment"));
 app.use("/api/region", require("./routes/regions"));
 app.use("/api/like", require("./routes/like"));

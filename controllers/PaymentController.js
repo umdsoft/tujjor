@@ -1,6 +1,7 @@
 const Errors = require("../utils/paymeErrors");
 const Order = require("../models/order");
 const Transaction = require("../models/transaction");
+const PayedList = require("../models/payedList");
 exports.payme = async (req, res) => {
     const PAYCOM_PASSWORD = "zBnGw3@28ByVqDM?ib7ojWN9PCvuI3%PW&AG";
     const body = req.body;
@@ -148,39 +149,19 @@ exports.payme = async (req, res) => {
                             }
                         );
                     }
-                    // const order = await Order.findOne({
-                    //     orderId: transaction.order,
-                    // });
-                    // const journal = new Journal({
-                    //     system: "payme",
-                    //     amount: transaction.amount,
-                    //     order: order._id,
-                    // });
-                    // await journal.save();
-                    // order.product.forEach(async (element) => {
-                    //     let params = await params.findById({
-                    //         _id: element.params,
-                    //     });
-                    //     let temp = [];
-                    //     params.size.forEach((key) => {
-                    //         if (key.size == element.ss) {
-                    //             temp.push({
-                    //                 size: key.size,
-                    //                 status: key.status,
-                    //                 num:
-                    //                     parseInt(key.num) -
-                    //                     parseInt(element.num),
-                    //             });
-                    //         } else {
-                    //             temp.push(key);
-                    //         }
-                    //     });
-                    //     params.size = temp;
-                    //     await params.findByIdAndUpdate(
-                    //         { _id: element.params },
-                    //         { $set: params }
-                    //     );
-                    // });
+                    const order = await Order.findOne({
+                        orderId: transaction.order,
+                    });
+                    order.products.forEach((key) => {
+                        new PayedList({
+                            user: order.user,
+                            shop: key.shop,
+                            category: key.category,
+                            brand: key.brand,
+                            amount: key.amount,
+                        }).save();
+                    });
+
                     await Order.updateOne(
                         { orderId: transaction.order },
                         {

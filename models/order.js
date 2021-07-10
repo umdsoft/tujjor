@@ -74,6 +74,18 @@ const OrderSchema = new mongoose.Schema(
                         required: true,
                         index: true,
                     },
+                    category: {
+                        type: mongoose.Schema.ObjectId,
+                        ref: "Brand",
+                        required: true,
+                        index: true,
+                    },
+                    brand: {
+                        type: mongoose.Schema.ObjectId,
+                        ref: "Brand",
+                        required: true,
+                        index: true,
+                    },
 
                     account: { type: String, required: true },
                     name: {
