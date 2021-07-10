@@ -17,7 +17,10 @@ exports.create = (req, res) => {
                 ? await Promise.all(
                       req.body.products.map(async (element) => {
                           let shop = await Shop.findById({ _id: element.shop });
-                          return { ...element, account: shop.shopId };
+                          return {
+                              ...element,
+                              account: "601bcec5c16ad418fad81eba",
+                          };
                       })
                   )
                 : [],
