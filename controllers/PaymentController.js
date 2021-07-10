@@ -56,39 +56,39 @@ exports.payme = async (req, res) => {
                                 amount: key.amount,
                             });
                         });
+
+                        const transaction = new Transaction({
+                            tid: params.id,
+                            amount: params.amount / 100,
+                            transaction: Math.floor(
+                                Math.random() * 1000000000
+                            ).toString(),
+                            state: 1,
+                            perform_time: 0,
+                            cancel_time: 0,
+                            create_time: Date.now(),
+                            order: parseInt(params.account.order),
+                            time: params.time,
+                            receivers: receivers,
+                        });
+                        transaction
+                            .save()
+                            .then(() => {
+                                console.log("saved");
+                                return sendResponse(null, {
+                                    transaction: transaction.transaction,
+                                    state: transaction.state,
+                                    create_time: transaction.create_time,
+                                    perform_time: transaction.perform_time,
+                                    cancel_time: transaction.cancel_time,
+                                    receivers: transaction.receivers,
+                                });
+                            })
+                            .catch((err) => {
+                                console.log(err);
+                            });
                     }
                 );
-
-                const transaction = new Transaction({
-                    tid: params.id,
-                    amount: params.amount / 100,
-                    transaction: Math.floor(
-                        Math.random() * 1000000000
-                    ).toString(),
-                    state: 1,
-                    perform_time: 0,
-                    cancel_time: 0,
-                    create_time: Date.now(),
-                    order: parseInt(params.account.order),
-                    time: params.time,
-                    receivers: receivers,
-                });
-                transaction
-                    .save()
-                    .then(() => {
-                        console.log("saved");
-                        return sendResponse(null, {
-                            transaction: transaction.transaction,
-                            state: transaction.state,
-                            create_time: transaction.create_time,
-                            perform_time: transaction.perform_time,
-                            cancel_time: transaction.cancel_time,
-                            receivers: transaction.receivers,
-                        });
-                    })
-                    .catch((err) => {
-                        console.log(err);
-                    });
             }
 
             if (data) {
