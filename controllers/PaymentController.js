@@ -45,7 +45,7 @@ exports.payme = async (req, res) => {
                     async (err, data) => {
                         if (err || !data)
                             return sendResponse(Errors.OrderNotFound, null);
-                        if (!data.status) {
+                        if (data.status) {
                             return sendResponse(Errors.OrderAvailable, null);
                         }
                         if (data.amount !== params.amount / 100)
