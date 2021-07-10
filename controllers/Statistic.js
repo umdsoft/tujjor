@@ -12,13 +12,13 @@ exports.statShop = async (req, res) => {
                 },
             },
         },
-        {
-            $group: {
-                _id: "$shop",
-                amount: { $sum: "$amount" },
-                // count: { $sum: "$count" },
-            },
-        },
+        // {
+        //     $group: {
+        //         _id: "$shop",
+        //         amount: { $sum: "$amount" },
+        // count: { $sum: "$count" },
+        //     },
+        // },
     ]).exec((err, data) => {
         if (err) return res.status(400).json({ success: false, err });
         res.status(200).json({
