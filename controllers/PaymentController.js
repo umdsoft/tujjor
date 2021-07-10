@@ -53,7 +53,7 @@ exports.payme = async (req, res) => {
                         data.products.forEach((key) => {
                             receivers.push({
                                 id: key.account,
-                                amount: key.amount,
+                                amount: key.amount * 100,
                             });
                         });
 
