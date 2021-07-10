@@ -4,12 +4,10 @@ exports.statShop = async (req, res) => {
     PayedList.aggregate([
         {
             $match: {
-                createdAt: {
-                    $and: [
-                        { createdAt: { $gte: new Date(req.body.start) } },
-                        { createdAt: { $lte: new Date(req.body.end) } },
-                    ],
-                },
+                $and: [
+                    { createdAt: { $gte: new Date(req.body.start) } },
+                    { createdAt: { $lte: new Date(req.body.end) } },
+                ],
             },
         },
         // {
