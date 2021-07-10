@@ -17,6 +17,29 @@ exports.statShop = async (req, res) => {
                 count: { $sum: "$count" },
             },
         },
+        {
+            $lookup: {
+                from: "shops",
+                let: { shop: "$_id" },
+                pipeline: [
+                    {
+                        $match: {
+                            $expr: {
+                                $eq: ["$_id", "&&shop"],
+                            },
+                        },
+                    },
+                ],
+                as: "shop",
+            },
+        },
+        {
+            $project: {
+                shop: "$shop.shopName",
+                amount: 1,
+                count: 1,
+            },
+        },
     ]).exec((err, data) => {
         if (err) return res.status(400).json({ success: false, err });
         res.status(200).json({
