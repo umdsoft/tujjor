@@ -31,8 +31,12 @@ exports.statShop = async (req, res) => {
                 as: "shop",
             },
         },
+        { $unwind: "$shop" },
         {
             $project: {
+                shop: "$shop.shopName",
+                amount: 1,
+                count: 1,
                 _id: 0,
             },
         },
