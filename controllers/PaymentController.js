@@ -159,6 +159,7 @@ exports.payme = async (req, res) => {
                             category: key.category,
                             brand: key.brand,
                             amount: key.amount,
+                            count: key.count,
                         }).save();
                     });
 

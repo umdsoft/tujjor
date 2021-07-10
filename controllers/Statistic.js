@@ -15,7 +15,7 @@ exports.statShop = async (req, res) => {
         {
             $group: {
                 _id: "$shop",
-                price: { $sum: "$price" },
+                amount: { $sum: "$amount" },
                 count: { $sum: "$count" },
             },
         },
