@@ -1,9 +1,10 @@
 const Order = require("../models/order");
 const Shop = require("../models/shop");
-
+const Size = require("../models/size");
 exports.create = (req, res) => {
     Order.countDocuments({}, async (err, count) => {
-        await new Order({
+        let summ = 0;
+        const order = await new Order({
             user: req.user,
             amount: req.body.amount,
             orderId: count,
@@ -17,6 +18,11 @@ exports.create = (req, res) => {
                 ? await Promise.all(
                       req.body.products.map(async (element) => {
                           let shop = await Shop.findById({ _id: element.shop });
+                          let size = await Size.findById({
+                              _id: element.sizeId,
+                          });
+
+                          summ += size.price;
                           return {
                               ...element,
                               account: "601bcec5c16ad418fad81eba",
@@ -24,7 +30,14 @@ exports.create = (req, res) => {
                       })
                   )
                 : [],
-        })
+        });
+
+        if (summ !== req.body.amount) {
+            return res
+                .status(400)
+                .json({ success: false, message: "Amount not equal" });
+        }
+        order
             .save()
             .then((order) => {
                 res.status(201).json({ success: true, data: order });
