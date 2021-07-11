@@ -22,6 +22,9 @@ exports.create = (req, res) => {
                               _id: element.sizeId,
                           });
 
+                          if (size.price !== element.amount) {
+                              return;
+                          }
                           summ += size.price;
                           return {
                               ...element,
