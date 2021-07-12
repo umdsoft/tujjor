@@ -120,9 +120,7 @@ exports.getUsers = async (req, res) => {
     });
 };
 exports.me = async (req, res) => {
-    const token = req.headers.token;
-    const user = jwt.decode(token.slice(7));
-    await User.findOne({ _id: user.id })
+    await User.findOne({ _id: req.user })
         .select({ password: 0, __v: 0, role: 0 })
         .exec(async (err, data) => {
             if (err) return res.status(400).json({ success: false, err });
@@ -138,4 +136,13 @@ exports.delete = async (req, res) => {
         return res.status(400).json({ success: false, data: "This id not found" });
     }
     return res.status(200).json({ success: true, data: [] });
+};
+
+exports.editClient = async (req, res) => {
+    User.updateOne({ _id: req.user }, { $set: req.body }, { new: true }, (err, data) => {
+        if (err) {
+            res.status(400).json({ success: false, err });
+        }
+        res.status(201).json({ success: true, data });
+    });
 };

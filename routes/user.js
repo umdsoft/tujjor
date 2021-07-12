@@ -9,4 +9,5 @@ router.post("/seller/login", UserController.loginSeller);
 router.get("/all", UserController.getUsers);
 router.get("/me", protectClient, UserController.me);
 router.delete("/:id", UserController.delete);
+router.put("/update", protectClient, UserController.editClient);
 module.exports = router;
