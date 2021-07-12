@@ -302,7 +302,7 @@ exports.payme = async (req, res) => {
             (auth = auth.trim().split(/ +/)) && //разделяем заголовок на 2 части
             auth[0] === "Basic" &&
             auth[1] && //проверяем правильность формата заголовка
-            (auth = new Buffer(auth[1], "base64").toString("utf-8")) && //декодируем из base64
+            (auth = Buffer.from(auth[1], "base64").toString("utf-8")) && //декодируем из base64
             (auth = auth.trim().split(/ *: */)) && //разделяем заголовок на логин пароль
             auth[0] === "Paycom" && //проверяем логин
             auth[1] === PAYCOM_PASSWORD
