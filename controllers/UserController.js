@@ -138,11 +138,11 @@ exports.delete = async (req, res) => {
     return res.status(200).json({ success: true, data: [] });
 };
 
-exports.editClient = async (req, res) => {
-    User.updateOne({ _id: req.user }, { $set: req.body }, { new: true }, (err, data) => {
+exports.editClient = (req, res) => {
+    User.updateOne({ _id: req.user }, { $set: req.body }, { new: true }).exec((err, data) => {
         if (err) {
             res.status(400).json({ success: false, err });
         }
-        res.status(201).json({ success: true, data });
+        res.status(201).json({ success: true, data: data });
     });
 };
