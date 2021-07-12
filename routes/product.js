@@ -18,49 +18,19 @@ const upload = multer({ storage: storage });
 
 //get all && filter
 router.get("/all", ProductController.getAll);
-router.get("/:slug", ProductController.getOne);
+router.get("/:slug", ProductController.getOneClient);
 router.post("/filter", ProductController.filter);
 
 //create
-router.post(
-    "/create",
-    upload.single("image"),
-    validateFile,
-    ProductController.create
-);
-router.post(
-    "/param/create",
-    upload.single("image"),
-    validateFile,
-    ProductController.createParam
-);
+router.post("/create", upload.single("image"), validateFile, ProductController.create);
+router.post("/param/create", upload.single("image"), validateFile, ProductController.createParam);
 router.post("/size/create", ProductController.createSize);
-router.post(
-    "/image/create",
-    upload.single("image"),
-    validateFile,
-    ProductController.createImage
-);
-router.post(
-    "/footerimage/create",
-    upload.single("image"),
-    validateFile,
-    ProductController.createFooterImage
-);
+router.post("/image/create", upload.single("image"), validateFile, ProductController.createImage);
+router.post("/footerimage/create", upload.single("image"), validateFile, ProductController.createFooterImage);
 
 //update
-router.put(
-    "/:id",
-    upload.single("image"),
-    validateFile,
-    ProductController.edit
-);
-router.put(
-    "/param/:id",
-    upload.single("image"),
-    validateFile,
-    ProductController.editParam
-);
+router.put("/:id", upload.single("image"), validateFile, ProductController.edit);
+router.put("/param/:id", upload.single("image"), validateFile, ProductController.editParam);
 router.put("/size/:id", ProductController.editSize);
 
 //delete
