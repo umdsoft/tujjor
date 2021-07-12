@@ -84,6 +84,8 @@ exports.getAll = async (req, res) => {
                         $project: {
                             name: 1,
                             description: 1,
+                            brand: 1,
+                            category: 1,
                             slug: 1,
                             image: 1,
                             shop: 1,
