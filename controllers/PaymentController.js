@@ -203,32 +203,31 @@ exports.payme = async (req, res) => {
                         },
                     }
                 );
-                await Transaction.findOne({ tid: transaction.tid }, async () => {
-                    await Order.updateOne(
-                        { orderId: transaction.order },
-                        {
-                            $set: {
-                                payed: 0,
-                            },
+                await Order.updateOne(
+                    { orderId: transaction.order },
+                    {
+                        $set: {
+                            payed: 0,
                         },
-                        async (err, data) => {
+                    },
+                    { new: true },
+                    async (err, data) => {
+                        // if (err) return sendResponse(err, null);
+                        const ord = await Order.find({
+                            orderId: transaction.order,
+                        });
+                        await Order.findOneAndDelete({ _id: ord._id }, (err, data) => {
                             if (err) return sendResponse(err, null);
-                            const ord = await Order.find({
-                                orderId: transaction.order,
-                            });
-                            await Order.findOneAndDelete({ _id: ord._id }, (err, data) => {
-                                if (err) return sendResponse(err, null);
-                            });
-                            return sendResponse(null, {
-                                state: data.state,
-                                cancel_time: data.cancel_time,
-                                transaction: data.transaction,
-                                create_time: data.create_time,
-                                perform_time: data.perform_time || 0,
-                            });
-                        }
-                    );
-                });
+                        });
+                        return sendResponse(null, {
+                            state: data.state,
+                            cancel_time: data.cancel_time,
+                            transaction: data.transaction,
+                            // create_time: data.create_time,
+                            // perform_time: data.perform_time || 0,
+                        });
+                    }
+                );
             } else {
                 if (transaction.state === 2) {
                     await Order.findOne({ orderId: transaction.order }, async (err, order) => {
@@ -242,14 +241,15 @@ exports.payme = async (req, res) => {
                                         reason: params.reason,
                                         cancel_time: Date.now(),
                                     },
-                                }
+                                },
+                                { new: true }
                             ).exec((err, transac) => {
                                 return sendResponse(null, {
                                     state: transac.state,
                                     cancel_time: transac.cancel_time || 0,
                                     transaction: transac.transaction,
-                                    create_time: transac.create_time,
-                                    perform_time: transac.perform_time || 0,
+                                    // create_time: transac.create_time,
+                                    // perform_time: transac.perform_time || 0,
                                 });
                             });
                         } else {
