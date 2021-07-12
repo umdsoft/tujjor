@@ -97,6 +97,10 @@ const OrderSchema = new mongoose.Schema(
                     size: { type: String, required: true },
                     count: { type: Number, required: true },
                     amount: { type: Number, required: true },
+                    description: {
+                        uz: { type: String, required: true },
+                        ru: { type: String, required: true },
+                    },
                 },
             ],
             validate: (v) => Array.isArray(v) && v.length > 0,
