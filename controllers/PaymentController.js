@@ -21,6 +21,8 @@ exports.payme = async (req, res) => {
         PerformTransaction(body.params);
     } else if (body.method === "CheckTransaction") {
         CheckTransaction(body.params);
+    } else if (body.method === "CancelTransaction") {
+        CancelTransaction(body.params);
     }
     async function CheckPerformTransaction(params) {
         await Order.findOne({ orderId: params.account.order }, (err, data) => {
