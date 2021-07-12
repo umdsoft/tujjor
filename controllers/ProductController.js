@@ -161,7 +161,6 @@ exports.createImage = async (req, res) => {
             });
         });
 };
-
 exports.createFooterImage = async (req, res) => {
     const { filename } = req.file;
     sharpFooterImage(filename);
@@ -206,7 +205,6 @@ exports.edit = (req, res) => {
             });
         });
 };
-
 exports.editParam = async (req, res) => {
     const { filename } = req.file;
     sharpParamImage(filename);
@@ -279,7 +277,7 @@ exports.deleteFooterImage = async (req, res) => {
     });
 };
 
-// Get
+//Get
 //price , category, brand, color, size, tags,
 exports.filter = async (req, res) => {
     const page = parseInt(req.query.page);
@@ -614,7 +612,138 @@ exports.getAll = async (req, res) => {
         });
     });
 };
-exports.getOne = async (req, res) => {
+exports.getOneClient = async (req, res) => {
+    await Product.aggregate([
+        { $match: { slug: req.params.slug } },
+        {
+            $lookup: {
+                from: "brands",
+                let: { brand: "$brand" },
+                pipeline: [{ $match: { $expr: { $eq: ["$_id", "$$brand"] } } }, { $project: { name: 1, slug: 1, _id: 1 } }],
+                as: "brand",
+            },
+        },
+        { $unwind: "$brand" },
+        {
+            $lookup: {
+                from: "categories",
+                let: { category: "$category" },
+                pipeline: [{ $match: { $expr: { $eq: ["$_id", "$$category"] } } }, { $project: { __v: 0, createdAt: 0, updatedAt: 0 } }],
+                as: "category",
+            },
+        },
+        { $unwind: "$category" },
+        {
+            $lookup: {
+                from: "shops",
+                let: { shop: "$shop" },
+                pipeline: [
+                    { $match: { $expr: { $eq: ["$_id", "$$shop"] } } },
+                    {
+                        $project: {
+                            shopName: 1,
+                        },
+                    },
+                ],
+                as: "shop",
+            },
+        },
+        { $unwind: "$shop" },
+        {
+            $lookup: {
+                from: "productimages",
+                let: { productId: "$_id" },
+                pipeline: [
+                    {
+                        $match: {
+                            $expr: { $eq: ["$productId", "$$productId"] },
+                        },
+                    },
+                    {
+                        $project: { productId: 0 },
+                    },
+                ],
+                as: "images",
+            },
+        },
+        {
+            $lookup: {
+                from: "footerimages",
+                let: { productId: "$_id" },
+                pipeline: [
+                    {
+                        $match: {
+                            $expr: { $eq: ["$productId", "$$productId"] },
+                        },
+                    },
+                    {
+                        $project: { productId: 0 },
+                    },
+                ],
+                as: "footerImages",
+            },
+        },
+        {
+            $project: {
+                slug: 0,
+                createdAt: 0,
+                updatedAt: 0,
+                __v: 0,
+            },
+        },
+        {
+            $lookup: {
+                from: "params",
+                let: { productId: "$_id" },
+                pipeline: [
+                    {
+                        $match: {
+                            $expr: {
+                                $eq: ["$productId", "$$productId"],
+                            },
+                        },
+                    },
+                    {
+                        $project: {
+                            slug: 0,
+                            __v: 0,
+                            productId: 0,
+                        },
+                    },
+                    {
+                        $lookup: {
+                            from: "sizes",
+                            let: { paramId: "$_id" },
+                            pipeline: [
+                                {
+                                    $match: {
+                                        $expr: {
+                                            $eq: ["$paramId", "$$paramId"],
+                                        },
+                                    },
+                                },
+                                {
+                                    $project: {
+                                        price: 1,
+                                        size: 1,
+                                        count: 1,
+                                    },
+                                },
+                            ],
+                            as: "sizes",
+                        },
+                    },
+                ],
+                as: "params",
+            },
+        },
+    ]).exec((err, data) => {
+        if (err) return res.status(400).json({ success: false, err });
+        res.status(200).json({ success: true, data });
+    });
+};
+
+exports.getOneSeller = async (req, res) => {
     await Product.aggregate([
         { $match: { slug: req.params.slug } },
         {

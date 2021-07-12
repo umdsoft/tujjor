@@ -34,6 +34,9 @@ exports.create = async (req, res) => {
 exports.getAll = async (req, res) => {
     return res.status(200).json({ success: true, data: await Brand.find().populate("category") });
 };
+exports.getAllClient = async (req, res) => {
+    return res.status(200).json({ success: true, data: await Brand.find({}, { name: 1 }) });
+};
 exports.getOne = async (req, res) => {
     if (!req.params.slug) {
         return res.status(400).json({ success: false, data: [] });

@@ -223,8 +223,8 @@ exports.payme = async (req, res) => {
                                 state: data.state,
                                 cancel_time: data.cancel_time,
                                 transaction: data.transaction,
-                                // create_time: data.create_time,
-                                // perform_time: data.perform_time || 0,
+                                create_time: data.create_time,
+                                perform_time: data.perform_time || 0,
                             });
                         }
                     );
@@ -248,8 +248,8 @@ exports.payme = async (req, res) => {
                                     state: transac.state,
                                     cancel_time: transac.cancel_time || 0,
                                     transaction: transac.transaction,
-                                    // create_time: transac.create_time,
-                                    // perform_time: transac.perform_time || 0,
+                                    create_time: transac.create_time,
+                                    perform_time: transac.perform_time || 0,
                                 });
                             });
                         } else {
@@ -261,8 +261,8 @@ exports.payme = async (req, res) => {
                         state: transaction.state,
                         cancel_time: transaction.cancel_time || 0,
                         transaction: transaction.transaction,
-                        // create_time: transaction.create_time,
-                        // perform_time: transaction.perform_time || 0,
+                        create_time: transaction.create_time,
+                        perform_time: transaction.perform_time || 0,
                     });
                 }
             }
