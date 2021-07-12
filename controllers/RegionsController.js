@@ -13,12 +13,10 @@ exports.addRegion = (req, res) => {
         });
 };
 exports.editRegion = async (req, res) => {
-    await Region.updateOne({ _id: req.params.id }, { $set: req.body }).exec(
-        (err, data) => {
-            if (err) return res.status(400).json({ success: false, err });
-            res.status(200).json({ success: false, data });
-        }
-    );
+    await Region.updateOne({ _id: req.params.id }, { $set: req.body }).exec((err, data) => {
+        if (err) return res.status(400).json({ success: false, err });
+        res.status(200).json({ success: false, data });
+    });
 };
 exports.deleteRegion = async (req, res) => {
     await Region.findByIdAndDelete(req.params.id);
@@ -57,12 +55,10 @@ exports.addDistrict = (req, res) => {
         });
 };
 exports.updateDistrict = async (req, res) => {
-    await District.updateOne({ _id: req.params.id }, { $set: req.body }).exec(
-        (err, data) => {
-            if (err) return res.status(400).json({ success: false, err });
-            res.status(200).json({ success: false, data });
-        }
-    );
+    await District.updateOne({ _id: req.params.id }, { $set: req.body }).exec((err, data) => {
+        if (err) return res.status(400).json({ success: false, err });
+        res.status(200).json({ success: false, data });
+    });
 };
 exports.deleteDistrict = async (req, res) => {
     await District.findByIdAndDelete(req.params.id);

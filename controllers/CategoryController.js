@@ -99,12 +99,8 @@ exports.delete = async (req, res) => {
     });
 };
 exports.edit = async (req, res) => {
-    await Category.updateOne(
-        { _id: req.params.id },
-        { $set: req.body },
-        (err, data) => {
-            if (err) return res.status(400).json({ success: false });
-            res.status(200).json({ success: true });
-        }
-    );
+    await Category.updateOne({ _id: req.params.id }, { $set: req.body }, (err, data) => {
+        if (err) return res.status(400).json({ success: false });
+        res.status(200).json({ success: true });
+    });
 };

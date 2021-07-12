@@ -19,9 +19,7 @@ exports.create = (req, res) => {
         });
 };
 exports.getAll = async (req, res) => {
-    return res
-        .status(200)
-        .json({ success: true, data: await Application.find() });
+    return res.status(200).json({ success: true, data: await Application.find() });
 };
 exports.getOne = async (req, res) => {
     await Application.findOne({ user: req.params.user })
@@ -34,23 +32,17 @@ exports.getOne = async (req, res) => {
         });
 };
 exports.editStatus = async (req, res) => {
-    await Application.findByIdAndUpdate(
-        { _id: req.params.id },
-        { $set: { status: req.body.status } },
-        (err, data) => {
-            if (err) {
-                return res.status(400).json({ success: false, err });
-            }
-            return res.status(200).json({ success: true });
+    await Application.findByIdAndUpdate({ _id: req.params.id }, { $set: { status: req.body.status } }, (err, data) => {
+        if (err) {
+            return res.status(400).json({ success: false, err });
         }
-    );
+        return res.status(200).json({ success: true });
+    });
 };
 exports.delete = async (req, res) => {
     await Application.findByIdAndDelete({ _id: req.params.id }, (err, data) => {
         if (err) {
-            return res
-                .status(400)
-                .json({ success: false, message: "Not found" });
+            return res.status(400).json({ success: false, message: "Not found" });
         }
         res.status(200).json({ success: true });
     });

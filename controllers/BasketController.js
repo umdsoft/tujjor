@@ -113,9 +113,7 @@ exports.getAll = async (req, res) => {
     });
 };
 exports.getCount = async (req, res) => {
-    Basket.aggregate([
-        { $match: { user: mongoose.Types.ObjectId(req.user) } },
-    ]).exec((err, data) => {
+    Basket.aggregate([{ $match: { user: mongoose.Types.ObjectId(req.user) } }]).exec((err, data) => {
         if (err) {
             return res.status(400).json({ success: false, err });
         }
@@ -123,23 +121,17 @@ exports.getCount = async (req, res) => {
     });
 };
 exports.edit = async (req, res) => {
-    await Basket.findByIdAndUpdate(
-        { _id: req.params.id },
-        { $set: { count: req.body.count } },
-        (err, data) => {
-            if (err) {
-                return res.status(400).json({ success: false, err });
-            }
-            return res.status(200).json({ success: true });
+    await Basket.findByIdAndUpdate({ _id: req.params.id }, { $set: { count: req.body.count } }, (err, data) => {
+        if (err) {
+            return res.status(400).json({ success: false, err });
         }
-    );
+        return res.status(200).json({ success: true });
+    });
 };
 exports.delete = async (req, res) => {
     await Basket.findByIdAndDelete({ _id: req.params.id }, (err, data) => {
         if (err) {
-            return res
-                .status(400)
-                .json({ success: false, message: "Not found" });
+            return res.status(400).json({ success: false, message: "Not found" });
         }
         res.status(200).json({ success: true });
     });
@@ -147,9 +139,7 @@ exports.delete = async (req, res) => {
 exports.deleteAll = async (req, res) => {
     await Basket.deleteMany({ user: req.user }, (err, data) => {
         if (err) {
-            return res
-                .status(400)
-                .json({ success: false, message: "Not found" });
+            return res.status(400).json({ success: false, message: "Not found" });
         }
         res.status(200).json({ success: true });
     });

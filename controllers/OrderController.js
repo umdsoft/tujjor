@@ -36,9 +36,7 @@ exports.create = (req, res) => {
         });
 
         if (summ !== req.body.amount) {
-            return res
-                .status(400)
-                .json({ success: false, message: "Amount not equal" });
+            return res.status(400).json({ success: false, message: "Amount not equal" });
         }
         order
             .save()

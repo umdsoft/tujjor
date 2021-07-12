@@ -43,55 +43,48 @@ exports.payme = async (req, res) => {
         await Transaction.findOne({ tid: params.id }, async (err, data) => {
             const receivers = [];
             if (err || !data) {
-                await Order.findOne(
-                    { orderId: params.account.order },
-                    async (err, data) => {
-                        if (err || !data)
-                            return sendResponse(Errors.OrderNotFound, null);
-                        if (data.status) {
-                            return sendResponse(Errors.OrderAvailable, null);
-                        }
-                        if (data.amount !== params.amount / 100)
-                            return sendResponse(Errors.IncorrectAmount, null);
-                        data.products.forEach((key) => {
-                            receivers.push({
-                                id: key.account,
-                                amount: key.amount * 100,
-                            });
-                        });
-
-                        const transaction = new Transaction({
-                            tid: params.id,
-                            amount: params.amount / 100,
-                            transaction: Math.floor(
-                                Math.random() * 1000000000
-                            ).toString(),
-                            state: 1,
-                            perform_time: 0,
-                            cancel_time: 0,
-                            create_time: Date.now(),
-                            order: parseInt(params.account.order),
-                            time: params.time,
-                            receivers: receivers,
-                        });
-                        transaction
-                            .save()
-                            .then(() => {
-                                console.log("saved");
-                                return sendResponse(null, {
-                                    transaction: transaction.transaction,
-                                    state: transaction.state,
-                                    create_time: transaction.create_time,
-                                    perform_time: transaction.perform_time,
-                                    cancel_time: transaction.cancel_time,
-                                    receivers: transaction.receivers,
-                                });
-                            })
-                            .catch((err) => {
-                                console.log(err);
-                            });
+                await Order.findOne({ orderId: params.account.order }, async (err, data) => {
+                    if (err || !data) return sendResponse(Errors.OrderNotFound, null);
+                    if (data.status) {
+                        return sendResponse(Errors.OrderAvailable, null);
                     }
-                );
+                    if (data.amount !== params.amount / 100) return sendResponse(Errors.IncorrectAmount, null);
+                    data.products.forEach((key) => {
+                        receivers.push({
+                            id: key.account,
+                            amount: key.amount * 100,
+                        });
+                    });
+
+                    const transaction = new Transaction({
+                        tid: params.id,
+                        amount: params.amount / 100,
+                        transaction: Math.floor(Math.random() * 1000000000).toString(),
+                        state: 1,
+                        perform_time: 0,
+                        cancel_time: 0,
+                        create_time: Date.now(),
+                        order: parseInt(params.account.order),
+                        time: params.time,
+                        receivers: receivers,
+                    });
+                    transaction
+                        .save()
+                        .then(() => {
+                            console.log("saved");
+                            return sendResponse(null, {
+                                transaction: transaction.transaction,
+                                state: transaction.state,
+                                create_time: transaction.create_time,
+                                perform_time: transaction.perform_time,
+                                cancel_time: transaction.cancel_time,
+                                receivers: transaction.receivers,
+                            });
+                        })
+                        .catch((err) => {
+                            console.log(err);
+                        });
+                });
             }
 
             if (data) {
@@ -106,10 +99,7 @@ exports.payme = async (req, res) => {
                                 },
                             },
                             (err, data) => {
-                                return sendResponse(
-                                    Errors.UnexpectedTransactionState,
-                                    null
-                                );
+                                return sendResponse(Errors.UnexpectedTransactionState, null);
                             }
                         );
                     } else {
@@ -123,93 +113,163 @@ exports.payme = async (req, res) => {
                         });
                     }
                 } else {
-                    return sendResponse(
-                        Errors.UnexpectedTransactionState,
-                        null
-                    );
+                    return sendResponse(Errors.UnexpectedTransactionState, null);
                 }
             }
         });
     }
-    async function PerformTransaction(params) {
-        await Transaction.findOne(
-            { tid: params.id },
-            async (err, transaction) => {
-                if (!transaction)
-                    return sendResponse(Errors.TransactionNotFound, null);
-                if (transaction.state === 1) {
-                    if (transaction.time > Date.now()) {
-                        await Transaction.updateOne(
-                            { tid: params.id },
-                            {
-                                $set: {
-                                    state: -1,
-                                    reason: 4,
-                                },
-                            }
-                        );
-                    }
-                    const order = await Order.findOne({
-                        orderId: transaction.order,
-                    });
-                    order.products.forEach((key) => {
-                        new PayedList({
-                            user: order.user,
-                            shop: key.shop,
-                            category: key.category,
-                            brand: key.brand,
-                            amount: key.amount,
-                            count: key.count,
-                        }).save();
-                    });
 
+    async function PerformTransaction(params) {
+        await Transaction.findOne({ tid: params.id }, async (err, transaction) => {
+            if (!transaction) return sendResponse(Errors.TransactionNotFound, null);
+            if (transaction.state === 1) {
+                if (transaction.time > Date.now()) {
+                    await Transaction.updateOne(
+                        { tid: params.id },
+                        {
+                            $set: {
+                                state: -1,
+                                reason: 4,
+                            },
+                        }
+                    );
+                }
+                const order = await Order.findOne({
+                    orderId: transaction.order,
+                });
+                order.products.forEach((key) => {
+                    new PayedList({
+                        user: order.user,
+                        shop: key.shop,
+                        category: key.category,
+                        brand: key.brand,
+                        amount: key.amount,
+                        count: key.count,
+                    }).save();
+                });
+
+                await Order.updateOne(
+                    { orderId: transaction.order },
+                    {
+                        $set: {
+                            payed: 1,
+                            paySystem: "payme",
+                        },
+                    }
+                );
+                await Transaction.updateOne(
+                    { tid: transaction.tid },
+                    {
+                        $set: {
+                            state: 2,
+                            perform_time: Date.now(),
+                        },
+                    }
+                );
+                const tt = await Transaction.findOne({
+                    tid: transaction.tid,
+                });
+                return sendResponse(null, {
+                    transaction: transaction.transaction,
+                    perform_time: tt.perform_time,
+                    state: 2,
+                });
+            }
+            if (transaction.state === 2) {
+                return sendResponse(null, {
+                    transaction: transaction.transaction,
+                    perform_time: transaction.perform_time,
+                    state: transaction.state,
+                });
+            } else {
+                return sendResponse(Errors.UnexpectedTransactionState, null);
+            }
+        });
+    }
+
+    async function CancelTransaction(params) {
+        await Transaction.findOne({ tid: params.id }, async (err, transaction) => {
+            if (err || !transaction) return sendResponse(Errors.TransactionNotFound, null);
+            if (transaction.state === 1) {
+                await Transaction.updateOne(
+                    { tid: transaction.tid },
+                    {
+                        $set: {
+                            state: -1,
+                            reason: params.reason,
+                            cancel_time: Date.now(),
+                        },
+                    }
+                );
+                await Transaction.findOne({ tid: transaction.tid }, async () => {
                     await Order.updateOne(
                         { orderId: transaction.order },
                         {
                             $set: {
-                                payed: 1,
-                                paySystem: "payme",
+                                payed: 0,
                             },
+                        },
+                        async (err, data) => {
+                            if (err) return sendResponse(err, null);
+                            const ord = await Order.find({
+                                orderId: transaction.order,
+                            });
+                            await Order.findOneAndDelete({ _id: ord._id }, (err, data) => {
+                                if (err) return sendResponse(err, null);
+                            });
+                            return sendResponse(null, {
+                                state: data.state,
+                                cancel_time: data.cancel_time,
+                                transaction: data.transaction,
+                                create_time: data.create_time,
+                                perform_time: data.perform_time || 0,
+                            });
                         }
                     );
-                    await Transaction.updateOne(
-                        { tid: transaction.tid },
-                        {
-                            $set: {
-                                state: 2,
-                                perform_time: Date.now(),
-                            },
-                        }
-                    );
-                    const tt = await Transaction.findOne({
-                        tid: transaction.tid,
-                    });
-                    return sendResponse(null, {
-                        transaction: transaction.transaction,
-                        perform_time: tt.perform_time,
-                        state: 2,
-                    });
-                }
+                });
+            } else {
                 if (transaction.state === 2) {
-                    return sendResponse(null, {
-                        transaction: transaction.transaction,
-                        perform_time: transaction.perform_time,
-                        state: transaction.state,
+                    await Order.findOne({ orderId: transaction.order }, async (err, order) => {
+                        if (err) return sendResponse(err, null);
+                        if (order.payed === 0) {
+                            await Transaction.updateOne(
+                                { tid: params.id },
+                                {
+                                    $set: {
+                                        state: -2,
+                                        reason: params.reason,
+                                        cancel_time: Date.now(),
+                                    },
+                                }
+                            ).exec((err, transac) => {
+                                return sendResponse(null, {
+                                    state: transac.state,
+                                    cancel_time: transac.cancel_time || 0,
+                                    transaction: transac.transaction,
+                                    create_time: transac.create_time,
+                                    perform_time: transac.perform_time || 0,
+                                });
+                            });
+                        } else {
+                            return sendResponse(Errors.OrderNotСanceled, null);
+                        }
                     });
                 } else {
-                    return sendResponse(
-                        Errors.UnexpectedTransactionState,
-                        null
-                    );
+                    return sendResponse(null, {
+                        state: transaction.state,
+                        cancel_time: transaction.cancel_time || 0,
+                        transaction: transaction.transaction,
+                        create_time: transaction.create_time,
+                        perform_time: transaction.perform_time || 0,
+                    });
                 }
             }
-        );
+        });
     }
 
     async function CheckTransaction(params) {
         await Transaction.findOne({ tid: params.id }, (err, data) => {
-            if (err || !data)
-                return sendResponse(Errors.TransactionNotFound, null);
+            if (err || !data) return sendResponse(Errors.TransactionNotFound, null);
             return sendResponse(null, {
                 create_time: data.create_time,
                 perform_time: data.perform_time || 0,
@@ -220,6 +280,7 @@ exports.payme = async (req, res) => {
             });
         });
     }
+
     function sendResponse(error, result) {
         res.writeHead(200, {
             "Content-Type": "application/json; charset=utf-8",

@@ -32,30 +32,22 @@ exports.getOne = async (req, res) => {
     });
 };
 exports.edit = async (req, res) => {
-    await Info.findByIdAndUpdate(
-        { _id: req.params.id },
-        { $set: req.body },
-        (err, data) => {
-            if (err) {
-                return res.status(400).json({ success: false, err });
-            }
-            return res.status(200).json({ success: true });
+    await Info.findByIdAndUpdate({ _id: req.params.id }, { $set: req.body }, (err, data) => {
+        if (err) {
+            return res.status(400).json({ success: false, err });
         }
-    );
+        return res.status(200).json({ success: true });
+    });
 };
 exports.delete = async (req, res) => {
     await Info.findByIdAndDelete({ _id: req.params.id }, (err, data) => {
         if (err) {
-            return res
-                .status(400)
-                .json({ success: false, message: "Not found" });
+            return res.status(400).json({ success: false, message: "Not found" });
         }
         res.status(200).json({ success: true });
     });
 };
 
 exports.getClientAll = async (req, res) => {
-    return res
-        .status(200)
-        .json({ success: true, data: await Info.find({ status: true }) });
+    return res.status(200).json({ success: true, data: await Info.find({ status: true }) });
 };

@@ -1,6 +1,4 @@
 const User = require("../models/user");
-const Shop = require("../models/shop");
-const Application = require("../models/applicationShop");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 
@@ -10,9 +8,7 @@ const sendTokenResponse = (user, statusCode, res) => {
     const token = user.getSignedJwtToken();
     console.log("Working...........");
     const options = {
-        expires: new Date(
-            Date.now() + process.env.JWT_COOKIE_EXPIRE * 24 * 60 * 60 * 1000
-        ),
+        expires: new Date(Date.now() + process.env.JWT_COOKIE_EXPIRE * 24 * 60 * 60 * 1000),
         httpOnly: true,
     };
     if (process.env.NODE_ENV === "production") {
@@ -135,15 +131,11 @@ exports.me = async (req, res) => {
 };
 exports.delete = async (req, res) => {
     if (!req.params.id) {
-        return res
-            .status(400)
-            .json({ success: false, data: "Somting is wrong" });
+        return res.status(400).json({ success: false, data: "Somting is wrong" });
     }
     let result = await User.findByIdAndDelete({ _id: req.params.id });
     if (!result) {
-        return res
-            .status(400)
-            .json({ success: false, data: "This id not found" });
+        return res.status(400).json({ success: false, data: "This id not found" });
     }
     return res.status(200).json({ success: true, data: [] });
 };

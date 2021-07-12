@@ -97,9 +97,7 @@ exports.getCount = async (req, res) => {
 exports.delete = async (req, res) => {
     await Like.findByIdAndDelete({ _id: req.params.id }, (err, data) => {
         if (err) {
-            return res
-                .status(400)
-                .json({ success: false, message: "Not found" });
+            return res.status(400).json({ success: false, message: "Not found" });
         }
         res.status(200).json({ success: true });
     });
@@ -107,9 +105,7 @@ exports.delete = async (req, res) => {
 exports.deleteAll = async (req, res) => {
     await Like.deleteMany({ user: req.user }, (err, data) => {
         if (err) {
-            return res
-                .status(400)
-                .json({ success: false, message: "Not found" });
+            return res.status(400).json({ success: false, message: "Not found" });
         }
         res.status(200).json({ success: true });
     });

@@ -6,12 +6,7 @@ const Size = require("../models/size");
 const ProductImage = require("../models/productImage");
 const FooterImage = require("../models/footerImage");
 const { getSlug, deleteFile } = require("../utils");
-const {
-    sharpFrontImage,
-    sharpParamImage,
-    sharpProductImage,
-    sharpFooterImage,
-} = require("../utils/product");
+const { sharpFrontImage, sharpParamImage, sharpProductImage, sharpFooterImage } = require("../utils/product");
 
 const deleteParam = (id) => {
     Param.findOneAndDelete({ productId: id }).exec((err, param) => {
@@ -103,9 +98,7 @@ exports.create = async (req, res) => {
         })
         .catch((err) => {
             res.status(500).json({
-                message:
-                    err.message ||
-                    "Something wrong while creating the product.",
+                message: err.message || "Something wrong while creating the product.",
             });
         });
 };
@@ -125,8 +118,7 @@ exports.createParam = async (req, res) => {
             deleteFile(`/public/temp/${filename}`);
             deleteFile(`/public/uploads/products/colors/${filename}`);
             res.status(500).json({
-                message:
-                    err.message || "Something wrong while creating the param.",
+                message: err.message || "Something wrong while creating the param.",
             });
         });
 };
@@ -144,8 +136,7 @@ exports.createSize = (req, res) => {
         })
         .catch((err) => {
             res.status(500).json({
-                message:
-                    err.message || "Something wrong while creating the size.",
+                message: err.message || "Something wrong while creating the size.",
             });
         });
 };
@@ -166,8 +157,7 @@ exports.createImage = async (req, res) => {
         })
         .catch((err) => {
             res.status(500).json({
-                message:
-                    err.message || "Something wrong while creating the image.",
+                message: err.message || "Something wrong while creating the image.",
             });
         });
 };
@@ -187,8 +177,7 @@ exports.createFooterImage = async (req, res) => {
         })
         .catch((err) => {
             res.status(500).json({
-                message:
-                    err.message || "Something wrong while creating the image.",
+                message: err.message || "Something wrong while creating the image.",
             });
         });
 };
@@ -197,10 +186,7 @@ exports.createFooterImage = async (req, res) => {
 exports.edit = (req, res) => {
     const { filename } = req.file;
     sharpFrontImage(filename);
-    Product.findByIdAndUpdate(
-        { _id: req.params.id },
-        { $set: { ...req.body, image: `/uploads/products/cards/${filename}` } }
-    )
+    Product.findByIdAndUpdate({ _id: req.params.id }, { $set: { ...req.body, image: `/uploads/products/cards/${filename}` } })
         .then((data) => {
             if (!data) {
                 return res.status(404).json({
@@ -216,8 +202,7 @@ exports.edit = (req, res) => {
                 });
             }
             return res.status(500).json({
-                message:
-                    "Something wrong updating note with id " + req.params.id,
+                message: "Something wrong updating note with id " + req.params.id,
             });
         });
 };
@@ -225,23 +210,17 @@ exports.edit = (req, res) => {
 exports.editParam = async (req, res) => {
     const { filename } = req.file;
     sharpParamImage(filename);
-    await Param.updateOne(
-        { _id: req.params.id },
-        { $set: { image: `/uploads/products/colors/${filename}` } },
-        { new: true }
-    ).exec((err, data) => {
+    await Param.updateOne({ _id: req.params.id }, { $set: { image: `/uploads/products/colors/${filename}` } }, { new: true }).exec((err, data) => {
         if (err) return res.status(400).json({ success: false, data: err });
         deleteFile(`public${data.image}`);
         return res.status(200).json({ success: true, data: data });
     });
 };
 exports.editSize = async (req, res) => {
-    await Size.updateOne({ _id: req.params.id }, { $set: req.body }).exec(
-        (err, data) => {
-            if (err) return res.status(400).json({ success: false, data: err });
-            return res.status(200).json({ success: true, data: data });
-        }
-    );
+    await Size.updateOne({ _id: req.params.id }, { $set: req.body }).exec((err, data) => {
+        if (err) return res.status(400).json({ success: false, data: err });
+        return res.status(200).json({ success: true, data: data });
+    });
 };
 
 // Delete
@@ -282,22 +261,18 @@ exports.deleteSize = async (req, res) => {
     });
 };
 exports.deleteImage = async (req, res) => {
-    await ProductImage.findByIdAndDelete({ _id: req.params.id }).then(
-        (image) => {
-            deleteFile(`/public${image?.image}`);
-        }
-    );
+    await ProductImage.findByIdAndDelete({ _id: req.params.id }).then((image) => {
+        deleteFile(`/public${image?.image}`);
+    });
     res.status(200).json({
         success: true,
         data: [],
     });
 };
 exports.deleteFooterImage = async (req, res) => {
-    await FooterImage.findByIdAndDelete({ _id: req.params.id }).then(
-        (image) => {
-            deleteFile(`/public${image?.image}`);
-        }
-    );
+    await FooterImage.findByIdAndDelete({ _id: req.params.id }).then((image) => {
+        deleteFile(`/public${image?.image}`);
+    });
     res.status(200).json({
         success: true,
         data: [],
@@ -311,9 +286,7 @@ exports.filter = async (req, res) => {
     const limit = parseInt(req.query.limit);
 
     if (page === 0 || limit === 0) {
-        return res
-            .status(400)
-            .json({ success: false, message: "Error page or limit" });
+        return res.status(400).json({ success: false, message: "Error page or limit" });
     }
     let aggregateStart = [];
     let aggregateSearch = [];
@@ -379,9 +352,7 @@ exports.filter = async (req, res) => {
         aggregateStart.push({
             $match: {
                 category: {
-                    $in: req.body.category.map((key) =>
-                        mongoose.Types.ObjectId(key)
-                    ),
+                    $in: req.body.category.map((key) => mongoose.Types.ObjectId(key)),
                 },
             },
         });
@@ -390,9 +361,7 @@ exports.filter = async (req, res) => {
         aggregateStart.push({
             $match: {
                 brand: {
-                    $in: req.body.brand.map((key) =>
-                        mongoose.Types.ObjectId(key)
-                    ),
+                    $in: req.body.brand.map((key) => mongoose.Types.ObjectId(key)),
                 },
             },
         });
@@ -470,10 +439,7 @@ exports.filter = async (req, res) => {
             $lookup: {
                 from: "categories",
                 let: { category: "$category" },
-                pipeline: [
-                    { $match: { $expr: { $eq: ["$_id", "$$category"] } } },
-                    { $project: { name: 1, _id: 0 } },
-                ],
+                pipeline: [{ $match: { $expr: { $eq: ["$_id", "$$category"] } } }, { $project: { name: 1, _id: 0 } }],
                 as: "category",
             },
         },
@@ -482,10 +448,7 @@ exports.filter = async (req, res) => {
             $lookup: {
                 from: "brands",
                 let: { brand: "$brand" },
-                pipeline: [
-                    { $match: { $expr: { $eq: ["$_id", "$$brand"] } } },
-                    { $project: { name: 1 } },
-                ],
+                pipeline: [{ $match: { $expr: { $eq: ["$_id", "$$brand"] } } }, { $project: { name: 1 } }],
                 as: "brand",
             },
         },
@@ -540,11 +503,7 @@ exports.filter = async (req, res) => {
                     },
                 ],
                 count: [{ $group: { _id: null, count: { $sum: 1 } } }],
-                data: [
-                    { $skip: (page - 1) * limit },
-                    { $limit: limit },
-                    { $project: { brand: 0 } },
-                ],
+                data: [{ $skip: (page - 1) * limit }, { $limit: limit }, { $project: { brand: 0 } }],
             },
         },
         {
@@ -588,10 +547,7 @@ exports.getAll = async (req, res) => {
             $lookup: {
                 from: "categories",
                 let: { category: "$category" },
-                pipeline: [
-                    { $match: { $expr: { $eq: ["$_id", "$$category"] } } },
-                    { $project: { name: 1, _id: 0 } },
-                ],
+                pipeline: [{ $match: { $expr: { $eq: ["$_id", "$$category"] } } }, { $project: { name: 1, _id: 0 } }],
                 as: "category",
             },
         },
@@ -665,10 +621,7 @@ exports.getOne = async (req, res) => {
             $lookup: {
                 from: "brands",
                 let: { brand: "$brand" },
-                pipeline: [
-                    { $match: { $expr: { $eq: ["$_id", "$$brand"] } } },
-                    { $project: { name: 1, slug: 1, _id: 1 } },
-                ],
+                pipeline: [{ $match: { $expr: { $eq: ["$_id", "$$brand"] } } }, { $project: { name: 1, slug: 1, _id: 1 } }],
                 as: "brand",
             },
         },
@@ -677,10 +630,7 @@ exports.getOne = async (req, res) => {
             $lookup: {
                 from: "categories",
                 let: { category: "$category" },
-                pipeline: [
-                    { $match: { $expr: { $eq: ["$_id", "$$category"] } } },
-                    { $project: { __v: 0, createdAt: 0, updatedAt: 0 } },
-                ],
+                pipeline: [{ $match: { $expr: { $eq: ["$_id", "$$category"] } } }, { $project: { __v: 0, createdAt: 0, updatedAt: 0 } }],
                 as: "category",
             },
         },

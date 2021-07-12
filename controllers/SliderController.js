@@ -9,17 +9,12 @@ exports.create = async (req, res) => {
         .jpeg({
             quality: 70,
         })
-        .toFile(
-            path.join(
-                path.dirname(__dirname) + `/public/uploads/sliders/${filename}`
-            ),
-            (err) => {
-                if (err) {
-                    console.log(err);
-                }
-                deleteFile(`/public/temp/${filename}`)
+        .toFile(path.join(path.dirname(__dirname) + `/public/uploads/sliders/${filename}`), (err) => {
+            if (err) {
+                console.log(err);
             }
-        );
+            deleteFile(`/public/temp/${filename}`);
+        });
     const slider = new Slider({
         image: `/uploads/sliders/${filename}`,
     });
@@ -30,8 +25,7 @@ exports.create = async (req, res) => {
         })
         .catch((err) => {
             res.status(500).json({
-                message:
-                    err.message || "Something wrong while creating the slider.",
+                message: err.message || "Something wrong while creating the slider.",
             });
         });
 };
@@ -43,8 +37,7 @@ exports.getAll = (req, res) => {
         })
         .catch((err) => {
             res.status(500).json({
-                message:
-                    err.message || "Something wrong while retrieving slider.",
+                message: err.message || "Something wrong while retrieving slider.",
             });
         });
 };
@@ -54,30 +47,19 @@ exports.edit = async (req, res) => {
     const img = { image: `/uploads/sliders/${filename}` };
     await Slider.findById({ _id: req.params.id }, async (err, data) => {
         if (err) return res.status(200).json({ success: false, err });
-        deleteFile(`/public${data.image}`)
-        await sharp(
-            path.join(path.dirname(__dirname) + `/public/temp/${filename}`)
-        )
+        deleteFile(`/public${data.image}`);
+        await sharp(path.join(path.dirname(__dirname) + `/public/temp/${filename}`))
             .jpeg({
                 quality: 70,
             })
-            .toFile(
-                path.join(
-                    path.dirname(__dirname) +
-                        `/public/uploads/sliders/${filename}`
-                ),
-                (err) => {
-                    if (err) {
-                        console.log(err);
-                    }
-                    deleteFile(`/public/temp/${filename}`)
+            .toFile(path.join(path.dirname(__dirname) + `/public/uploads/sliders/${filename}`), (err) => {
+                if (err) {
+                    console.log(err);
                 }
-            );
+                deleteFile(`/public/temp/${filename}`);
+            });
     });
-    await Slider.findByIdAndUpdate(
-        { _id: req.params.id },
-        { $set: { ...req.body, ...img } }
-    )
+    await Slider.findByIdAndUpdate({ _id: req.params.id }, { $set: { ...req.body, ...img } })
         .then((data) => {
             if (!data) {
                 return res.status(404).json({
@@ -93,8 +75,7 @@ exports.edit = async (req, res) => {
                 });
             }
             return res.status(500).json({
-                message:
-                    "Something wrong updating note with id " + req.params.id,
+                message: "Something wrong updating note with id " + req.params.id,
             });
         });
 };
@@ -108,7 +89,7 @@ exports.delete = (req, res) => {
                     message: "Slider not found with id " + req.params.id,
                 });
             }
-            deleteFile(`/public${slider.image}`)
+            deleteFile(`/public${slider.image}`);
             res.json({ message: "Slider deleted successfully!" });
         })
         .catch((err) => {
