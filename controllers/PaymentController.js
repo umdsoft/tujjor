@@ -231,7 +231,7 @@ exports.payme = async (req, res) => {
             } else {
                 if (transaction.state === 2) {
                     await Order.findOne({ orderId: transaction.order }, async (err, order) => {
-                        if (err) return sendResponse(err, null);
+                        // if (err) return sendResponse(err, null);
                         if (order.payed === 0) {
                             await Transaction.updateOne(
                                 { tid: params.id },
