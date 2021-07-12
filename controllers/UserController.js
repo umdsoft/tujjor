@@ -121,7 +121,7 @@ exports.getUsers = async (req, res) => {
 };
 exports.me = async (req, res) => {
     await User.findOne({ _id: req.user })
-        .select({ password: 0, __v: 0, role: 0 })
+        .select({ password: 0, __v: 0, role: 0, createdAt: 0, updatedAt: 0 })
         .exec(async (err, data) => {
             if (err) return res.status(400).json({ success: false, err });
             res.status(200).json({ success: true, data });
@@ -138,7 +138,7 @@ exports.delete = async (req, res) => {
     return res.status(200).json({ success: true, data: [] });
 };
 
-exports.editClient = (req, res) => {
+exports.edit = (req, res) => {
     User.updateOne({ _id: req.user }, { $set: req.body }, { new: true }).exec((err, data) => {
         if (err) {
             res.status(400).json({ success: false, err });
