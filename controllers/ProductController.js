@@ -827,14 +827,14 @@ exports.getOneClient = async (req, res) => {
                     as: "user",
                 },
             },
-            // {
-            //     $project: {
-            //         name: "$user.name",
-            //         comment: 1,
-            //         raiting: 1,
-            //         _id: 0,
-            //     },
-            // },
+            {
+                $project: {
+                    name: "$user.name",
+                    comment: 1,
+                    raiting: 1,
+                    _id: 0,
+                },
+            },
         ]).exec((err, commentData) => {
             if (err) return res.status(400).json({ success: false, err });
             res.status(200).json({ success: true, data, comments: commentData });
