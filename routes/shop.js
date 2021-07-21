@@ -36,6 +36,6 @@ router.post(
     ShopController.create
 );
 router.get("/:user", ShopController.getOne);
-router.get("/all", ShopController.getShopsClient);
+router.get("/client/all", ShopController.getShopsClient);
 
 module.exports = router;
