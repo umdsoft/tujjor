@@ -4,6 +4,7 @@ const multer = require("multer");
 const md5 = require("md5");
 const path = require("path");
 const { validateFile } = require("../middleware/errorFileUpload");
+const { protectClient } = require("../middleware/auth");
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -22,7 +23,7 @@ router.get("/:slug", ProductController.getOneClient);
 router.post("/filter", ProductController.filter);
 
 //create
-router.post("/comment/create", ProductController.commentCreate);
+router.post("/comment/create", protectClient, ProductController.commentCreate);
 router.post("/create", upload.single("image"), validateFile, ProductController.create);
 router.post(
     "/param/create",
