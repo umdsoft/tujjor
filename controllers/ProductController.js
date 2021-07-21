@@ -456,8 +456,6 @@ exports.filter = async (req, res) => {
         }
     }
     await Product.aggregate([
-        { $skip: (page - 1) * limit },
-        { $limit: limit },
         ...aggregateStart,
         {
             $lookup: {
@@ -569,29 +567,32 @@ exports.filter = async (req, res) => {
         //         },
         //     },
         // },
-    ]).exec(async (err, data) => {
-        if (err) return res.status(400).json({ success: false, err });
-
-        Product.aggregate([
-            ...aggregateStart,
-            {
-                $group: {
-                    _id: null,
-                    count: { $sum: 1 },
-                    brands: { $addToSet: "$brand" },
-                },
-            },
-        ]).exec((errCount, dataCount) => {
+    ])
+        .skip((page - 1) * limit)
+        .limit(limit)
+        .exec(async (err, data) => {
             if (err) return res.status(400).json({ success: false, err });
-            if (errCount) return res.status(400).json({ success: false, errCount });
-            res.status(200).json({
-                success: true,
-                data: data,
-                brand: dataCount[0].brands,
-                count: dataCount[0].count,
+
+            Product.aggregate([
+                ...aggregateStart,
+                {
+                    $group: {
+                        _id: null,
+                        count: { $sum: 1 },
+                        brands: { $addToSet: "$brand" },
+                    },
+                },
+            ]).exec((errCount, dataCount) => {
+                if (err) return res.status(400).json({ success: false, err });
+                if (errCount) return res.status(400).json({ success: false, errCount });
+                res.status(200).json({
+                    success: true,
+                    data: data,
+                    brand: dataCount[0].brands,
+                    count: dataCount[0].count,
+                });
             });
         });
-    });
 };
 // exports.count = async (req, res) => {
 //     let aggregateStart = [];
