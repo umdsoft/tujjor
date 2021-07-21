@@ -26,7 +26,16 @@ router.post("/create", upload.single("image"), validateFile, ProductController.c
 router.post("/param/create", upload.single("image"), validateFile, ProductController.createParam);
 router.post("/size/create", ProductController.createSize);
 router.post("/image/create", upload.single("image"), validateFile, ProductController.createImage);
-router.post("/footerimage/create", upload.single("image"), validateFile, ProductController.createFooterImage);
+router.post(
+    "/footerimage/create",
+    upload.single("image"),
+    validateFile,
+    ProductController.createFooterImage
+);
+
+//discount
+router.post("/discount/create", ProductController.createDiscount);
+router.post("/discount/create/all", ProductController.createDiscountAll);
 
 //update
 router.put("/:id", upload.single("image"), validateFile, ProductController.edit);

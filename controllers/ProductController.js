@@ -6,8 +6,12 @@ const Size = require("../models/size");
 const ProductImage = require("../models/productImage");
 const FooterImage = require("../models/footerImage");
 const { getSlug, deleteFile } = require("../utils");
-const { sharpFrontImage, sharpParamImage, sharpProductImage, sharpFooterImage } = require("../utils/product");
-
+const {
+    sharpFrontImage,
+    sharpParamImage,
+    sharpProductImage,
+    sharpFooterImage,
+} = require("../utils/product");
 const deleteParam = (id) => {
     Param.findOneAndDelete({ productId: id }).exec((err, param) => {
         console.log("DELETE PARAM", param);
@@ -181,11 +185,37 @@ exports.createFooterImage = async (req, res) => {
         });
 };
 
+//Discount
+exports.createDiscount = async (req, res) => {
+    Size.updateMany(
+        { $match: { $expr: { $eq: req.body.products } } },
+        { $set: req.body.discount }
+    );
+};
+
+exports.createDiscountAll = async (req, res) => {
+    const products = [];
+    await Product.aggregate([
+        { $match: { shop: mongoose.Types.ObjectId(req.body.shop) } },
+    ]).exec((err, data) => {
+        data.forEach((key) => {
+            products.push(key._id);
+        });
+    });
+    Size.updateMany(
+        { $match: { $expr: { $eq: products } } },
+        { $set: req.body.discount }
+    );
+};
+
 //Edit
 exports.edit = (req, res) => {
     const { filename } = req.file;
     sharpFrontImage(filename);
-    Product.findByIdAndUpdate({ _id: req.params.id }, { $set: { ...req.body, image: `/uploads/products/cards/${filename}` } })
+    Product.findByIdAndUpdate(
+        { _id: req.params.id },
+        { $set: { ...req.body, image: `/uploads/products/cards/${filename}` } }
+    )
         .then((data) => {
             if (!data) {
                 return res.status(404).json({
@@ -208,7 +238,11 @@ exports.edit = (req, res) => {
 exports.editParam = async (req, res) => {
     const { filename } = req.file;
     sharpParamImage(filename);
-    await Param.updateOne({ _id: req.params.id }, { $set: { image: `/uploads/products/colors/${filename}` } }, { new: true }).exec((err, data) => {
+    await Param.updateOne(
+        { _id: req.params.id },
+        { $set: { image: `/uploads/products/colors/${filename}` } },
+        { new: true }
+    ).exec((err, data) => {
         if (err) return res.status(400).json({ success: false, data: err });
         deleteFile(`public${data.image}`);
         return res.status(200).json({ success: true, data: data });
@@ -287,10 +321,9 @@ exports.filter = async (req, res) => {
         return res.status(400).json({ success: false, message: "Error page or limit" });
     }
     let aggregateStart = [];
-    let aggregateSearch = [];
-    let aggregateEnd = [];
+    let aggregateSort = {};
     if (req.body.search && req.body.search.length) {
-        aggregateSearch.push({
+        aggregateStart.push({
             $match: {
                 $or: [
                     {
@@ -365,7 +398,7 @@ exports.filter = async (req, res) => {
         });
     }
     if (req.body.start && req.body.start != 0) {
-        aggregateEnd.push({
+        aggregateStart.push({
             $match: {
                 price: {
                     $gte: parseInt(req.body.start),
@@ -374,7 +407,7 @@ exports.filter = async (req, res) => {
         });
     }
     if (req.body.end && req.body.end != 0) {
-        aggregateEnd.push({
+        aggregateStart.push({
             $match: {
                 price: {
                     $lte: parseInt(req.body.end),
@@ -385,37 +418,37 @@ exports.filter = async (req, res) => {
     if (req.body.sort) {
         switch (req.body.sort) {
             case "new": {
-                aggregateStart.push({
+                aggregateSort = {
                     $sort: {
                         createdAt: -1,
                     },
-                });
+                };
                 break;
             }
             case "popular": {
-                aggregateEnd.push({
+                aggregateSort = {
                     $sort: {
                         count: -1,
                     },
-                });
+                };
                 break;
             }
 
             case "priceUp": {
-                aggregateEnd.push({
+                aggregateSort = {
                     $sort: {
                         price: 1,
                     },
-                });
+                };
                 break;
             }
 
             case "priceDown": {
-                aggregateEnd.push({
+                aggregateSort = {
                     $sort: {
                         price: -1,
                     },
-                });
+                };
                 break;
             }
             default: {
@@ -423,6 +456,9 @@ exports.filter = async (req, res) => {
         }
     }
     await Product.aggregate([
+        aggregateSort,
+        { $skip: (page - 1) * limit },
+        { $limit: limit },
         ...aggregateStart,
         {
             $lookup: {
@@ -437,7 +473,10 @@ exports.filter = async (req, res) => {
             $lookup: {
                 from: "categories",
                 let: { category: "$category" },
-                pipeline: [{ $match: { $expr: { $eq: ["$_id", "$$category"] } } }, { $project: { name: 1, _id: 0 } }],
+                pipeline: [
+                    { $match: { $expr: { $eq: ["$_id", "$$category"] } } },
+                    { $project: { name: 1, _id: 0 } },
+                ],
                 as: "category",
             },
         },
@@ -446,12 +485,14 @@ exports.filter = async (req, res) => {
             $lookup: {
                 from: "brands",
                 let: { brand: "$brand" },
-                pipeline: [{ $match: { $expr: { $eq: ["$_id", "$$brand"] } } }, { $project: { name: 1 } }],
+                pipeline: [
+                    { $match: { $expr: { $eq: ["$_id", "$$brand"] } } },
+                    { $project: { name: 1 } },
+                ],
                 as: "brand",
             },
         },
         { $unwind: "$brand" },
-        ...aggregateSearch,
         {
             $lookup: {
                 from: "sizes",
@@ -487,54 +528,167 @@ exports.filter = async (req, res) => {
                 },
             },
         },
-        ...aggregateEnd,
-        {
-            $facet: {
-                brands: [
-                    {
-                        $group: {
-                            _id: null,
-                            brands: {
-                                $addToSet: "$brand._id",
-                            },
-                        },
-                    },
-                ],
-                count: [{ $group: { _id: null, count: { $sum: 1 } } }],
-                data: [{ $skip: (page - 1) * limit }, { $limit: limit }, { $project: { brand: 0 } }],
-            },
-        },
-        {
-            $project: {
-                data: 1,
-                count: {
-                    $let: {
-                        vars: {
-                            count: { $arrayElemAt: ["$count", 0] },
-                        },
-                        in: "$$count.count",
-                    },
-                },
-                brands: {
-                    $let: {
-                        vars: {
-                            brands: { $arrayElemAt: ["$brands", 0] },
-                        },
-                        in: "$$brands.brands",
-                    },
-                },
-            },
-        },
+        // {
+        //     $facet: {
+        //         brands: [
+        //             {
+        //                 $group: {
+        //                     _id: null,
+        //                     brands: {
+        //                         $addToSet: "$brand._id",
+        //                     },
+        //                 },
+        //             },
+        //         ],
+        //         count: [{ $group: { _id: null, count: { $sum: 1 } } }],
+        //         data: [
+        //             { $skip: (page - 1) * limit },
+        //             { $limit: limit },
+        //             { $project: { brand: 0 } },
+        //         ],
+        //     },
+        // },
+        // {
+        //     $project: {
+        //         data: 1,
+        //         count: {
+        //             $let: {
+        //                 vars: {
+        //                     count: { $arrayElemAt: ["$count", 0] },
+        //                 },
+        //                 in: "$$count.count",
+        //             },
+        //         },
+        //         brands: {
+        //             $let: {
+        //                 vars: {
+        //                     brands: { $arrayElemAt: ["$brands", 0] },
+        //                 },
+        //                 in: "$$brands.brands",
+        //             },
+        //         },
+        //     },
+        // },
     ]).exec(async (err, data) => {
         if (err) return res.status(400).json({ success: false, err });
-        res.status(200).json({
-            success: true,
-            data: data[0].data,
-            brands: data[0].brands,
-            count: Math.ceil(data[0].count / limit),
+
+        Product.aggregate([
+            ...aggregateStart,
+            {
+                $group: {
+                    _id: null,
+                    count: { $sum: 1 },
+                    brands: { $addToSet: "$brand" },
+                },
+            },
+        ]).exec((errCount, dataCount) => {
+            if (err) return res.status(400).json({ success: false, err });
+            if (errCount) return res.status(400).json({ success: false, errCount });
+            res.status(200).json({
+                success: true,
+                data: data,
+                brand: dataCount[0].brands,
+                count: dataCount[0].count,
+            });
         });
     });
 };
+// exports.count = async (req, res) => {
+//     let aggregateStart = [];
+//     if (req.body.search && req.body.search.length) {
+//         aggregateStart.push({
+//             $match: {
+//                 $or: [
+//                     {
+//                         "name.uz": {
+//                             $regex: `.*${req.body.search}.*`,
+//                             $options: "i",
+//                         },
+//                     },
+//                     {
+//                         "name.ru": {
+//                             $regex: `.*${req.body.search}.*`,
+//                             $options: "i",
+//                         },
+//                     },
+//                     {
+//                         "brand.name": {
+//                             $regex: `.*${req.body.search}.*`,
+//                             $options: "i",
+//                         },
+//                     },
+//                     {
+//                         "category.name.uz": {
+//                             $regex: `.*${req.body.search}.*`,
+//                             $options: "i",
+//                         },
+//                     },
+//                     {
+//                         "category.name.ru": {
+//                             $regex: `.*${req.body.search}.*`,
+//                             $options: "i",
+//                         },
+//                     },
+//                     {
+//                         "description.uz": {
+//                             $regex: `.*${req.body.search}.*`,
+//                             $options: "i",
+//                         },
+//                     },
+//                     {
+//                         "description.ru": {
+//                             $regex: `.*${req.body.search}.*`,
+//                             $options: "i",
+//                         },
+//                     },
+//                     {
+//                         "tags.name": {
+//                             $regex: `.*${req.body.search}.*`,
+//                             $options: "i",
+//                         },
+//                     },
+//                 ],
+//             },
+//         });
+//     }
+
+//     if (req.body.category && req.body.category.length) {
+//         aggregateStart.push({
+//             $match: {
+//                 category: {
+//                     $in: req.body.category.map((key) => mongoose.Types.ObjectId(key)),
+//                 },
+//             },
+//         });
+//     }
+//     if (req.body.brand && req.body.brand.length) {
+//         aggregateStart.push({
+//             $match: {
+//                 brand: {
+//                     $in: req.body.brand.map((key) => mongoose.Types.ObjectId(key)),
+//                 },
+//             },
+//         });
+//     }
+//     if (req.body.start && req.body.start != 0) {
+//         aggregateStart.push({
+//             $match: {
+//                 price: {
+//                     $gte: parseInt(req.body.start),
+//                 },
+//             },
+//         });
+//     }
+//     if (req.body.end && req.body.end != 0) {
+//         aggregateStart.push({
+//             $match: {
+//                 price: {
+//                     $lte: parseInt(req.body.end),
+//                 },
+//             },
+//         });
+//     }
+// };
 exports.getAll = async (req, res) => {
     const page = parseInt(req.query.page);
     const limit = parseInt(req.query.limit);
@@ -545,7 +699,10 @@ exports.getAll = async (req, res) => {
             $lookup: {
                 from: "categories",
                 let: { category: "$category" },
-                pipeline: [{ $match: { $expr: { $eq: ["$_id", "$$category"] } } }, { $project: { name: 1, _id: 0 } }],
+                pipeline: [
+                    { $match: { $expr: { $eq: ["$_id", "$$category"] } } },
+                    { $project: { name: 1, _id: 0 } },
+                ],
                 as: "category",
             },
         },
@@ -619,7 +776,10 @@ exports.getOneClient = async (req, res) => {
             $lookup: {
                 from: "brands",
                 let: { brand: "$brand" },
-                pipeline: [{ $match: { $expr: { $eq: ["$_id", "$$brand"] } } }, { $project: { name: 1, slug: 1, _id: 1 } }],
+                pipeline: [
+                    { $match: { $expr: { $eq: ["$_id", "$$brand"] } } },
+                    { $project: { name: 1, slug: 1, _id: 1 } },
+                ],
                 as: "brand",
             },
         },
@@ -628,7 +788,10 @@ exports.getOneClient = async (req, res) => {
             $lookup: {
                 from: "categories",
                 let: { category: "$category" },
-                pipeline: [{ $match: { $expr: { $eq: ["$_id", "$$category"] } } }, { $project: { __v: 0, createdAt: 0, updatedAt: 0 } }],
+                pipeline: [
+                    { $match: { $expr: { $eq: ["$_id", "$$category"] } } },
+                    { $project: { __v: 0, createdAt: 0, updatedAt: 0 } },
+                ],
                 as: "category",
             },
         },
@@ -750,7 +913,10 @@ exports.getOneSeller = async (req, res) => {
             $lookup: {
                 from: "brands",
                 let: { brand: "$brand" },
-                pipeline: [{ $match: { $expr: { $eq: ["$_id", "$$brand"] } } }, { $project: { name: 1, slug: 1, _id: 1 } }],
+                pipeline: [
+                    { $match: { $expr: { $eq: ["$_id", "$$brand"] } } },
+                    { $project: { name: 1, slug: 1, _id: 1 } },
+                ],
                 as: "brand",
             },
         },
@@ -759,7 +925,10 @@ exports.getOneSeller = async (req, res) => {
             $lookup: {
                 from: "categories",
                 let: { category: "$category" },
-                pipeline: [{ $match: { $expr: { $eq: ["$_id", "$$category"] } } }, { $project: { __v: 0, createdAt: 0, updatedAt: 0 } }],
+                pipeline: [
+                    { $match: { $expr: { $eq: ["$_id", "$$category"] } } },
+                    { $project: { __v: 0, createdAt: 0, updatedAt: 0 } },
+                ],
                 as: "category",
             },
         },

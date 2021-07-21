@@ -1,6 +1,7 @@
 const Order = require("../models/order");
 const Shop = require("../models/shop");
 const Size = require("../models/size");
+const mongoose = require("mongoose");
 exports.create = (req, res) => {
     Order.countDocuments({}, async (err, count) => {
         let summ = 0;
@@ -36,7 +37,9 @@ exports.create = (req, res) => {
         });
 
         if (summ !== req.body.amount) {
-            return res.status(400).json({ success: false, message: "Amount not equal" });
+            return res
+                .status(400)
+                .json({ success: false, message: "Amount not equal" });
         }
         order
             .save()
@@ -55,5 +58,26 @@ exports.getAll = async (req, res) => {
     res.status(200).json({
         success: true,
         data: order,
+    });
+};
+
+exports.getMeOrder = (req, res) => {
+    let status = {};
+    if (req.query.status === "payed") {
+        status = { $match: { status: 1 } };
+    } else if (req.query.status === "onTheWay") {
+        status = { $match: { status: { $and: [{ $gte: 2, $lte: 4 }] } } };
+    } else if (req.query.status === "delivered") {
+        status = { $match: { status: 5 } };
+    }
+    Order.aggregate([
+        { $match: { user: mongoose.Types.ObjectId(req.user) } },
+        status,
+    ]).exec((err, data) => {
+        if (err) return res.status(400).json({ success: false, err });
+        res.status(200).json({
+            success: true,
+            data,
+        });
     });
 };
