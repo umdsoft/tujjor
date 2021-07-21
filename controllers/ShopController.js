@@ -34,13 +34,25 @@ exports.create = async (req, res) => {
             res.status(400).json({ success: false, err });
         });
 };
-exports.getShop = async (req, res) => {
+exports.getShops = async (req, res) => {
     res.status(200).json({
         success: true,
         data: await Shop.find({ status: { $gte: 1 } }).select({ __v: 0 }),
     });
 };
-exports.getContract = async (req, res) => {
+exports.getShopsClient = async (req, res) => {
+    res.status(200).json({
+        success: true,
+        data: await Shop.find({ status: { $gte: 2 } }).select({
+            address: 1,
+            shopName: 1,
+            phone: 1,
+            image: 1,
+            description: 1,
+        }),
+    });
+};
+exports.getContracts = async (req, res) => {
     res.status(200).json({
         success: true,
         data: await Shop.find({ status: 0 })
@@ -53,7 +65,9 @@ exports.getOne = async (req, res) => {
         .select({ user: 0, __v: 0 })
         .then((data) => {
             if (!data) {
-                return res.status(404).json({ success: false, message: "Not found this shop" });
+                return res
+                    .status(404)
+                    .json({ success: false, message: "Not found this shop" });
             }
             return res.status(200).json({ success: true, data });
         })
@@ -66,7 +80,9 @@ exports.getOneAdmin = async (req, res) => {
         .select({ user: 0, __v: 0 })
         .then((data) => {
             if (!data) {
-                return res.status(404).json({ success: false, message: "Not found this shop" });
+                return res
+                    .status(404)
+                    .json({ success: false, message: "Not found this shop" });
             }
             return res.status(200).json({ success: true, data });
         })
@@ -78,13 +94,18 @@ exports.editStatus = async (req, res) => {
     if (!req.body) {
         return res.status(400).json({ success: false, data: "Something is wrong" });
     }
-    await Shop.findOneAndUpdate({ _id: req.params.id }, { $set: { status: 1, category: req.body.category } }, { new: true }, async (err, data) => {
-        if (err) {
-            return res.status(400).json({ success: false, data: "Not Found" });
+    await Shop.findOneAndUpdate(
+        { _id: req.params.id },
+        { $set: { status: 1, category: req.body.category } },
+        { new: true },
+        async (err, data) => {
+            if (err) {
+                return res.status(400).json({ success: false, data: "Not Found" });
+            }
+            await User.findOneAndUpdate({ _id: data.user }, { $set: { role: "seller" } });
+            res.status(200).json({ success: true, data });
         }
-        await User.findOneAndUpdate({ _id: data.user }, { $set: { role: "seller" } });
-        res.status(200).json({ success: true, data });
-    });
+    );
 };
 exports.edit = async (req, res) => {
     const img = { image: `/uploads/shops/${req.file.filename}` };
@@ -92,12 +113,16 @@ exports.edit = async (req, res) => {
         if (err) return res.status(200).json({ success: false, err });
         deleteFile(`/public${data.image}`);
     });
-    await Shop.updateOne({ _id: req.params.id }, { $set: { ...req.body, ...img } }, (err, data) => {
-        if (err) {
-            return res.status(400).json({ success: false, data: "Not Found" });
+    await Shop.updateOne(
+        { _id: req.params.id },
+        { $set: { ...req.body, ...img } },
+        (err, data) => {
+            if (err) {
+                return res.status(400).json({ success: false, data: "Not Found" });
+            }
+            res.status(200).json({ success: true, data });
         }
-        res.status(200).json({ success: true, data });
-    });
+    );
 };
 exports.delete = async (req, res) => {
     await Shop.findOne({ _id: req.params.id }, async (err, data) => {
@@ -110,7 +135,10 @@ exports.delete = async (req, res) => {
         deleteFile(`/public${data.image}`);
         await Shop.findByIdAndDelete({ _id: data._id }, async (err, data) => {
             if (data) {
-                await User.findOneAndUpdate({ _id: data.user }, { $set: { role: "client" } });
+                await User.findOneAndUpdate(
+                    { _id: data.user },
+                    { $set: { role: "client" } }
+                );
             }
         });
         res.status(200).json({
