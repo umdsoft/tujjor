@@ -827,16 +827,10 @@ exports.getOneClient = async (req, res) => {
                     as: "user",
                 },
             },
+            { $unwind: "$user" },
             {
                 $project: {
-                    name: {
-                        $let: {
-                            vars: {
-                                user: "$user",
-                            },
-                            in: "$$user.name",
-                        },
-                    },
+                    name: "$user.name",
                     comment: 1,
                     raiting: 1,
                     _id: 0,
