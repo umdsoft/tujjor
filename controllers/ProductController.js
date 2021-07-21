@@ -817,12 +817,12 @@ exports.getOneClient = async (req, res) => {
     ]).exec((err, data) => {
         Comment.aggregate([
             { $match: { productId: mongoose.Types.ObjectId(data._id) } },
-            {
-                from: "users",
-                localField: "userId",
-                foreignField: "_id",
-                as: "user",
-            },
+            // {
+            //     from: "users",
+            //     localField: "userId",
+            //     foreignField: "_id",
+            //     as: "user",
+            // },
             // {
             //     $project: {
             //         user: {
