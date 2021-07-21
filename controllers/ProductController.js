@@ -573,7 +573,7 @@ exports.filter = async (req, res) => {
         if (err) return res.status(400).json({ success: false, err });
 
         Product.aggregate([
-            ...aggregateStart,
+            // ...aggregateStart,
             {
                 $group: {
                     _id: null,
