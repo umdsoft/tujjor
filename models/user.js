@@ -15,10 +15,6 @@ const UserSchema = new mongoose.Schema(
     },
     { timestamps: true }
 );
-UserSchema.pre("remove", async function (next) {
-    await this.model("Shop").deleteOne({ user: this._id });
-    next();
-});
 // Sign JWT and return
 UserSchema.methods.getSignedJwtToken = function () {
     return jwt.sign({ id: this._id }, process.env.JWT_SECRET, {

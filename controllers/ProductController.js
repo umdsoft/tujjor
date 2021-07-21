@@ -12,6 +12,7 @@ const {
     sharpProductImage,
     sharpFooterImage,
 } = require("../utils/product");
+const Comment = require("../models/Comment");
 const deleteParam = (id) => {
     Param.findOneAndDelete({ productId: id }).exec((err, param) => {
         console.log("DELETE PARAM", param);
@@ -183,6 +184,20 @@ exports.createFooterImage = async (req, res) => {
                 message: err.message || "Something wrong while creating the image.",
             });
         });
+};
+
+exports.comment = async (req, res) => {
+    const comment = new Comment({
+        userId: req.user,
+        productId: productId,
+        comment: req.body.comment,
+        raiting: req.body.raiting,
+    });
+    comment.save().exec((err, data) => {
+        if (err) return res.status(400).json({ success: false, err });
+
+        res.status(201).json({ success: true, data });
+    });
 };
 
 //Discount
@@ -797,8 +812,30 @@ exports.getOneClient = async (req, res) => {
             },
         },
     ]).exec((err, data) => {
-        if (err) return res.status(400).json({ success: false, err });
-        res.status(200).json({ success: true, data });
+        Comment.aggregate([
+            { $match: { productId: mongoose.Types.ObjectId(data._id) } },
+            {
+                from: "users",
+                localField: "userId",
+                foreignField: "_id",
+                as: "user",
+            },
+            {
+                $project: {
+                    user: {
+                        name: 1,
+                        _id: 0,
+                    },
+                    comment: 1,
+                    raiting: 1,
+                    _id: 0,
+                },
+            },
+        ]).exec((commentErr, commentData) => {
+            if (err) return res.status(400).json({ success: false, err });
+            if (commentErr) return res.status(400).json({ success: false, commentErr });
+            res.status(200).json({ success: true, data, comments: commentData });
+        });
     });
 };
 
