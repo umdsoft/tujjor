@@ -512,11 +512,11 @@ exports.filter = async (req, res) => {
         },
         {
             $project: {
-                name: 1,
-                category: "$category.name",
-                image: 1,
-                brand: 1,
-                slug: 1,
+                // name: 1,
+                // category: "$category.name",
+                // image: 1,
+                // brand: 1,
+                // slug: 1,
                 price: {
                     $let: {
                         vars: {
