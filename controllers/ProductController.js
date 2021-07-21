@@ -418,37 +418,37 @@ exports.filter = async (req, res) => {
     if (req.body.sort) {
         switch (req.body.sort) {
             case "new": {
-                aggregateSort = {
+                aggregateStart.push({
                     $sort: {
                         createdAt: -1,
                     },
-                };
+                });
                 break;
             }
             case "popular": {
-                aggregateSort = {
+                aggregateStart.push({
                     $sort: {
                         count: -1,
                     },
-                };
+                });
                 break;
             }
 
             case "priceUp": {
-                aggregateSort = {
+                aggregateStart.push({
                     $sort: {
                         price: 1,
                     },
-                };
+                });
                 break;
             }
 
             case "priceDown": {
-                aggregateSort = {
+                aggregateStart.push({
                     $sort: {
                         price: -1,
                     },
-                };
+                });
                 break;
             }
             default: {
@@ -456,7 +456,6 @@ exports.filter = async (req, res) => {
         }
     }
     await Product.aggregate([
-        // aggregateSort,
         { $skip: (page - 1) * limit },
         { $limit: limit },
         ...aggregateStart,
