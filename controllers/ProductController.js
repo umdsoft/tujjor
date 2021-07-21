@@ -321,7 +321,7 @@ exports.filter = async (req, res) => {
         return res.status(400).json({ success: false, message: "Error page or limit" });
     }
     let aggregateStart = [];
-    let aggregateSort = [];
+    let aggregateEnd = [];
     if (req.body.search && req.body.search.length) {
         aggregateStart.push({
             $match: {
@@ -398,7 +398,7 @@ exports.filter = async (req, res) => {
         });
     }
     if (req.body.start && req.body.start != 0) {
-        aggregateStart.push({
+        aggregateEnd.push({
             $match: {
                 price: {
                     $gte: parseInt(req.body.start),
@@ -407,7 +407,7 @@ exports.filter = async (req, res) => {
         });
     }
     if (req.body.end && req.body.end != 0) {
-        aggregateStart.push({
+        aggregateEnd.push({
             $match: {
                 price: {
                     $lte: parseInt(req.body.end),
@@ -418,7 +418,7 @@ exports.filter = async (req, res) => {
     if (req.body.sort) {
         switch (req.body.sort) {
             case "new": {
-                aggregateSort.push({
+                aggregateEnd.push({
                     $sort: {
                         createdAt: -1,
                     },
@@ -426,7 +426,7 @@ exports.filter = async (req, res) => {
                 break;
             }
             case "popular": {
-                aggregateSort.push({
+                aggregateEnd.push({
                     $sort: {
                         count: -1,
                     },
@@ -435,7 +435,7 @@ exports.filter = async (req, res) => {
             }
 
             case "priceUp": {
-                aggregateSort.push({
+                aggregateEnd.push({
                     $sort: {
                         price: 1,
                     },
@@ -444,7 +444,7 @@ exports.filter = async (req, res) => {
             }
 
             case "priceDown": {
-                aggregateSort.push({
+                aggregateEnd.push({
                     $sort: {
                         price: -1,
                     },
@@ -525,48 +525,7 @@ exports.filter = async (req, res) => {
                 },
             },
         },
-        ...aggregateSort,
-        // {
-        //     $facet: {
-        //         brands: [
-        //             {
-        //                 $group: {
-        //                     _id: null,
-        //                     brands: {
-        //                         $addToSet: "$brand._id",
-        //                     },
-        //                 },
-        //             },
-        //         ],
-        //         count: [{ $group: { _id: null, count: { $sum: 1 } } }],
-        //         data: [
-        //             { $skip: (page - 1) * limit },
-        //             { $limit: limit },
-        //             { $project: { brand: 0 } },
-        //         ],
-        //     },
-        // },
-        // {
-        //     $project: {
-        //         data: 1,
-        //         count: {
-        //             $let: {
-        //                 vars: {
-        //                     count: { $arrayElemAt: ["$count", 0] },
-        //                 },
-        //                 in: "$$count.count",
-        //             },
-        //         },
-        //         brands: {
-        //             $let: {
-        //                 vars: {
-        //                     brands: { $arrayElemAt: ["$brands", 0] },
-        //                 },
-        //                 in: "$$brands.brands",
-        //             },
-        //         },
-        //     },
-        // },
+        ...aggregateEnd,
     ])
         .skip((page - 1) * limit)
         .limit(limit)
@@ -588,108 +547,12 @@ exports.filter = async (req, res) => {
                 res.status(200).json({
                     success: true,
                     data: data,
-                    brand: dataCount[0].brands,
+                    brands: dataCount[0].brands,
                     count: dataCount[0].count,
                 });
             });
         });
 };
-// exports.count = async (req, res) => {
-//     let aggregateStart = [];
-//     if (req.body.search && req.body.search.length) {
-//         aggregateStart.push({
-//             $match: {
-//                 $or: [
-//                     {
-//                         "name.uz": {
-//                             $regex: `.*${req.body.search}.*`,
-//                             $options: "i",
-//                         },
-//                     },
-//                     {
-//                         "name.ru": {
-//                             $regex: `.*${req.body.search}.*`,
-//                             $options: "i",
-//                         },
-//                     },
-//                     {
-//                         "brand.name": {
-//                             $regex: `.*${req.body.search}.*`,
-//                             $options: "i",
-//                         },
-//                     },
-//                     {
-//                         "category.name.uz": {
-//                             $regex: `.*${req.body.search}.*`,
-//                             $options: "i",
-//                         },
-//                     },
-//                     {
-//                         "category.name.ru": {
-//                             $regex: `.*${req.body.search}.*`,
-//                             $options: "i",
-//                         },
-//                     },
-//                     {
-//                         "description.uz": {
-//                             $regex: `.*${req.body.search}.*`,
-//                             $options: "i",
-//                         },
-//                     },
-//                     {
-//                         "description.ru": {
-//                             $regex: `.*${req.body.search}.*`,
-//                             $options: "i",
-//                         },
-//                     },
-//                     {
-//                         "tags.name": {
-//                             $regex: `.*${req.body.search}.*`,
-//                             $options: "i",
-//                         },
-//                     },
-//                 ],
-//             },
-//         });
-//     }
-
-//     if (req.body.category && req.body.category.length) {
-//         aggregateStart.push({
-//             $match: {
-//                 category: {
-//                     $in: req.body.category.map((key) => mongoose.Types.ObjectId(key)),
-//                 },
-//             },
-//         });
-//     }
-//     if (req.body.brand && req.body.brand.length) {
-//         aggregateStart.push({
-//             $match: {
-//                 brand: {
-//                     $in: req.body.brand.map((key) => mongoose.Types.ObjectId(key)),
-//                 },
-//             },
-//         });
-//     }
-//     if (req.body.start && req.body.start != 0) {
-//         aggregateStart.push({
-//             $match: {
-//                 price: {
-//                     $gte: parseInt(req.body.start),
-//                 },
-//             },
-//         });
-//     }
-//     if (req.body.end && req.body.end != 0) {
-//         aggregateStart.push({
-//             $match: {
-//                 price: {
-//                     $lte: parseInt(req.body.end),
-//                 },
-//             },
-//         });
-//     }
-// };
 exports.getAll = async (req, res) => {
     const page = parseInt(req.query.page);
     const limit = parseInt(req.query.limit);
