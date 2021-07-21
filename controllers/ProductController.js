@@ -815,8 +815,10 @@ exports.getOneClient = async (req, res) => {
             },
         },
     ]).exec((err, data) => {
+        if (err) return res.status(400).json({ success: false, err });
+
         Comment.aggregate([
-            { $match: { productId: mongoose.Types.ObjectId(data._id) } },
+            { $match: { productId: mongoose.Types.ObjectId(data[0]._id) } },
             // {
             //     from: "users",
             //     localField: "userId",
@@ -834,9 +836,8 @@ exports.getOneClient = async (req, res) => {
             //         _id: 0,
             //     },
             // },
-        ]).exec((commentErr, commentData) => {
+        ]).exec((err, commentData) => {
             if (err) return res.status(400).json({ success: false, err });
-            if (commentErr) return res.status(400).json({ success: false, commentErr });
             res.status(200).json({ success: true, data, comments: commentData });
         });
     });
