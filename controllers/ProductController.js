@@ -400,7 +400,7 @@ exports.filter = async (req, res) => {
     if (req.body.shop) {
         aggregateStart.push({
             $match: {
-                shop: shop,
+                shop: mongoose.Types.ObjectId(req.body.shop),
             },
         });
     }
