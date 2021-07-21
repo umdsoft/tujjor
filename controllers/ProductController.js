@@ -193,11 +193,14 @@ exports.commentCreate = async (req, res) => {
         comment: req.body.comment,
         raiting: req.body.raiting,
     });
-    comment.save().exec((err, data) => {
-        if (err) return res.status(400).json({ success: false, err });
-
-        res.status(201).json({ success: true, data });
-    });
+    comment
+        .save()
+        .then((data) => {
+            res.status(201).json({ success: true, data });
+        })
+        .catch((err) => {
+            res.status(400).json({ success: false, err });
+        });
 };
 
 //Discount
