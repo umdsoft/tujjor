@@ -456,10 +456,10 @@ exports.filter = async (req, res) => {
         }
     }
     await Product.aggregate([
-        aggregateSort,
+        // aggregateSort,
         { $skip: (page - 1) * limit },
         { $limit: limit },
-        ...aggregateStart,
+        // ...aggregateStart,
         {
             $lookup: {
                 from: "tags",
@@ -573,7 +573,7 @@ exports.filter = async (req, res) => {
         if (err) return res.status(400).json({ success: false, err });
 
         Product.aggregate([
-            // ...aggregateStart,
+            ...aggregateStart,
             {
                 $group: {
                     _id: null,
