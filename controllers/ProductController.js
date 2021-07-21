@@ -321,7 +321,7 @@ exports.filter = async (req, res) => {
         return res.status(400).json({ success: false, message: "Error page or limit" });
     }
     let aggregateStart = [];
-    let aggregateSort = {};
+    let aggregateSort = [];
     if (req.body.search && req.body.search.length) {
         aggregateStart.push({
             $match: {
@@ -418,7 +418,7 @@ exports.filter = async (req, res) => {
     if (req.body.sort) {
         switch (req.body.sort) {
             case "new": {
-                aggregateStart.push({
+                aggregateSort.push({
                     $sort: {
                         createdAt: -1,
                     },
@@ -426,7 +426,7 @@ exports.filter = async (req, res) => {
                 break;
             }
             case "popular": {
-                aggregateStart.push({
+                aggregateSort.push({
                     $sort: {
                         count: -1,
                     },
@@ -435,7 +435,7 @@ exports.filter = async (req, res) => {
             }
 
             case "priceUp": {
-                aggregateStart.push({
+                aggregateSort.push({
                     $sort: {
                         price: 1,
                     },
@@ -444,7 +444,7 @@ exports.filter = async (req, res) => {
             }
 
             case "priceDown": {
-                aggregateStart.push({
+                aggregateSort.push({
                     $sort: {
                         price: -1,
                     },
@@ -510,6 +510,7 @@ exports.filter = async (req, res) => {
                 as: "sizes",
             },
         },
+        ...aggregateSort,
         {
             $project: {
                 // name: 1,
