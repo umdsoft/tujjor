@@ -510,7 +510,6 @@ exports.filter = async (req, res) => {
                 as: "sizes",
             },
         },
-        ...aggregateSort,
         {
             $project: {
                 // name: 1,
@@ -528,6 +527,7 @@ exports.filter = async (req, res) => {
                 },
             },
         },
+        ...aggregateSort,
         // {
         //     $facet: {
         //         brands: [
