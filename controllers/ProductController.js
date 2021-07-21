@@ -321,9 +321,10 @@ exports.filter = async (req, res) => {
         return res.status(400).json({ success: false, message: "Error page or limit" });
     }
     let aggregateStart = [];
+    let aggregateSearch = [];
     let aggregateEnd = [];
     if (req.body.search && req.body.search.length) {
-        aggregateStart.push({
+        aggregateSearch.push({
             $match: {
                 $or: [
                     {
@@ -418,7 +419,7 @@ exports.filter = async (req, res) => {
     if (req.body.sort) {
         switch (req.body.sort) {
             case "new": {
-                aggregateEnd.push({
+                aggregateStart.push({
                     $sort: {
                         createdAt: -1,
                     },
@@ -490,6 +491,7 @@ exports.filter = async (req, res) => {
             },
         },
         { $unwind: "$brand" },
+        ...aggregateSearch,
         {
             $lookup: {
                 from: "sizes",
@@ -510,11 +512,11 @@ exports.filter = async (req, res) => {
         },
         {
             $project: {
-                // name: 1,
-                // category: "$category.name",
-                // image: 1,
-                // brand: 1,
-                // slug: 1,
+                name: 1,
+                category: "$category.name",
+                image: 1,
+                brand: 1,
+                slug: 1,
                 price: {
                     $let: {
                         vars: {
@@ -526,32 +528,56 @@ exports.filter = async (req, res) => {
             },
         },
         ...aggregateEnd,
-    ])
-        .skip((page - 1) * limit)
-        .limit(limit)
-        .exec(async (err, data) => {
-            if (err) return res.status(400).json({ success: false, err });
-
-            Product.aggregate([
-                ...aggregateStart,
-                {
-                    $group: {
-                        _id: null,
-                        count: { $sum: 1 },
-                        brands: { $addToSet: "$brand" },
+        {
+            $facet: {
+                brands: [
+                    {
+                        $group: {
+                            _id: null,
+                            brands: {
+                                $addToSet: "$brand._id",
+                            },
+                        },
+                    },
+                ],
+                count: [{ $group: { _id: null, count: { $sum: 1 } } }],
+                data: [
+                    { $skip: (page - 1) * limit },
+                    { $limit: limit },
+                    { $project: { brand: 0 } },
+                ],
+            },
+        },
+        {
+            $project: {
+                data: 1,
+                count: {
+                    $let: {
+                        vars: {
+                            count: { $arrayElemAt: ["$count", 0] },
+                        },
+                        in: "$$count.count",
                     },
                 },
-            ]).exec((errCount, dataCount) => {
-                if (err) return res.status(400).json({ success: false, err });
-                if (errCount) return res.status(400).json({ success: false, errCount });
-                res.status(200).json({
-                    success: true,
-                    data: data,
-                    brands: dataCount[0].brands,
-                    count: dataCount[0].count,
-                });
-            });
+                brands: {
+                    $let: {
+                        vars: {
+                            brands: { $arrayElemAt: ["$brands", 0] },
+                        },
+                        in: "$$brands.brands",
+                    },
+                },
+            },
+        },
+    ]).exec(async (err, data) => {
+        if (err) return res.status(400).json({ success: false, err });
+        res.status(200).json({
+            success: true,
+            data: data[0].data,
+            brands: data[0].brands,
+            count: Math.ceil(data[0].count / limit),
         });
+    });
 };
 exports.getAll = async (req, res) => {
     const page = parseInt(req.query.page);
