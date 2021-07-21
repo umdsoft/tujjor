@@ -379,7 +379,13 @@ exports.filter = async (req, res) => {
             },
         });
     }
-
+    if (req.body.shop) {
+        aggregateStart.push({
+            $match: {
+                shop: shop,
+            },
+        });
+    }
     if (req.body.category && req.body.category.length) {
         aggregateStart.push({
             $match: {
