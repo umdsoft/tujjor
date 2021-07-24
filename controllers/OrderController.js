@@ -66,7 +66,7 @@ exports.getMeOrder = (req, res) => {
     if (req.query.status === "payed") {
         status = { $match: { status: 1 } };
     } else if (req.query.status === "onTheWay") {
-        status = { $match: { status: { $lte: 4 } } };
+        status = { $match: { status: {$gt: 2, $lt: 4 } } };
     } else if (req.query.status === "delivered") {
         status = { $match: { status: 5 } };
     }
