@@ -1,6 +1,7 @@
 const User = require("../models/user");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
+const { deleteFile } = require("../utils");
 
 const sendTokenResponse = (user, statusCode, res) => {
     // Create token
@@ -8,7 +9,9 @@ const sendTokenResponse = (user, statusCode, res) => {
     const token = user.getSignedJwtToken();
     console.log("Working...........");
     const options = {
-        expires: new Date(Date.now() + process.env.JWT_COOKIE_EXPIRE * 24 * 60 * 60 * 1000),
+        expires: new Date(
+            Date.now() + process.env.JWT_COOKIE_EXPIRE * 24 * 60 * 60 * 1000
+        ),
         httpOnly: true,
     };
     if (process.env.NODE_ENV === "production") {
@@ -135,14 +138,33 @@ exports.delete = async (req, res) => {
     if (!result) {
         return res.status(400).json({ success: false, data: "This id not found" });
     }
+    deleteFile(`/public${result.image}`);
     return res.status(200).json({ success: true, data: [] });
 };
 
-exports.edit = (req, res) => {
-    User.updateOne({ _id: req.user }, { $set: req.body }, { new: true }).exec((err, data) => {
+exports.edit = async (req, res) => {
+    const { filename } = req.file;
+    await sharp(path.join(path.dirname(__dirname) + `/public/temp/${filename}`))
+        .resize(100, 100)
+        .toFile(
+            path.join(path.dirname(__dirname) + `/public/uploads/users/${filename}`),
+            (err) => {
+                if (err) {
+                    console.log(err);
+                }
+                deleteFile(`/public/temp/${filename}`);
+            }
+        );
+    const obj = {
+        ...req.body,
+        image: `/uploads/users/${filename}`,
+    };
+    User.updateOne({ _id: req.user }, { $set: obj }, { new: true }).exec((err, data) => {
         if (err) {
             res.status(400).json({ success: false, err });
         }
         res.status(201).json({ success: true, data: data });
     });
 };
+
+exports.resetPassword = async (req, res) => {};

@@ -6,6 +6,20 @@ const UserSchema = new mongoose.Schema(
         password: { type: String, required: true },
         name: { type: String, required: true, trim: true },
         email: { type: String, unique: true, required: true },
+        address: {
+            region: {
+                type: mongoose.Schema.ObjectId,
+                ref: "Region",
+            },
+            district: {
+                type: mongoose.Schema.ObjectId,
+                ref: "District",
+            },
+            address: {
+                type: String,
+            },
+        },
+        image: { type: String },
         role: {
             type: String,
             required: true,

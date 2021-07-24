@@ -12,15 +12,18 @@ exports.create = (req, res) => {
             return res.status(400).json({ success: false, err });
         });
 };
-exports.getAll = async (req, res) => {
-    return res.status(200).json({ success: true, data: await Tag.find() });
+exports.all = async (req, res) => {
+    Tag.find({}, (err, data) => {
+        if (err) {
+            res.status(500).json({ success: false, err });
+        }
+        res.status(200).json({ success: true, data });
+    });
 };
 exports.delete = async (req, res) => {
     await Tag.findByIdAndDelete({ _id: req.params.id }, (err, data) => {
         if (err) {
-            return res
-                .status(400)
-                .json({ success: false, message: "Not found" });
+            return res.status(400).json({ success: false, message: "Not found" });
         }
         res.status(200).json({ success: true });
     });

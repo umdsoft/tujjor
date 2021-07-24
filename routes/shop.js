@@ -20,6 +20,7 @@ const upload = multer({ storage: storage });
 router.get("/all", ShopController.getShops);
 router.get("/contract/all", ShopController.getContracts);
 router.get("/one/:id", ShopController.getOneAdmin);
+router.get("/one/:slug", ShopController.getOneAdmin);
 router.put("/status/:id", ShopController.editStatus);
 router.put("/:id", upload.single("image"), validateFile, ShopController.edit);
 router.delete("/:id", ShopController.delete);
@@ -35,6 +36,7 @@ router.post(
     validateFile,
     ShopController.create
 );
+router.get("/client/:slug", ShopController.getOneClient);
 router.get("/:user", ShopController.getOne);
 router.get("/client/all", ShopController.getShopsClient);
 

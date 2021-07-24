@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-
 const Product = require("../models/product");
 const Param = require("../models/param");
 const Size = require("../models/size");
@@ -12,65 +11,14 @@ const {
     sharpProductImage,
     sharpFooterImage,
 } = require("../utils/product");
+const {
+    deleteParam,
+    deleteSizeByProduct,
+    deleteImage,
+    deleteFooterImage,
+    deleteSizeByParam,
+} = require("../utils/preModel");
 const Comment = require("../models/Comment");
-const deleteParam = (id) => {
-    Param.findOneAndDelete({ productId: id }).exec((err, param) => {
-        console.log("DELETE PARAM", param);
-        if (err) {
-            console.log(err);
-            return;
-        }
-        if (param) {
-            deleteFile(`/public${param.image}`);
-            deleteParam(id);
-        }
-    });
-};
-const deleteSizeByProduct = (id) => {
-    Size.deleteMany({ productId: id }, (err, data) => {
-        console.log("DELETE Size", data);
-        if (err) {
-            console.log(err);
-            return;
-        }
-    });
-};
-const deleteSizeByParam = (id) => {
-    Size.deleteMany({ paramId: id }, (err, data) => {
-        console.log("DELETE Size", data);
-        if (err) {
-            console.log(err);
-            return;
-        }
-    });
-};
-const deleteImage = (id) => {
-    ProductImage.findOneAndDelete({ productId: id }).exec((err, image) => {
-        console.log("DELETE Image", image);
-        if (err) {
-            console.log(err);
-            return;
-        }
-        if (image) {
-            deleteFile(`/public${image?.image}`);
-            deleteImage(id);
-        }
-    });
-};
-const deleteFooterImage = (id) => {
-    FooterImage.findOneAndDelete({ productId: id }).exec((err, image) => {
-        console.log("DELETE footerImage", image);
-        if (err) {
-            console.log(err);
-            return;
-        }
-        if (image) {
-            deleteFile(`/public${image?.image}`);
-            deleteFooterImage(id);
-        }
-    });
-};
-
 //create
 exports.create = async (req, res) => {
     const { filename } = req.file;
@@ -284,7 +232,6 @@ exports.delete = (req, res) => {
             }
             deleteFile(`/public${product.image}`);
             deleteParam(product._id);
-            deleteSizeByProduct(product._id);
             deleteImage(product._id);
             deleteFooterImage(product._id);
             res.json({ message: "Product deleted successfully!" });

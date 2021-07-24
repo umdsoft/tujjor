@@ -8,9 +8,7 @@ exports.sharpProductImage = async (filename) => {
             quality: 100,
         })
         .toFile(
-            path.join(
-                path.dirname(__dirname) + `/public/uploads/products/${filename}`
-            ),
+            path.join(path.dirname(__dirname) + `/public/uploads/products/${filename}`),
             (err) => {}
         );
     await sharp(path.join(path.dirname(__dirname) + `/public/temp/${filename}`))
@@ -20,8 +18,7 @@ exports.sharpProductImage = async (filename) => {
         })
         .toFile(
             path.join(
-                path.dirname(__dirname) +
-                    `/public/uploads/products/smalls/${filename}`
+                path.dirname(__dirname) + `/public/uploads/products/smalls/${filename}`
             ),
             (err) => {
                 if (err) {
@@ -39,8 +36,7 @@ exports.sharpParamImage = async (filename) => {
         })
         .toFile(
             path.join(
-                path.dirname(__dirname) +
-                    `/public/uploads/products/colors/${filename}`
+                path.dirname(__dirname) + `/public/uploads/products/colors/${filename}`
             ),
             (err) => {
                 if (err) {
@@ -58,8 +54,7 @@ exports.sharpFrontImage = async (filename) => {
         })
         .toFile(
             path.join(
-                path.dirname(__dirname) +
-                    `/public/uploads/products/cards/${filename}`
+                path.dirname(__dirname) + `/public/uploads/products/cards/${filename}`
             ),
             (err) => {
                 if (err) {
@@ -74,8 +69,7 @@ exports.sharpFooterImage = async (filename) => {
         .resize({ with: 1200 })
         .toFile(
             path.join(
-                path.dirname(__dirname) +
-                    `/public/uploads/products/footer/${filename}`
+                path.dirname(__dirname) + `/public/uploads/products/footer/${filename}`
             ),
             (err) => {
                 if (err) {

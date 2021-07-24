@@ -1,6 +1,7 @@
 const Shop = require("../models/shop");
 const User = require("../models/user");
 const { getSlug, deleteFile } = require("../utils");
+const { deleteProduct } = require("../utils/preModel");
 
 exports.create = async (req, res) => {
     const shop = new Shop({
@@ -90,6 +91,21 @@ exports.getOneAdmin = async (req, res) => {
             return res.status(500).json({ success: false, message: err });
         });
 };
+exports.getOneClient = async (req, res) => {
+    await Shop.findById({ _id: req.params.id })
+        .select({ shopName: 1, address: 1, phone: 1, email: 1, description: 1, image: 1 })
+        .then((data) => {
+            if (!data) {
+                return res
+                    .status(404)
+                    .json({ success: false, message: "Not found this shop" });
+            }
+            return res.status(200).json({ success: true, data });
+        })
+        .catch((err) => {
+            return res.status(500).json({ success: false, message: err });
+        });
+};
 exports.editStatus = async (req, res) => {
     if (!req.body) {
         return res.status(400).json({ success: false, data: "Something is wrong" });
@@ -133,6 +149,7 @@ exports.delete = async (req, res) => {
         deleteFile(`/public${data.fileContract}`);
         deleteFile(`/public${data.fileCertificate}`);
         deleteFile(`/public${data.image}`);
+        deleteProduct(data._id, "shop");
         await Shop.findByIdAndDelete({ _id: data._id }, async (err, data) => {
             if (data) {
                 await User.findOneAndUpdate(
