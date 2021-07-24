@@ -143,22 +143,28 @@ exports.delete = async (req, res) => {
 };
 
 exports.edit = async (req, res) => {
-    const { filename } = req.file;
-    await sharp(path.join(path.dirname(__dirname) + `/public/temp/${filename}`))
-        .resize(100, 100)
-        .toFile(
-            path.join(path.dirname(__dirname) + `/public/uploads/users/${filename}`),
-            (err) => {
-                if (err) {
-                    console.log(err);
+    let filename, obj;
+
+    if(req.file){
+        filename = req.file.filename
+        await sharp(path.join(path.dirname(__dirname) + `/public/temp/${filename}`))
+            .resize(100, 100)
+            .toFile(
+                path.join(path.dirname(__dirname) + `/public/uploads/users/${filename}`),
+                (err) => {
+                    if (err) {
+                        console.log(err);
+                    }
+                    deleteFile(`/public/temp/${filename}`);
                 }
-                deleteFile(`/public/temp/${filename}`);
-            }
-        );
-    const obj = {
-        ...req.body,
-        image: `/uploads/users/${filename}`,
-    };
+            );
+            obj = {
+                ...req.body,
+                image: `/uploads/users/${filename}`,
+            };
+    } else {
+        obj = req.body
+    }
     User.updateOne({ _id: req.user }, { $set: obj }, { new: true }).exec((err, data) => {
         if (err) {
             res.status(400).json({ success: false, err });
