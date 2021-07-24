@@ -94,7 +94,7 @@ exports.getOneAdmin = async (req, res) => {
         });
 };
 exports.getOneClient = async (req, res) => {
-    await Shop.findById({ _id: req.params.id })
+    await Shop.findById({ slug: req.params.slug })
         .select({ shopName: 1, address: 1, phone: 1, email: 1, description: 1, image: 1 })
         .then((data) => {
             if (!data) {
