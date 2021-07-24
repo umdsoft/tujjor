@@ -1,5 +1,7 @@
 const User = require("../models/user");
 const jwt = require("jsonwebtoken");
+const sharp = require("sharp");
+const path = require("path");
 const bcrypt = require("bcrypt");
 const { deleteFile } = require("../utils");
 
