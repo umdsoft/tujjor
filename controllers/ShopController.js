@@ -95,7 +95,7 @@ exports.getOneAdmin = async (req, res) => {
 };
 exports.getOneClient = async (req, res) => {
     await Shop.findOne({ slug: req.params.slug })
-        .select({ _id: 0, shopName: 1, address: 1, phone: 1, email: 1, description: 1, image: 1 })
+        .select({shopName: 1, address: 1, phone: 1, email: 1, description: 1, image: 1 })
         .then((data) => {
             if (!data) {
                 return res
