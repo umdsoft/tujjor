@@ -38,6 +38,6 @@ router.post(
 );
 router.get("/client/:slug", ShopController.getOneClient);
 router.get("/:user", ShopController.getOne);
-router.get("/filter", ShopController.getShopsClient);
+router.get("/all/filter", ShopController.getShopsClient);
 
 module.exports = router;
