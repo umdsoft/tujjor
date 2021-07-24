@@ -1,13 +1,14 @@
-const Message = require("../controllers/MessageController");
+const Message = require("../models/message");
 exports.create = async (req, res) => {
-    new Message({
+    const message = new Message({
         name: req.body.name,
         phone: req.body.phone,
         email: req.body.email,
         message: req.body.message,
         type: "client-admin",
     })
-        .save()
+        
+    message.save()
         .then((data) => {
             res.status(201).json({ success: true, data });
         })
