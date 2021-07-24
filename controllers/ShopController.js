@@ -45,10 +45,12 @@ exports.getShopsClient = async (req, res) => {
     res.status(200).json({
         success: true,
         data: await Shop.find({ status: { $gte: 2 } }).select({
+            _id: 0,
             address: 1,
             shopName: 1,
             phone: 1,
             image: 1,
+            slug: 1,
             description: 1,
         }),
     });
