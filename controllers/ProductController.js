@@ -153,10 +153,21 @@ exports.commentCreate = async (req, res) => {
 
 //Discount
 exports.createDiscount = async (req, res) => {
+    if(!(req.body.discount && req.body.start && req.body.end && req.body.products.length)){
+        res.status(400).json({success: false, message: "Something wrong"})
+    }
+    const obj = {
+        discount: req.body.discount,
+        discount_start: new Date(req.body.start),
+        discount_end: new Date(req.body.end),
+    }
     Size.updateMany(
-        { $match: { $expr: { $eq: req.body.products } } },
-        { $set: req.body.discount }
-    );
+        { $match: { $expr: { $eq: req.body.products.map((key) => mongoose.Types.ObjectId(key))} } },
+        { $set: obj }
+    ).exec((err, data)=>{
+        if(err) return res.status(400).json({ success: false, err})
+        res.status(200).json({success: true, data})
+    })
 };
 
 exports.createDiscountAll = async (req, res) => {
@@ -400,7 +411,7 @@ exports.filter = async (req, res) => {
             case "popular": {
                 aggregateEnd.push({
                     $sort: {
-                        count: -1,
+                        views: -1,
                     },
                 });
                 break;

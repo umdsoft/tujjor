@@ -4,6 +4,7 @@ const FooterImage = new mongoose.Schema({
         type: mongoose.Schema.ObjectId,
         ref: "Product",
         required: true,
+        index: true
     },
     image: { type: String, required: true },
 });
