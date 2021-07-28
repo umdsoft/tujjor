@@ -180,6 +180,9 @@ exports.createDiscount = async (req, res) => {
 };
 
 exports.createDiscountAll = async (req, res) => {
+    if(!(req.body.discount && req.body.start && req.body.end && req.body.shop)){
+        res.status(400).json({success: false, message: "Something wrong"})
+    }
     const products = [];
     await Product.aggregate([
         { $match: { shop: mongoose.Types.ObjectId(req.body.shop) } },
