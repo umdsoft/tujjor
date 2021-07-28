@@ -39,6 +39,7 @@ exports.create = async (req, res) => {
         article: req.body.article,
         tags: req.body.tags || "",
         slug: getSlug(req.body.name ? req.body.name.ru : ""),
+        items: req.body.items,
         status: 0,
     });
     product
@@ -178,7 +179,6 @@ exports.createDiscount = async (req, res) => {
         res.status(500).json({success: false, err})
     }
 };
-
 exports.createDiscountAll = async (req, res) => {
     if(!(req.body.discount && req.body.start && req.body.end && req.body.shop)){
        return res.status(400).json({success: false, message: "Something wrong"})
@@ -319,10 +319,9 @@ exports.filter = async (req, res) => {
         return res.status(400).json({ success: false, message: "Error page or limit" });
     }
     let aggregateStart = [];
-    let aggregateSearch = [];
     let aggregateEnd = [];
     if (req.body.search && req.body.search.length) {
-        aggregateSearch.push({
+        aggregateStart.push({
             $match: {
                 $or: [
                     {
@@ -338,19 +337,7 @@ exports.filter = async (req, res) => {
                         },
                     },
                     {
-                        "brand.name": {
-                            $regex: `.*${req.body.search}.*`,
-                            $options: "i",
-                        },
-                    },
-                    {
-                        "category.name.uz": {
-                            $regex: `.*${req.body.search}.*`,
-                            $options: "i",
-                        },
-                    },
-                    {
-                        "category.name.ru": {
+                        "items": {
                             $regex: `.*${req.body.search}.*`,
                             $options: "i",
                         },
@@ -363,12 +350,6 @@ exports.filter = async (req, res) => {
                     },
                     {
                         "description.ru": {
-                            $regex: `.*${req.body.search}.*`,
-                            $options: "i",
-                        },
-                    },
-                    {
-                        "tags.name": {
                             $regex: `.*${req.body.search}.*`,
                             $options: "i",
                         },
@@ -462,40 +443,27 @@ exports.filter = async (req, res) => {
     }
     await Product.aggregate([
         ...aggregateStart,
-        {
-            $lookup: {
-                from: "tags",
-                localField: "tags",
-                foreignField: "_id",
-                as: "tags",
-            },
-        },
-        { $project: { "tags.__v": 0, "tags._id": 0 } },
-        {
-            $lookup: {
-                from: "categories",
-                let: { category: "$category" },
-                pipeline: [
-                    { $match: { $expr: { $eq: ["$_id", "$$category"] } } },
-                    { $project: { name: 1, _id: 0 } },
-                ],
-                as: "category",
-            },
-        },
-        { $unwind: "$category" },
-        {
-            $lookup: {
-                from: "brands",
-                let: { brand: "$brand" },
-                pipeline: [
-                    { $match: { $expr: { $eq: ["$_id", "$$brand"] } } },
-                    { $project: { name: 1 } },
-                ],
-                as: "brand",
-            },
-        },
-        { $unwind: "$brand" },
-        ...aggregateSearch,
+        // {
+        //     $lookup: {
+        //         from: "tags",
+        //         localField: "tags",
+        //         foreignField: "_id",
+        //         as: "tags",
+        //     },
+        // },
+        // { $project: { "tags.__v": 0, "tags._id": 0 } },
+        // {
+        //     $lookup: {
+        //         from: "brands",
+        //         let: { brand: "$brand" },
+        //         pipeline: [
+        //             { $match: { $expr: { $eq: ["$_id", "$$brand"] } } },
+        //             { $project: { name: 1 } },
+        //         ],
+        //         as: "brand",
+        //     },
+        // },
+        // { $unwind: "$brand" },
         {
             $lookup: {
                 from: "sizes",
@@ -506,10 +474,16 @@ exports.filter = async (req, res) => {
                             $expr: { $eq: ["$productId", "$$productId"] },
                         },
                     },
-                    { $project: { price: 1, _id: 0 } },
-                    {
-                        $sort: { price: 1 },
-                    },
+                    {$sort: { price: 1 }},
+                    {$limit: 1},
+                    { $project: {
+                        discount: {
+                            $cond: [ { $and: [{$gte: [ "$discount_start", "$$NOW" ]}, {$lte: [ "$discount_end", "$$NOW" ]}]  }, "$discount",  null ]
+                        },
+                        price: 1, 
+                        _id: 0 
+                    } },
+                    
                 ],
                 as: "sizes",
             },
@@ -517,9 +491,47 @@ exports.filter = async (req, res) => {
         {
             $project: {
                 name: 1,
-                category: "$category.name",
+                category:1,
                 image: 1,
-                brand: 1,
+                slug: 1,
+                createdAt: 1,
+                views: 1,
+                price: {
+                    $let: {
+                        vars: {
+                            size: { $arrayElemAt: ["$sizes", 0] },
+                        },
+                        in: "$$size.price",
+                    },
+                },
+                discount: {
+                    $let: {
+                        vars: {
+                            size: { $arrayElemAt: ["$sizes", 0] },
+                        },
+                        in: "$$size.discount",
+                    },
+                },
+            },
+        },
+        ...aggregateEnd,
+        { $skip: (page - 1) * limit },
+        { $limit: limit },
+        {
+            $lookup:
+                {
+                    from: "categories",
+                    localField: "category",
+                    foreignField: "_id",
+                    as: "category"
+                }
+        },
+        { $unwind: "$category" },
+        {
+            $project: {
+                name: 1,
+                category:"$category.name",
+                image: 1,
                 slug: 1,
                 price: {
                     $let: {
@@ -529,46 +541,12 @@ exports.filter = async (req, res) => {
                         in: "$$size.price",
                     },
                 },
-            },
-        },
-        ...aggregateEnd,
-        {
-            $facet: {
-                brands: [
-                    {
-                        $group: {
-                            _id: null,
-                            brands: {
-                                $addToSet: "$brand._id",
-                            },
-                        },
-                    },
-                ],
-                count: [{ $group: { _id: null, count: { $sum: 1 } } }],
-                data: [
-                    { $skip: (page - 1) * limit },
-                    { $limit: limit },
-                    { $project: { brand: 0 } },
-                ],
-            },
-        },
-        {
-            $project: {
-                data: 1,
-                count: {
+                discount: {
                     $let: {
                         vars: {
-                            count: { $arrayElemAt: ["$count", 0] },
+                            size: { $arrayElemAt: ["$sizes", 0] },
                         },
-                        in: "$$count.count",
-                    },
-                },
-                brands: {
-                    $let: {
-                        vars: {
-                            brands: { $arrayElemAt: ["$brands", 0] },
-                        },
-                        in: "$$brands.brands",
+                        in: "$$size.discount",
                     },
                 },
             },
@@ -577,9 +555,138 @@ exports.filter = async (req, res) => {
         if (err) return res.status(400).json({ success: false, err });
         res.status(200).json({
             success: true,
-            data: data[0].data,
-            brands: data[0].brands,
-            count: Math.ceil(data[0].count / limit),
+            data
+        });
+    });
+};
+exports.count = async (req, res) => {
+    let aggregateStart = [];
+    let aggregateEnd = [];
+    if (req.body.search && req.body.search.length) {
+        aggregateStart.push({
+            $match: {
+                $or: [
+                    {
+                        "name.uz": {
+                            $regex: `.*${req.body.search}.*`,
+                            $options: "i",
+                        },
+                    },
+                    {
+                        "name.ru": {
+                            $regex: `.*${req.body.search}.*`,
+                            $options: "i",
+                        },
+                    },
+                    {
+                        "items": {
+                            $regex: `.*${req.body.search}.*`,
+                            $options: "i",
+                        },
+                    },
+                    {
+                        "description.uz": {
+                            $regex: `.*${req.body.search}.*`,
+                            $options: "i",
+                        },
+                    },
+                    {
+                        "description.ru": {
+                            $regex: `.*${req.body.search}.*`,
+                            $options: "i",
+                        },
+                    },
+                ],
+            },
+        });
+    }
+    if (req.body.shop) {
+        aggregateStart.push({
+            $match: {
+                shop: mongoose.Types.ObjectId(req.body.shop),
+            },
+        });
+    }
+    if (req.body.brand && req.body.brand.length) {
+        aggregateStart.push({
+            $match: {
+                brand: {
+                    $in: req.body.brand.map((key) => mongoose.Types.ObjectId(key)),
+                },
+            },
+        });
+    }
+    if (req.body.category && req.body.category.length) {
+        aggregateStart.push({
+            $match: {
+                category: {
+                    $in: req.body.category.map((key) => mongoose.Types.ObjectId(key)),
+                },
+            },
+        });
+    }
+    if (req.body.start && req.body.start != 0) {
+        aggregateEnd.push({
+            $match: {
+                price: {
+                    $gte: parseInt(req.body.start),
+                },
+            },
+        });
+    }
+    if (req.body.end && req.body.end != 0) {
+        aggregateEnd.push({
+            $match: {
+                price: {
+                    $lte: parseInt(req.body.end),
+                },
+            },
+        });
+    }
+    Product.aggregate([
+        ...aggregateStart,
+        {
+            $lookup: {
+                from: "sizes",
+                let: { productId: "$_id" },
+                pipeline: [
+                    {
+                        $match: {
+                            $expr: { $eq: ["$productId", "$$productId"] },
+                        },
+                    },
+                    {$sort: { price: 1 },},  
+                ],
+                as: "sizes",
+            },
+        },
+        {
+            $project: {
+                brand: 1,
+                price: {
+                    $let: {
+                        vars: {
+                            size: { $arrayElemAt: ["$sizes", 0] },
+                        },
+                        in: "$$size.price",
+                    },
+                }
+            },
+        },
+        ...aggregateEnd,
+        {
+            $group: {
+                _id: null,
+                count: { $sum: 1 },
+                brands: { $addToSet: "$brand" },
+            },
+        },
+    ]).exec((err, data) => {
+        if (err) return res.status(400).json({ success: false, err });
+        res.status(200).json({
+            success: true,
+            brands: data[0]?.brands,
+            count: data[0]?.count,
         });
     });
 };
