@@ -160,13 +160,13 @@ exports.createDiscount = async (req, res) => {
         discount_start: new Date(req.body.start),
         discount_end: new Date(req.body.end),
     }
-    Size.find(
+    Size.update(
         {
             productId: {
                 $in: req.body.products.map((key) => mongoose.Types.ObjectId(key)),
             },
         },
-        // {$set: obj}
+        {$set: obj}
     ).exec((err, data)=>{
         if(err) return res.status(400).json({ success: false, err})
         res.status(200).json({success: true, data})

@@ -12,8 +12,11 @@ const SizeSchema = new mongoose.Schema({
         required: true,
         index: true,
     },
-    size: { type: String, index: true, required: true, index: true },
-    price: { type: Number, index: true, required: true, index: true },
-    count: { type: Number, index: true, required: true, index: true },
+    size: { type: String, index: true, required: true},
+    price: { type: Number, index: true, required: true},
+    count: { type: Number, index: true, required: true},
+    discount: Number ,
+    discount_start: Date,
+    discount_end: Date,
 });
 module.exports = mongoose.model("Size", SizeSchema);
