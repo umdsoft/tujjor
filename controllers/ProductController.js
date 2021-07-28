@@ -133,7 +133,6 @@ exports.createFooterImage = async (req, res) => {
             });
         });
 };
-
 exports.commentCreate = async (req, res) => {
     const comment = new Comment({
         userId: req.user,
@@ -762,6 +761,9 @@ exports.getOneClient = async (req, res) => {
                                         price: 1,
                                         size: 1,
                                         count: 1,
+                                        discount: 1,
+                                        discount_start: 1,
+                                        discount_end: 1
                                     },
                                 },
                             ],
@@ -800,7 +802,6 @@ exports.getOneClient = async (req, res) => {
         });
     });
 };
-
 exports.getOneSeller = async (req, res) => {
     await Product.aggregate([
         { $match: { slug: req.params.slug } },
