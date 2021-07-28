@@ -155,7 +155,7 @@ exports.createDiscount = async (req, res) => {
     if(!(req.body.discount && req.body.start && req.body.end && req.body.products.length)){
         res.status(400).json({success: false, message: "Something wrong"})
     }
-    Size.find(
+    Size.updateMany(
         {
             productId: {
                 $in: req.body.products.map((key) => mongoose.Types.ObjectId(key)),
