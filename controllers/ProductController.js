@@ -161,7 +161,7 @@ exports.createDiscount = async (req, res) => {
                 $in: req.body.products.map((key) => mongoose.Types.ObjectId(key)),
             },
         },[
-            {$set: {
+            {$addFields: {
                 discount: {
                     $let: {
                         vars: {
