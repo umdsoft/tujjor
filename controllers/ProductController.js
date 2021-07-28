@@ -183,18 +183,12 @@ exports.createDiscountAll = async (req, res) => {
     if(!(req.body.discount && req.body.start && req.body.end && req.body.shop)){
        return res.status(400).json({success: false, message: "Something wrong"})
     }
-    const products = [];
-    await Product.find({ shop: mongoose.Types.ObjectId(req.body.shop)}, {_id: 1}).exec((err, data) => {
-        console.log(data, err);
-        data.forEach((key) => {
-            products.push(key._id);
-        });
-    });
+    const products = await Product.find({ shop: mongoose.Types.ObjectId(req.body.shop)}, {_id: 1})
     try {
         const sizes = await Size.find(
             {
                 productId: {
-                    $in: products.map((key) => mongoose.Types.ObjectId(key)),
+                    $in: products.map((key) => mongoose.Types.ObjectId(key._id)),
                 },
             },)
         sizes.forEach((key, index)=>{
@@ -202,13 +196,13 @@ exports.createDiscountAll = async (req, res) => {
             obj['discount'] = key.price* (100 - req.body.discount)/100
             obj['discount_start'] = new Date(req.body.start)
             obj['discount_end'] = new Date(req.body.end)
-    
             obj.save()
             if(index === sizes.length-1){
                 res.status(201).json({success: true})
             }
         })
     } catch (err) {
+        console.log(err)
         res.status(500).json({success: false, err})
     }
 };
