@@ -1,6 +1,7 @@
 const sharp = require("sharp");
 const path = require("path");
 const { deleteFile } = require(".");
+const Size = require("../models/size");
 exports.sharpProductImage = async (filename) => {
     await sharp(path.join(path.dirname(__dirname) + `/public/temp/${filename}`))
         .resize(500, 450)

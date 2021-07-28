@@ -150,6 +150,7 @@ exports.commentCreate = async (req, res) => {
         });
 };
 
+
 //Discount
 exports.createDiscount = async (req, res) => {
     if(!(req.body.discount && req.body.start && req.body.end && req.body.products.length)){
@@ -174,7 +175,6 @@ exports.createDiscount = async (req, res) => {
             }
         })
     } catch (err) {
-        console.log(err);
         res.status(500).json({success: false, err})
     }
 };
@@ -188,10 +188,27 @@ exports.createDiscountAll = async (req, res) => {
             products.push(key._id);
         });
     });
-    Size.updateMany(
-        { $match: { $expr: { $eq: products } } },
-        { $set: req.body.discount }
-    );
+    try {
+        const sizes = await Size.find(
+            {
+                productId: {
+                    $in: products.map((key) => mongoose.Types.ObjectId(key)),
+                },
+            },)
+        sizes.forEach((key, index)=>{
+            let obj = key;
+            obj['discount'] = key.price* (100 - req.body.discount)/100
+            obj['discount_start'] = new Date(req.body.start)
+            obj['discount_end'] = new Date(req.body.end)
+    
+            obj.save()
+            if(index === sizes.length-1){
+                res.status(201).json({success: true})
+            }
+        })
+    } catch (err) {
+        res.status(500).json({success: false, err})
+    }
 };
 
 //Edit
