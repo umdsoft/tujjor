@@ -155,18 +155,17 @@ exports.createDiscount = async (req, res) => {
     if(!(req.body.discount && req.body.start && req.body.end && req.body.products.length)){
         res.status(400).json({success: false, message: "Something wrong"})
     }
-    const obj = {
-        discount: req.body.discount,
-        discount_start: new Date(req.body.start),
-        discount_end: new Date(req.body.end),
-    }
     Size.updateMany(
         {
             productId: {
                 $in: req.body.products.map((key) => mongoose.Types.ObjectId(key)),
             },
         },
-        {$set: obj}
+        {$set: {
+            discount: {$multiply: [(100-req.body.discount)/100, "$price" ]}  ,
+            discount_start: new Date(req.body.start),
+            discount_end: new Date(req.body.end),
+        }}
     ).exec((err, data)=>{
         if(err) return res.status(400).json({ success: false, err})
         res.status(200).json({success: true, data})
