@@ -464,7 +464,10 @@ exports.filter = async (req, res) => {
                                     end: "$discount_end"
                                 },
                                 in: {
-                                    $cond: [ { $and: [ {$lte: ["$$start","$$now"]}, {$lte: ["$$end","$$now"]}]  }, "$discount",  null ]
+                                    first: "$$now",
+                                    second: "$$start",
+                                    three: "$$end",
+                                    // $cond: [ { $and: [ {$lte: ["$$start","$$now"]}, {$gte: ["$$end","$$now"]}]  }, "$discount",  null ]
                                 }
                             }
                         },
