@@ -161,17 +161,17 @@ exports.createDiscount = async (req, res) => {
         discount_end: new Date(req.body.end),
     }
     const aggregate = [
+        
+    ]
+
+    Size.updateMany([
         {
             $match: {
                 productId: {
                     $in: req.body.products.map((key) => mongoose.Types.ObjectId(key)),
                 },
             },
-        }
-    ]
-
-    Size.updateMany([
-        ...aggregate,
+        },
         {$set: obj}
     ]).exec((err, data)=>{
         if(err) return res.status(400).json({ success: false, err})
