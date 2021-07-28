@@ -467,32 +467,32 @@ exports.filter = async (req, res) => {
                 as: "sizes",
             },
         },
-        {
-            $project: {
-                name: 1,
-                category:1,
-                image: 1,
-                slug: 1,
-                createdAt: 1,
-                views: 1,
-                price: {
-                    $let: {
-                        vars: {
-                            size: { $arrayElemAt: ["$sizes", 0] },
-                        },
-                        in: "$$size.price",
-                    },
-                },
-                discount: {
-                    $let: {
-                        vars: {
-                            size: { $arrayElemAt: ["$sizes", 0] },
-                        },
-                        in: "$$size.discount",
-                    },
-                },
-            },
-        },
+        // {
+        //     $project: {
+        //         name: 1,
+        //         category:1,
+        //         image: 1,
+        //         slug: 1,
+        //         createdAt: 1,
+        //         views: 1,
+        //         price: {
+        //             $let: {
+        //                 vars: {
+        //                     size: { $arrayElemAt: ["$sizes", 0] },
+        //                 },
+        //                 in: "$$size.price",
+        //             },
+        //         },
+        //         discount: {
+        //             $let: {
+        //                 vars: {
+        //                     size: { $arrayElemAt: ["$sizes", 0] },
+        //                 },
+        //                 in: "$$size.discount",
+        //             },
+        //         },
+        //     },
+        // },
         // ...aggregateEnd,
         // { $skip: (page - 1) * limit },
         // { $limit: limit },
