@@ -161,7 +161,13 @@ exports.createDiscount = async (req, res) => {
         discount_end: new Date(req.body.end),
     }
     Size.updateMany(
-        { $match: { $expr: { $eq: req.body.products.map((key) => mongoose.Types.ObjectId(key))} } },
+        {
+            $match: {
+                productId: {
+                    $in: req.body.products.map((key) => mongoose.Types.ObjectId(key)),
+                },
+            },
+        },
         { $set: obj }
     ).exec((err, data)=>{
         if(err) return res.status(400).json({ success: false, err})
