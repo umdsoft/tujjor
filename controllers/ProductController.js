@@ -162,7 +162,9 @@ exports.createDiscount = async (req, res) => {
     }
     try {
         req.body.products.forEach(key=>{
-            Size.updateMany({ productId: key}, {$set: obj})
+            Size.updateMany({ productId: key}, {$set: obj}, (err, data)=>{
+                if(err) console.log(err)
+            })
         })
         return res.status(200).json({success: true, data})
     } catch (err) {
