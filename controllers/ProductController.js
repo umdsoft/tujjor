@@ -162,7 +162,17 @@ exports.createDiscount = async (req, res) => {
             },
         },
         {$set: {
-            discount: "$price" * (100 - req.body.discount)/100 ,
+            discount: {
+                $let: {
+                    vars: {
+                        temp : "$price"
+                    },
+                    in: {
+                        $multiply: ["$$temp", (100 - req.body.discount)/100]
+                    }
+                }
+
+            },
             discount_start: new Date(req.body.start),
             discount_end: new Date(req.body.end),
         }}
