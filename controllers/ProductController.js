@@ -459,9 +459,7 @@ exports.filter = async (req, res) => {
                         discount: {
                             $cond: {
                                 if: {
-                                    $and: [
-                                        {$lte: ["$discount_start", new Date().toISOString()]}
-                                    ]
+                                    $lte: ["$discount_start", new Date().toISOString()]
                                 },
                                 then: "$discount",
                                 else: null
