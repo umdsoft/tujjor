@@ -160,16 +160,17 @@ exports.createDiscount = async (req, res) => {
         discount_start: new Date(req.body.start),
         discount_end: new Date(req.body.end),
     }
-    try {
-        req.body.products.forEach(key=>{
-            Size.updateMany({ productId: key}, {$set: obj}, (err, data)=>{
-                if(err) console.log(err)
-            })
-        })
-        return res.status(200).json({success: true, data})
-    } catch (err) {
-        return res.status(400).json({ success: false, err})
-    }
+    Size.updateMany(
+        {
+            productId: {
+                $in: req.body.products.map((key) => mongoose.Types.ObjectId(key)),
+            },
+        },
+        {$set: obj}
+    ).exec((err, data)=>{
+        if(err) return res.status(400).json({ success: false, err})
+        res.status(200).json({success: true, data})
+    })
 };
 
 exports.createDiscountAll = async (req, res) => {
