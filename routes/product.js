@@ -21,6 +21,7 @@ const upload = multer({ storage: storage });
 router.get("/all", ProductController.getAll);
 router.get("/:slug", ProductController.getOneClient);
 router.post("/filter", ProductController.filter);
+router.post("/count", ProductController.count);
 
 //create
 router.post("/comment/create", protectClient, ProductController.commentCreate);
