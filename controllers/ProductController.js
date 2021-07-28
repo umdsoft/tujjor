@@ -184,9 +184,8 @@ exports.createDiscountAll = async (req, res) => {
         res.status(400).json({success: false, message: "Something wrong"})
     }
     const products = [];
-    await Product.aggregate([
-        { $match: { shop: mongoose.Types.ObjectId(req.body.shop) } },
-    ]).exec((err, data) => {
+    await Product.find({ shop: mongoose.Types.ObjectId(req.body.shop)}, {_id: 1}).exec((err, data) => {
+        console.log(data, err);
         data.forEach((key) => {
             products.push(key._id);
         });
