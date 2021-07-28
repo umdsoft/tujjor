@@ -455,13 +455,13 @@ exports.filter = async (req, res) => {
                     },
                     {$sort: { price: 1 }},
                     {$limit: 1},
-                    { $project: {
-                        discount: {
-                            $cond: [ { $and: [{$gte: [ "$discount_start", "$$NOW" ]}, {$lte: [ "$discount_end", "$$NOW" ]}]  }, "$discount",  null ]
-                        },
-                        price: 1, 
-                        _id: 0 
-                    } },
+                    // { $project: {
+                    //     discount: {
+                    //         $cond: [ { $and: [{$gte: [ "$discount_start", "$$NOW" ]}, {$lte: [ "$discount_end", "$$NOW" ]}]  }, "$discount",  null ]
+                    //     },
+                    //     price: 1, 
+                    //     _id: 0 
+                    // } },
                     
                 ],
                 as: "sizes",
