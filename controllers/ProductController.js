@@ -443,27 +443,6 @@ exports.filter = async (req, res) => {
     }
     await Product.aggregate([
         ...aggregateStart,
-        // {
-        //     $lookup: {
-        //         from: "tags",
-        //         localField: "tags",
-        //         foreignField: "_id",
-        //         as: "tags",
-        //     },
-        // },
-        // { $project: { "tags.__v": 0, "tags._id": 0 } },
-        // {
-        //     $lookup: {
-        //         from: "brands",
-        //         let: { brand: "$brand" },
-        //         pipeline: [
-        //             { $match: { $expr: { $eq: ["$_id", "$$brand"] } } },
-        //             { $project: { name: 1 } },
-        //         ],
-        //         as: "brand",
-        //     },
-        // },
-        // { $unwind: "$brand" },
         {
             $lookup: {
                 from: "sizes",
@@ -533,22 +512,8 @@ exports.filter = async (req, res) => {
                 category:"$category.name",
                 image: 1,
                 slug: 1,
-                price: {
-                    $let: {
-                        vars: {
-                            size: { $arrayElemAt: ["$sizes", 0] },
-                        },
-                        in: "$$size.price",
-                    },
-                },
-                discount: {
-                    $let: {
-                        vars: {
-                            size: { $arrayElemAt: ["$sizes", 0] },
-                        },
-                        in: "$$size.discount",
-                    },
-                },
+                price: 1,
+                discount: 1,
             },
         },
     ]).exec(async (err, data) => {
