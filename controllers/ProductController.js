@@ -456,11 +456,11 @@ exports.filter = async (req, res) => {
                     {$sort: { price: 1 }},
                     {$limit: 1},
                     { $project: {
-                        // discount: {
-                        //     $cond: [ { $and: [{$gte: [ "$discount_start", "$$NOW" ]}, {$lte: [ "$discount_end", "$$NOW" ]}]  }, "$discount",  null ]
-                        // },
                         discount: {
-                            $cond: [{$gte: [ "$discount_start", "$$NOW" ]}, "$discount",  null ]
+                            $cond: [ { $and: [{discount_start:{ $gte: "$$NOW"}}, {discount_ent:{ $lte: "$$NOW"}}]  }, "$discount",  null ]
+                        },
+                        discount: {
+                            $cond: [{$gte: [ "$", "$$NOW" ]}, "$discount",  null ]
                         },
                         price: 1, 
                         _id: 0 
