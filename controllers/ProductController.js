@@ -160,7 +160,7 @@ exports.createDiscount = async (req, res) => {
         discount_start: new Date(req.body.start),
         discount_end: new Date(req.body.end),
     }
-    Size.update(
+    Size.updateMany(
         {
             productId: {
                 $in: req.body.products.map((key) => mongoose.Types.ObjectId(key)),
