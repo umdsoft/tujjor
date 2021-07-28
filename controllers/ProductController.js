@@ -154,7 +154,7 @@ exports.commentCreate = async (req, res) => {
 //Discount
 exports.createDiscount = async (req, res) => {
     if(!(req.body.discount && req.body.start && req.body.end && req.body.products.length)){
-        res.status(400).json({success: false, message: "Something wrong"})
+        return res.status(400).json({success: false, message: "Something wrong"})
     }
     try {
         const sizes = await Size.find(
@@ -181,7 +181,7 @@ exports.createDiscount = async (req, res) => {
 
 exports.createDiscountAll = async (req, res) => {
     if(!(req.body.discount && req.body.start && req.body.end && req.body.shop)){
-        res.status(400).json({success: false, message: "Something wrong"})
+       return res.status(400).json({success: false, message: "Something wrong"})
     }
     const products = [];
     await Product.find({ shop: mongoose.Types.ObjectId(req.body.shop)}, {_id: 1}).exec((err, data) => {
