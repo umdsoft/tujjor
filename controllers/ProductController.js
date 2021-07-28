@@ -160,7 +160,7 @@ exports.createDiscount = async (req, res) => {
         discount_start: new Date(req.body.start),
         discount_end: new Date(req.body.end),
     }
-    Size.aggregate(
+    const aggregate = [
         {
             $match: {
                 productId: {
@@ -168,7 +168,11 @@ exports.createDiscount = async (req, res) => {
                 },
             },
         }
-    ).exec((err, data)=>{
+    ]
+
+    Size.aggregate([
+        ...aggregate
+    ]).exec((err, data)=>{
         if(err) return res.status(400).json({ success: false, err})
         res.status(200).json({success: true, data})
     })
