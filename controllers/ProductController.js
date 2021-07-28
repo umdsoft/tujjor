@@ -456,15 +456,18 @@ exports.filter = async (req, res) => {
                     {$sort: { price: 1 }},
                     {$limit: 1},
                     { $project: {
-                        // discount: {
-                        //     $cond: {
-                        //         if: {
-                        //             discount_start: {$lte: new Date()}
-                        //         },
-                        //         then: "$discount",
-                        //         else: null
-                        //     }
-                        // },
+                        discount: {
+                            $cond: {
+                                if: {
+                                    $and: [
+                                        true,
+                                        false
+                                    ]
+                                },
+                                then: "$discount",
+                                else: null
+                            }
+                        },
                         price: 1, 
                         _id: 0 
                     } },
