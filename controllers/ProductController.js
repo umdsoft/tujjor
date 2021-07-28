@@ -493,29 +493,29 @@ exports.filter = async (req, res) => {
                 },
             },
         },
-        ...aggregateEnd,
-        { $skip: (page - 1) * limit },
-        { $limit: limit },
-        {
-            $lookup:
-                {
-                    from: "categories",
-                    localField: "category",
-                    foreignField: "_id",
-                    as: "category"
-                }
-        },
-        { $unwind: "$category" },
-        {
-            $project: {
-                name: 1,
-                category:"$category.name",
-                image: 1,
-                slug: 1,
-                price: 1,
-                discount: 1,
-            },
-        },
+        // ...aggregateEnd,
+        // { $skip: (page - 1) * limit },
+        // { $limit: limit },
+        // {
+        //     $lookup:
+        //         {
+        //             from: "categories",
+        //             localField: "category",
+        //             foreignField: "_id",
+        //             as: "category"
+        //         }
+        // },
+        // { $unwind: "$category" },
+        // {
+        //     $project: {
+        //         name: 1,
+        //         category:"$category.name",
+        //         image: 1,
+        //         slug: 1,
+        //         price: 1,
+        //         discount: 1,
+        //     },
+        // },
     ]).exec(async (err, data) => {
         if (err) return res.status(400).json({ success: false, err });
         res.status(200).json({
