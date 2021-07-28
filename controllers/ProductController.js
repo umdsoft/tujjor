@@ -457,7 +457,7 @@ exports.filter = async (req, res) => {
                     {$limit: 1},
                     { $project: {
                         discount: {
-                            $cond: [ { $and: [ {discount_start: {$lte: new Date()}}, {discount_end: {$gte: new Date()}}]  }, "$discount",  null ]
+                            $cond: [ { $and: [ {"discount_start": {$lte: 123}}, {"discount_end": {$gte: 123}}]  }, "$discount",  null ]
                         },
                         price: 1, 
                         _id: 0 
