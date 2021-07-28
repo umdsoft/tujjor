@@ -169,7 +169,7 @@ exports.createDiscount = async (req, res) => {
             obj['discount_end'] = new Date(req.body.end)
     
             obj.save()
-            if(index === sizes.length){
+            if(index === sizes.length-1){
                 res.status(201).json({success: true})
             }
         })
