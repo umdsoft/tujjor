@@ -180,7 +180,7 @@ exports.payme = async (req, res) => {
                 );
                 const tt = await Transaction.findOne({
                     tid: transaction.tid,
-                });
+                });s
                 return sendResponse(null, {
                     transaction: transaction.transaction,
                     perform_time: tt.perform_time,

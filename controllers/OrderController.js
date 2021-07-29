@@ -22,11 +22,22 @@ exports.create = (req, res) => {
                           let size = await Size.findById({
                               _id: element.sizeId,
                           });
-
-                          if (size.price !== element.amount) {
-                              return;
+                          if(size.discount){
+                              if(new Date(size.discount_start) <= new Date() && new Date(size.discount_end) >= new Date()){
+                                if (size.discount !== element.amount) {
+                                    return;
+                                } else {
+                                    summ += size.discount
+                                }               
+                              }
+                          } else {
+                              if (size.price !== element.amount) {
+                                  return;
+                              } else {
+                                  summ += size.price
+                              }
                           }
-                          summ += size.price;
+                          ;
                           return {
                               ...element,
                               account: "601bcec5c16ad418fad81eba",

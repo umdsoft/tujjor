@@ -471,7 +471,6 @@ exports.filter = async (req, res) => {
                         price: 1, 
                         _id: 0 
                     } },
-                    
                 ],
                 as: "sizes",
             },
