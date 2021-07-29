@@ -476,55 +476,55 @@ exports.filter = async (req, res) => {
                 as: "sizes",
             },
         },
-        // {
-        //     $project: {
-        //         name: 1,
-        //         category:1,
-        //         image: 1,
-        //         slug: 1,
-        //         createdAt: 1,
-        //         views: 1,
-        //         price: {
-        //             $let: {
-        //                 vars: {
-        //                     size: { $arrayElemAt: ["$sizes", 0] },
-        //                 },
-        //                 in: "$$size.price",
-        //             },
-        //         },
-        //         discount: {
-        //             $let: {
-        //                 vars: {
-        //                     size: { $arrayElemAt: ["$sizes", 0] },
-        //                 },
-        //                 in: "$$size.discount",
-        //             },
-        //         },
-        //     },
-        // },
-        // ...aggregateEnd,
-        // { $skip: (page - 1) * limit },
-        // { $limit: limit },
-        // {
-        //     $lookup:
-        //         {
-        //             from: "categories",
-        //             localField: "category",
-        //             foreignField: "_id",
-        //             as: "category"
-        //         }
-        // },
-        // { $unwind: "$category" },
-        // {
-        //     $project: {
-        //         name: 1,
-        //         category:"$category.name",
-        //         image: 1,
-        //         slug: 1,
-        //         price: 1,
-        //         discount: 1,
-        //     },
-        // },
+        {
+            $project: {
+                name: 1,
+                category:1,
+                image: 1,
+                slug: 1,
+                createdAt: 1,
+                views: 1,
+                price: {
+                    $let: {
+                        vars: {
+                            size: { $arrayElemAt: ["$sizes", 0] },
+                        },
+                        in: "$$size.price",
+                    },
+                },
+                discount: {
+                    $let: {
+                        vars: {
+                            size: { $arrayElemAt: ["$sizes", 0] },
+                        },
+                        in: "$$size.discount",
+                    },
+                },
+            },
+        },
+        ...aggregateEnd,
+        { $skip: (page - 1) * limit },
+        { $limit: limit },
+        {
+            $lookup:
+                {
+                    from: "categories",
+                    localField: "category",
+                    foreignField: "_id",
+                    as: "category"
+                }
+        },
+        { $unwind: "$category" },
+        {
+            $project: {
+                name: 1,
+                category:"$category.name",
+                image: 1,
+                slug: 1,
+                price: 1,
+                discount: 1,
+            },
+        },
     ]).exec(async (err, data) => {
         if (err) return res.status(400).json({ success: false, err });
         res.status(200).json({
