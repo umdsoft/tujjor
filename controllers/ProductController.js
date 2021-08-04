@@ -163,6 +163,7 @@ exports.createDiscount = async (req, res) => {
     const products = await Promise.all( req.body.products.map( async (product) => {
         console.log("product ", product);
         const temp = await Product.findOne({ _id: mongoose.Types.ObjectId(product)})
+        console.log("temp ", temp);
         if(temp?.shop == shop?._id){
             return product;
         }
