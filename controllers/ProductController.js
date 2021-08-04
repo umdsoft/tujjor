@@ -158,11 +158,22 @@ exports.createDiscount = async (req, res) => {
     if(!(req.body.discount && req.body.start && req.body.end && req.body.products.length)){
         return res.status(400).json({success: false, message: "Something wrong"})
     }
+    const shop = await Shop.findOne({user: req.user}, {_id: 1})._id
+    console.log(shop)
+    const products = await req.body.products.map((product) => {
+
+        Product.findOne({ _id: product}, (err, data)=>{
+            if(data.shop.toString() === shop.toString()){
+                return product;
+            }
+        })
+    })
+    console.log(products);
     try {
         const sizes = await Size.find(
             {
                 productId: {
-                    $in: req.body.products.map((key) => mongoose.Types.ObjectId(key)),
+                    $in: products.map((key) => mongoose.Types.ObjectId(key)),
                 },
             },)
         sizes.forEach((key, index)=>{
@@ -184,10 +195,8 @@ exports.createDiscountAll = async (req, res) => {
     if(!(req.body.discount && req.body.start && req.body.end)){
        return res.status(400).json({success: false, message: "Something wrong"})
     }
-    const shop = await Shop.find({user: req.user}, {_id: 1})
-    console.log(shop);
+    const shop = await Shop.findOne({user: req.user}, {_id: 1})
     const products = await Product.find({ shop: shop._id}, {_id: 1})
-    console.log(products);
     try {
         const sizes = await Size.find(
             {

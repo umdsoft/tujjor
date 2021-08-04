@@ -4,7 +4,7 @@ const multer = require("multer");
 const md5 = require("md5");
 const path = require("path");
 const { validateFile } = require("../middleware/errorFileUpload");
-const { protectClient } = require("../middleware/auth");
+const { protectClient, protectSeller } = require("../middleware/auth");
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -18,7 +18,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 //get all && filter
-router.get("/all", ProductController.getAll);
+router.get("/all", protectSeller, ProductController.getAll);
 router.get("/:slug", ProductController.getOneClient);
 router.post("/filter", ProductController.filter);
 router.post("/count", ProductController.count);
@@ -47,8 +47,8 @@ router.post(
 );
 
 //discount
-router.post("/discount/create", ProductController.createDiscount);
-router.post("/discount/create/all", ProductController.createDiscountAll);
+router.post("/discount/create", protectSeller, ProductController.createDiscount);
+router.post("/discount/create/all", protectSeller, ProductController.createDiscountAll);
 
 //update
 router.put("/:id", upload.single("image"), validateFile, ProductController.edit);
