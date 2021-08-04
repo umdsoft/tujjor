@@ -159,12 +159,14 @@ exports.createDiscount = async (req, res) => {
         return res.status(400).json({success: false, message: "Something wrong"})
     }
     const shop = await Shop.findOne({user: mongoose.Types.ObjectId(req.user)}, {_id: 1})
-    console.log(shop, req.user)
+    console.log(shop, shop._id)
     const products = await req.body.products.map((product) => {
 
         Product.findOne({ _id: mongoose.Types.ObjectId(product)}, (err, data)=>{
-            if(data.shop.toString() === shop._id.toString()){
-                return product;
+            if(data){
+                if(data.shop.toString() === shop._id.toString()){
+                    return product;
+                }
             }
         })
     })
