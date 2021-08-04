@@ -16,7 +16,9 @@ const ShopSchema = new mongoose.Schema(
             unique: true,
             required: true,
         },
-        image: { type: String },
+        image: { type: [String] },
+        logo: { type: String },
+        logotip: { type: String },
         description: {
             uz: { type: String },
             ru: { type: String },

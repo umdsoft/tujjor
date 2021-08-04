@@ -52,7 +52,7 @@ exports.protectAdmin = async (req, res, next) => {
                 data: "No authorize to access this route",
             });
         }
-        req.user = user;
+        req.user = user._id;
         next();
     } catch (err) {
         return res.status(401).json({
@@ -82,7 +82,7 @@ exports.protectSeller = async (req, res, next) => {
                 data: "No authorize to access this route",
             });
         }
-        req.user = user;
+        req.user = user._id;
         next();
     } catch (err) {
         return res.status(401).json({

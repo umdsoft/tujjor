@@ -3,7 +3,7 @@ const ShopController = require("../controllers/ShopController");
 const multer = require("multer");
 const md5 = require("md5");
 const path = require("path");
-const { protectAdmin } = require("../middleware/auth");
+const { protectAdmin, protectSeller, protectClient } = require("../middleware/auth");
 const { validateFile } = require("../middleware/errorFileUpload");
 
 const storage = multer.diskStorage({
@@ -17,17 +17,25 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 //admin
-router.get("/all", ShopController.getShops);
-router.get("/contract/all", ShopController.getContracts);
-router.get("/one/:id", ShopController.getOneAdmin);
-router.get("/one/:slug", ShopController.getOneAdmin);
-router.put("/status/:id", ShopController.editStatus);
-router.put("/:id", upload.single("image"), validateFile, ShopController.edit);
-router.delete("/:id", ShopController.delete);
+router.get("/all", protectAdmin, ShopController.getShops);
+router.get("/contract/all", protectAdmin, ShopController.getContracts);
+router.get("/one/:id", protectAdmin, ShopController.getOneAdmin);
+router.put("/status/:id", protectAdmin, ShopController.editStatus);
+router.delete("/:id", protectAdmin, ShopController.delete);
+
+//seller
+router.post("/image/upload",protectSeller, upload.single("image"), validateFile, ShopController.imageUpload )
+router.put(
+    "/:id",
+    protectSeller,
+    ShopController.edit
+);
+router.get("/me", protectSeller, ShopController.getOne);
 
 //client
 router.post(
     "/create",
+    protectClient,
     upload.fields([
         { name: "image", maxCount: 1 },
         { name: "fileContract", maxCount: 1 },
@@ -36,8 +44,7 @@ router.post(
     validateFile,
     ShopController.create
 );
-router.get("/client/:slug", ShopController.getOneClient);
-router.get("/:user", ShopController.getOne);
-router.get("/all/filter", ShopController.getShopsClient);
+router.get("/client/:slug", protectClient, ShopController.getOneClient);
+router.get("/all/filter", protectClient, ShopController.getShopsClient);
 
 module.exports = router;
