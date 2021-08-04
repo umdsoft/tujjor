@@ -28,8 +28,8 @@ exports.create = (req, res) => {
                                     console.log("NOT EQUAL", size.discount, element.amount);
                                     return;
                                 } else {
-                                    console.log("EQUAL", size.price, element.amount);
-                                    summ += size.price * element.count
+                                    console.log("EQUAL", size.discount, element.amount);
+                                    summ += size.discount * element.count
                                 }               
                               } else {
                                   if (size.price !== element.amount) {
