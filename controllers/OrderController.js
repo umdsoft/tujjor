@@ -23,18 +23,25 @@ exports.create = (req, res) => {
                               _id: element.sizeId,
                           });
                           if(size.discount){
+                              console.log(new Date(size.discount_start) <= new Date() && new Date(size.discount_end) >= new Date(), new Date(size.discount_start), new Date(size.discount_end), new Date())
                               if(new Date(size.discount_start) <= new Date() && new Date(size.discount_end) >= new Date()){
                                 if (size.discount !== element.amount) {
                                     return;
                                 } else {
-                                    summ += size.discount
+                                    summ += size.discount * element.count
                                 }               
+                              } else {
+                                  if (size.price !== element.amount) {
+                                  return;
+                                } else {
+                                    summ += size.price*element.count
+                                }
                               }
                           } else {
                               if (size.price !== element.amount) {
                                   return;
                               } else {
-                                  summ += size.price
+                                  summ += size.price*element.count
                               }
                           }
                           ;
@@ -50,7 +57,7 @@ exports.create = (req, res) => {
         if (summ !== req.body.amount) {
             return res
                 .status(400)
-                .json({ success: false, message: "Amount not equal" });
+                .json({ success: false, message: "Something went wrong" });
         }
         order
             .save()
