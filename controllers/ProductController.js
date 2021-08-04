@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const Product = require("../models/product");
 const Param = require("../models/param");
 const Size = require("../models/size");
+const Shop = require("../models/shop");
 const ProductImage = require("../models/productImage");
 const FooterImage = require("../models/footerImage");
 const { getSlug, deleteFile } = require("../utils");
