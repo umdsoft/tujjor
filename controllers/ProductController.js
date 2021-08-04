@@ -180,10 +180,11 @@ exports.createDiscount = async (req, res) => {
     }
 };
 exports.createDiscountAll = async (req, res) => {
-    if(!(req.body.discount && req.body.start && req.body.end && req.body.shop)){
+    if(!(req.body.discount && req.body.start && req.body.end)){
        return res.status(400).json({success: false, message: "Something wrong"})
     }
-    const products = await Product.find({ shop: mongoose.Types.ObjectId(req.body.shop)}, {_id: 1})
+    const shop = await Shop.find({user: req.user}, {_id: 1})
+    const products = await Product.find({ shop: shop._id}, {_id: 1})
     try {
         const sizes = await Size.find(
             {
