@@ -96,40 +96,36 @@ exports.payme = async (req, res) => {
             }
 
             if (data) {
-                await Order.findOne({ orderId: params.account.order }, async (err, data) => {
-                    if (err || !data) return sendResponse(Errors.OrderNotFound, null); else 
-                        if (data.state === 1) {
-                        if (data.time > params.time) {
-                            await Transaction.updateOne(
-                                { tid: data._id },
-                                {
-                                    $set: {
-                                        state: -1,
-                                        reason: 4,
-                                    },
+                if (data.state === 1) {
+                    if (data.time > params.time) {
+                        await Transaction.updateOne(
+                            { tid: data._id },
+                            {
+                                $set: {
+                                    state: -1,
+                                    reason: 4,
                                 },
-                                (err, data) => {
-                                    return sendResponse(
-                                        Errors.UnexpectedTransactionState,
-                                        null
-                                    );
-                                }
-                            );
-                        } else {
-                            return sendResponse(null, {
-                                state: data.state,
-                                create_time: data.create_time,
-                                transaction: data.transaction,
-                                perform_time: data.perform_time || 0,
-                                cancel_time: data.cancel_time || 0,
-                                receivers: data.receivers,
-                            });
-                        }
+                            },
+                            (err, data) => {
+                                return sendResponse(
+                                    Errors.UnexpectedTransactionState,
+                                    null
+                                );
+                            }
+                        );
                     } else {
-                        return sendResponse(Errors.UnexpectedTransactionState, null);
+                        return sendResponse(null, {
+                            state: data.state,
+                            create_time: data.create_time,
+                            transaction: data.transaction,
+                            perform_time: data.perform_time || 0,
+                            cancel_time: data.cancel_time || 0,
+                            receivers: data.receivers,
+                        });
                     }
-
-                })
+                } else {
+                    return sendResponse(Errors.UnexpectedTransactionState, null);
+                }
             }
         });
     }
