@@ -26,6 +26,7 @@ router.delete("/:id", protectAdmin, ShopController.delete);
 //seller
 router.post("/image/upload", protectSeller, upload.single("image"), validateFile, ShopController.imageUpload )
 router.put(
+    "/update",
     protectSeller,
     ShopController.edit
 );

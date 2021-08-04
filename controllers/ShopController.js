@@ -75,6 +75,7 @@ exports.edit = async (req, res) => {
     await Shop.updateOne(
         { user: req.user },
         { $set: { ...req.body} },
+        { new : true },
         (err, data) => {
             if (err) {
                 return res.status(400).json({ success: false, data: "Not Found" });
