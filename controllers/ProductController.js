@@ -704,7 +704,18 @@ exports.getAll = async (req, res) => {
                             $expr: { $eq: ["$productId", "$$productId"] },
                         },
                     },
-                    { $project: { price: 1, _id: 0 } },
+                    { $project: { price: 1, _id: 0, discount: {
+                            $cond: {
+                                if: {
+                                    $and: [
+                                        {$gte: ["$discount_end", new Date()]},
+                                        {$lte: ["$discount_start", new Date()]}
+                                    ]
+                                },
+                                then: "$discount",
+                                else: null
+                            }
+                        }, } },
                     {
                         $sort: { price: 1 },
                     },
@@ -724,6 +735,14 @@ exports.getAll = async (req, res) => {
                             size: { $arrayElemAt: ["$sizes", 0] },
                         },
                         in: "$$size.price",
+                    },
+                },
+                discount: {
+                    $let: {
+                        vars: {
+                            size: { $arrayElemAt: ["$sizes", 0] },
+                        },
+                        in: "$$size.discount",
                     },
                 },
             },
@@ -877,9 +896,18 @@ exports.getOneClient = async (req, res) => {
                                         price: 1,
                                         size: 1,
                                         count: 1,
-                                        discount: 1,
-                                        discount_start: 1,
-                                        discount_end: 1
+                                        discount: {
+                                            $cond: {
+                                                if: {
+                                                    $and: [
+                                                        {$gte: ["$discount_end", new Date()]},
+                                                        {$lte: ["$discount_start", new Date()]}
+                                                    ]
+                                                },
+                                                then: "$discount",
+                                                else: null
+                                            }
+                                        },
                                     },
                                 },
                             ],
