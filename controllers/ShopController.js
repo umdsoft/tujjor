@@ -34,7 +34,7 @@ exports.getOneAdmin = async (req, res) => {
         });
 };
 exports.editStatus = async (req, res) => {
-    if (!req.body) {
+    if (!req.body || !req.body.category) {
         return res.status(400).json({ success: false, data: "Something is wrong" });
     }
     await Shop.findOneAndUpdate(
