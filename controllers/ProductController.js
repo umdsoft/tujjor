@@ -185,7 +185,9 @@ exports.createDiscountAll = async (req, res) => {
        return res.status(400).json({success: false, message: "Something wrong"})
     }
     const shop = await Shop.find({user: req.user}, {_id: 1})
+    console.log(shop);
     const products = await Product.find({ shop: shop._id}, {_id: 1})
+    console.log(products);
     try {
         const sizes = await Size.find(
             {
