@@ -74,7 +74,7 @@ exports.edit = async (req, res) => {
     }
     await Shop.updateOne(
         { user: req.user },
-        { $set: { ...req.body} },
+        { $set: req.body},
         { new : true },
         (err, data) => {
             if (err) {
