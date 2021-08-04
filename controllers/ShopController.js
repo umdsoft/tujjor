@@ -72,7 +72,7 @@ exports.edit = async (req, res) => {
     if(req.body.status || req.body.category){
         return res.status(400).json({ success: false, message: "Something went wrong" })
     }
-    await Shop.updateOne(
+    await Shop.findOneAndUpdate(
         { user: req.user },
         { $set: req.body},
         { new : true },
