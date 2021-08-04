@@ -96,7 +96,7 @@ exports.payme = async (req, res) => {
             }
 
             if (data) {
-                await Order.findOne({ orderId: params.account.order },(err, data) => {
+                await Order.findOne({ orderId: params.account.order }, async (err, data) => {
                     if (err || !data) return sendResponse(Errors.OrderNotFound, null); else 
                         if (data.state === 1) {
                         if (data.time > params.time) {
