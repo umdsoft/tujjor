@@ -73,7 +73,7 @@ exports.edit = async (req, res) => {
         return res.status(400).json({ success: false, message: "Something went wrong" })
     }
     await Shop.updateOne(
-        { _id: req.params.id },
+        { user: req.user },
         { $set: { ...req.body} },
         (err, data) => {
             if (err) {
