@@ -276,7 +276,6 @@ exports.delete = (req, res) => {
                     message: "Product not found with id " + req.params.id,
                 });
             }
-            deleteFile(`/public${product.image}`);
             deleteParam(product._id);
             deleteImage(product._id);
             deleteFooterImage(product._id);

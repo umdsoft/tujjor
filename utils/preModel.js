@@ -13,7 +13,6 @@ exports.deleteProduct = (id, model) => {
             return;
         }
         if (product) {
-            deleteFile(`/public${product.image}`);
             this.deleteParam(product._id);
             this.deleteImage(product._id);
             this.deleteFooterImage(product._id);
