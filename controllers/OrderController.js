@@ -23,11 +23,12 @@ exports.create = (req, res) => {
                               _id: element.sizeId,
                           });
                           if(size.discount){
-                              console.log(new Date(size.discount_start) <= new Date() && new Date(size.discount_end) >= new Date(), new Date(size.discount_start), new Date(size.discount_end), new Date())
                               if(new Date(size.discount_start) <= new Date() && new Date(size.discount_end) >= new Date()){
                                 if (size.discount !== element.amount) {
+                                    console.log("NOT EQUAL");
                                     return;
                                 } else {
+                                    console.log("EQUAL");
                                     summ += size.discount * element.count
                                 }               
                               } else {
