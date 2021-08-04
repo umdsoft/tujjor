@@ -169,7 +169,6 @@ exports.createDiscount = async (req, res) => {
             return product;
         }
     }))
-    res.status(200).json({success: true})
     try {
         const sizes = await Size.find(
             {
