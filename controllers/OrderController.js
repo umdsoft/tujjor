@@ -65,7 +65,7 @@ exports.getAll = async (req, res) => {
     const page = parseInt(req.query.page);
     const limit = parseInt(req.query.limit);
     Order.aggregate([
-        { $match: { payed: 1 } },
+        { $match: { payed: 1, status: req.body.status } },
         {$sort: {createdAt: -1}},
         {
             $facet: {
@@ -107,14 +107,16 @@ exports.update = async (req, res) => {
 exports.getMeOrder = (req, res) => {
     let status = {};
     if (req.query.status === "payed") {
-        status = { $match: { status: 1 } };
+        status = { $match: { status: 1} };
     } else if (req.query.status === "onTheWay") {
-        status = { $match: { status: {$gt: 2, $lt: 4 } } };
+        status = { $match: { status: {$gt: 2, $lt: 3 } } };
     } else if (req.query.status === "delivered") {
+        status = { $match: { status: 4 } };
+    } else if (req.query.status === "canceled") {
         status = { $match: { status: 5 } };
     }
     Order.aggregate([
-        { $match: { user: mongoose.Types.ObjectId(req.user) } },
+        { $match: { user: mongoose.Types.ObjectId(req.user), payed: 1  } },
         status,
         {$sort: {createdAt: -1}},
     ]).exec((err, data) => {
