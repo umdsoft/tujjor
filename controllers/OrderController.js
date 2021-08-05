@@ -76,7 +76,7 @@ exports.getAll = async (req, res) => {
     Order.aggregate([
         { $match: { payed: 1, status: status } },
         {$sort: {createdAt: -1}},
-        {$project: {user: 0, updatedAt: 0, createdAt: 0, __v: 0}},
+        {$project: {user: 0, updatedAt: 0, createdAt: 0, __v: 0, products: {productId: 0, paramId:0, sizeId:0, shop:0,category:0, brand:0, account:0, _id: 0}}},
         {
             $facet: {
                 count: [{ $group: { _id: null, count: { $sum: 1 } } }],
