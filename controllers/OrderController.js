@@ -62,11 +62,36 @@ exports.create = (req, res) => {
 };
 
 exports.getAll = async (req, res) => {
-    const order = await Order.find();
-
-    res.status(200).json({
-        success: true,
-        data: order,
+    const page = parseInt(req.query.page);
+    const limit = parseInt(req.query.limit);
+    Order.aggregate([
+        { $match: { payed: 1 } },
+        {
+            $facet: {
+                count: [{ $group: { _id: null, count: { $sum: 1 } } }],
+                data: [{ $skip: (page - 1) * limit }, { $limit: limit }],
+            },
+        },
+        {
+            $project: {
+                count: {
+                    $let: {
+                        vars: {
+                            count: { $arrayElemAt: ["$count", 0] },
+                        },
+                        in: "$$count.count",
+                    },
+                },
+                data: 1,
+            },
+        },
+    ]).exec((err, data) => {
+        if (err) return res.status(400).json({ success: false, err });
+        res.status(200).json({
+            success: true,
+            data: data[0].data,
+            count: data[0].count,
+        });
     });
 };
 
