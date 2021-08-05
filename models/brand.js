@@ -12,8 +12,4 @@ const BrandSchema = new mongoose.Schema(
     },
     { timestamps: true }
 );
-BrandSchema.pre("remove", async function (next) {
-    await this.model("Product").deleteMany({ brand: this._id });
-    next();
-});
 module.exports = mongoose.model("brand", BrandSchema);

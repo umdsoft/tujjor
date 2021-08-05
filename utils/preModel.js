@@ -3,7 +3,6 @@ const Param = require("../models/param");
 const Size = require("../models/size");
 const ProductImage = require("../models/productImage");
 const FooterImage = require("../models/footerImage");
-
 exports.deleteProduct = (id, model) => {
     const obj = {};
     obj[`${model}`] = id;
@@ -14,10 +13,10 @@ exports.deleteProduct = (id, model) => {
             return;
         }
         if (product) {
-            this.deleteParam(product._id);
-            this.deleteImage(product._id);
-            this.deleteFooterImage(product._id);
-            this.deleteProduct(id, model);
+            exports.deleteParam(product._id);
+            exports.deleteImage(product._id);
+            exports.deleteFooterImage(product._id);
+            exports.deleteProduct(id, model);
         }
     });
 };
@@ -30,8 +29,8 @@ exports.deleteParam = (id) => {
         }
         if (param) {
             deleteFile(`/public${param.image}`);
-            this.deleteParam(id);
-            this.deleteSizeByParam(param._id);
+            exports.deleteParam(id);
+            exports.deleteSizeByParam(param._id);
         }
     });
 };
@@ -62,7 +61,7 @@ exports.deleteImage = (id) => {
         }
         if (image) {
             deleteFile(`/public${image?.image}`);
-            this.deleteImage(id);
+            exports.deleteImage(id);
         }
     });
 };
@@ -75,7 +74,7 @@ exports.deleteFooterImage = (id) => {
         }
         if (image) {
             deleteFile(`/public${image?.image}`);
-            this.deleteFooterImage(id);
+            exports.deleteFooterImage(id);
         }
     });
 };
