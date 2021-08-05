@@ -7,7 +7,6 @@ const { validateFile } = require('../middleware/errorFileUpload');
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        console.log(file);
         if (file.mimetype.startsWith('video')) {
             cb(null, './public/uploads/news/videos');
         } else {
