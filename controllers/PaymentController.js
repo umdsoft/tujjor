@@ -158,7 +158,7 @@ exports.payme = async (req, res) => {
                         amount: key.amount,
                         count: key.count,
                     }).save();
-                    let size = Size.findOne({_id:key.sizeId});
+                    let size = await Size.findOne({_id:key.sizeId});
                     size.count = size.count - key.count;
                     size.save();
                 });
