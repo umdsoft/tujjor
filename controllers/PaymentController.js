@@ -79,7 +79,6 @@ exports.payme = async (req, res) => {
                         transaction
                             .save()
                             .then(() => {
-                                console.log("saved");
                                 return sendResponse(null, {
                                     transaction: transaction.transaction,
                                     state: transaction.state,
@@ -184,7 +183,7 @@ exports.payme = async (req, res) => {
                 );
                 const tt = await Transaction.findOne({
                     tid: transaction.tid,
-                });s
+                });
                 return sendResponse(null, {
                     transaction: transaction.transaction,
                     perform_time: tt.perform_time,
