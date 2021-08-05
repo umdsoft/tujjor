@@ -66,6 +66,7 @@ exports.getAll = async (req, res) => {
     const limit = parseInt(req.query.limit);
     Order.aggregate([
         { $match: { payed: 1 } },
+        {$sort: {createdAt: -1}},
         {
             $facet: {
                 count: [{ $group: { _id: null, count: { $sum: 1 } } }],
@@ -107,6 +108,7 @@ exports.getMeOrder = (req, res) => {
     Order.aggregate([
         { $match: { user: mongoose.Types.ObjectId(req.user) } },
         status,
+        {$sort: {createdAt: -1}},
     ]).exec((err, data) => {
         if (err) return res.status(400).json({ success: false, err });
         res.status(200).json({
