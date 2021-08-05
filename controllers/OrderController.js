@@ -64,8 +64,9 @@ exports.create = (req, res) => {
 exports.getAll = async (req, res) => {
     const page = parseInt(req.query.page);
     const limit = parseInt(req.query.limit);
+    const status = parseInt(req.query.status);
     Order.aggregate([
-        { $match: { payed: 1, status: req.body.status } },
+        { $match: { payed: 1, status: status } },
         {$sort: {createdAt: -1}},
         {
             $facet: {
