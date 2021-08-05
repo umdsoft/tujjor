@@ -62,9 +62,16 @@ exports.create = (req, res) => {
 };
 
 exports.getById = async (req, res) => {
-    Order.findById({_id: req.params.id}, {user: 0, updatedAt: 0, createdAt: 0, __v: 0,  "products.productId":0}, (err, data)=>{
+    Order.findById({_id: req.params.id}, 
+        {user: 0, updatedAt: 0, createdAt: 0, __v: 0,  
+            "products.productId":0,
+            "products.paramId":0,
+            "products.sizeId":0,
+            "products.category":0,
+            "products.brand":0,
+            "products.account":0,
+        }, (err, data)=>{
         if(err){
-            //  {productId: 0, paramId:0, sizeId:0, shop:0,category:0, brand:0, account:0}
             return res.status(400).json({ success: false, err });
         } 
         res.status(200).json({ success: true , data})
