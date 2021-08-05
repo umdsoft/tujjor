@@ -57,7 +57,7 @@ exports.payme = async (req, res) => {
                         data.products.forEach((key) => {
                             receivers.push({
                                 id: key.account,
-                                amount: key.amount * 100,
+                                amount: key.count * key.amount * 100,
                             });
                         });
 
