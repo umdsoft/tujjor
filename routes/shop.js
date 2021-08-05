@@ -21,7 +21,6 @@ router.get("/all", protectAdmin, ShopController.getShops);
 router.get("/contract/all", protectAdmin, ShopController.getContracts);
 router.get("/one/:id", protectAdmin, ShopController.getOneAdmin);
 router.put("/status/:id", protectAdmin, ShopController.editStatus);
-router.delete("/:id", protectAdmin, ShopController.delete);
 
 //seller
 router.post("/image/upload", protectSeller, upload.single("image"), validateFile, ShopController.imageUpload )
@@ -47,5 +46,6 @@ router.post(
 );
 router.get("/client/:slug", protectClient, ShopController.getOneClient);
 router.get("/all/filter", protectClient, ShopController.getShopsClient);
+router.delete("/:id", protectClient, ShopController.delete);
 
 module.exports = router;
