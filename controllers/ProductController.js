@@ -921,7 +921,7 @@ exports.getOneClient = async (req, res) => {
         if (err) return res.status(400).json({ success: false, err });
 
         Comment.aggregate([
-            { $match: { productId: mongoose.Types.ObjectId(data[0]._id) } },
+            { $match: { productId: mongoose.Types.ObjectId(data[0]?._id) } },
             {
                 $lookup: {
                     from: "users",
