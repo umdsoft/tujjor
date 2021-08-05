@@ -62,7 +62,7 @@ exports.create = (req, res) => {
 };
 
 exports.getById = async (req, res) => {
-    Order.findById({_id: req.params.id}, (err, data)=>{
+    Order.findById({_id: req.params.id}, {user: 0, updatedAt: 0, createdAt: 0, __v: 0}, (err, data)=>{
         if(err){
             return res.status(400).json({ success: false, err });
         } 
@@ -76,6 +76,7 @@ exports.getAll = async (req, res) => {
     Order.aggregate([
         { $match: { payed: 1, status: status } },
         {$sort: {createdAt: -1}},
+        {$project: {user: 0, updatedAt: 0, createdAt: 0, __v: 0}},
         {
             $facet: {
                 count: [{ $group: { _id: null, count: { $sum: 1 } } }],
