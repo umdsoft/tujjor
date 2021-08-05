@@ -30,7 +30,7 @@ router.put(
     protectSeller,
     ShopController.edit
 );
-router.get("/me", protectSeller, ShopController.getOne);
+router.get("/me", ShopController.getOne);
 
 //client
 router.post(
