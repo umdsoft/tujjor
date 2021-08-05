@@ -1,5 +1,6 @@
 const Errors = require("../utils/paymeErrors");
 const Order = require("../models/order");
+const Size = require("../models/size");
 const Transaction = require("../models/transaction");
 const PayedList = require("../models/payedList");
 exports.payme = async (req, res) => {
@@ -148,7 +149,7 @@ exports.payme = async (req, res) => {
                 const order = await Order.findOne({
                     orderId: transaction.order,
                 });
-                order.products.forEach((key) => {
+                order.products.forEach( async(key) => {
                     new PayedList({
                         user: order.user,
                         shop: key.shop,
@@ -157,8 +158,11 @@ exports.payme = async (req, res) => {
                         amount: key.amount,
                         count: key.count,
                     }).save();
+                    let size = Size.findOne({_id:key.sizeId});
+                    size.count = size.count - key.count;
+                    size.save();
                 });
-
+                
                 await Order.updateOne(
                     { orderId: transaction.order },
                     {
