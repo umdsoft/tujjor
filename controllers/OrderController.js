@@ -69,6 +69,7 @@ exports.getById = async (req, res) => {
             "products.sizeId":0,
             "products.category":0,
             "products.brand":0,
+            "products.shop":0,
             "products.account":0,
         }, (err, data)=>{
         if(err){
