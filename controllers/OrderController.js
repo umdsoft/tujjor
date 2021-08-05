@@ -61,6 +61,14 @@ exports.create = (req, res) => {
     });
 };
 
+exports.getById = async (req, res) => {
+    Order.getById({_id: req.params.id}, (err, data)=>{
+        if(err){
+            return res.status(400).json({ success: false, err });
+        } 
+        res.status(200).json({ success: true , data})
+    })
+}
 exports.getAll = async (req, res) => {
     const page = parseInt(req.query.page);
     const limit = parseInt(req.query.limit);
