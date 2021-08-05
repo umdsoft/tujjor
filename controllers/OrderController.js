@@ -95,7 +95,15 @@ exports.getAll = async (req, res) => {
         });
     });
 };
-
+exports.update = async (req, res) => {
+    let order = await Order.findById({ _id: req.params.id});
+    order.status = order.status + 1;
+    order.save().then(data=>{
+        res.status(200).json({success: true})
+    }).catch(err=>{
+        res.status(400).json({success: false})
+    })
+}
 exports.getMeOrder = (req, res) => {
     let status = {};
     if (req.query.status === "payed") {
