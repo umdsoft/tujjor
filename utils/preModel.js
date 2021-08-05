@@ -3,6 +3,7 @@ const Param = require("../models/param");
 const Size = require("../models/size");
 const ProductImage = require("../models/productImage");
 const FooterImage = require("../models/footerImage");
+const {deleteFile} = require("../utils");
 exports.deleteProduct = (id, model) => {
     const obj = {};
     obj[`${model}`] = id;
