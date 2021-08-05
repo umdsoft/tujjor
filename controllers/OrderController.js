@@ -62,7 +62,7 @@ exports.create = (req, res) => {
 };
 
 exports.getById = async (req, res) => {
-    Order.getById({_id: req.params.id}, (err, data)=>{
+    Order.findById({_id: req.params.id}, (err, data)=>{
         if(err){
             return res.status(400).json({ success: false, err });
         } 
