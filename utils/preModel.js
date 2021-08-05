@@ -7,6 +7,7 @@ const FooterImage = require("../models/footerImage");
 exports.deleteProduct = (id, model) => {
     const obj = {};
     obj[`${model}`] = id;
+    console.log("WORKING Product");
     Product.findOneAndDelete(obj).exec((err, product) => {
         if (err) {
             console.log(err);
