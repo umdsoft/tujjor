@@ -25,23 +25,17 @@ exports.create = async (req, res) => {
     const { filename } = req.file;
     sharpFrontImage(filename);
     const product = new Product({
-        name: {
-            uz: req.body.name ? req.body.name.uz : "",
-            ru: req.body.name ? req.body.name.ru : "",
-        },
+        name: req.body.name,
         shop: req.body.shop,
         category: req.body.category,
         brand: req.body.brand,
-        description: {
-            uz: req.body.description ? req.body.description.uz : "",
-            ru: req.body.description ? req.body.description.ru : "",
-        },
+        description: req.body.description,
         image: `/uploads/products/cards/${filename}`,
         article: req.body.article,
-        tags: req.body.tags || "",
+        tags: req.body.tags,
         slug: getSlug(req.body.name ? req.body.name.ru : ""),
         items: req.body.items,
-        status: 0,
+        status: req.body.status,
     });
     product
         .save()
