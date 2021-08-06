@@ -18,6 +18,7 @@ const ProductSchema = new mongoose.Schema(
             ru: { type: String, index: true },
         },
         image: { type: String, required: true },
+        items: { type: String},
         article: { type: String, index: true, unique: true, required: true },
         slug: { type: String, index: true, unique: true, required: true },
         tags: [{ type: mongoose.Schema.ObjectId, ref: "Tag", index: true }],
