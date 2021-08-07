@@ -19,7 +19,7 @@ exports.deleteProductByShop = (id) => {
     });
 };
 exports.updateStatusByCategory = (id)=>{
-    Product.findOneAndUpdate({category: id}, {$set: {status: 0}}).exec((err, product) => {
+    Product.findOneAndUpdate({category: id, status: 1}, {$set: {status: 0}}).exec((err, product) => {
         if (err) {
             console.log(err);
             return;
@@ -31,12 +31,12 @@ exports.updateStatusByCategory = (id)=>{
     })
 }
 exports.updateStatusByBrand = (id)=>{
-    Product.findOneAndUpdate({brand: id}, {$set: {status: 0}}).exec((err, product) => {
+    Product.findOneAndUpdate({brand: id, status: 1}, {$set: {status: 0}}).exec((err, product) => {
         if (err) {
             console.log(err);
             return;
         }
-        if (product) {
+        if (product.status) {
             console.log("BY BRAND")
             exports.updateStatusByBrand(id);
         }
