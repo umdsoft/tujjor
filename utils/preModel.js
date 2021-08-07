@@ -25,7 +25,7 @@ exports.updateStatusByCategory = (id)=>{
             return;
         }
         if (product) {
-            exports.updateStatus(id);
+            exports.updateStatusByCategory(id);
         }
     })
 }
@@ -36,7 +36,7 @@ exports.updateStatusByBrand = (id)=>{
             return;
         }
         if (product) {
-            exports.updateStatus(id);
+            exports.updateStatusByBrand(id);
         }
     })
 }
