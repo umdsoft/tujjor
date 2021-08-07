@@ -36,7 +36,7 @@ exports.updateStatusByBrand = (id)=>{
             console.log(err);
             return;
         }
-        if (product.status) {
+        if (product) {
             console.log("BY BRAND")
             exports.updateStatusByBrand(id);
         }
