@@ -81,5 +81,6 @@ exports.delete = async (req, res) => {
         deleteFile(`/public${data.image}`);
         updateStatusByBrand(data._id);
         res.status(200).json({ success: true, data: [] });
+        
     });
 };
