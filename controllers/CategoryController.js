@@ -1,6 +1,6 @@
 const Category = require("../models/category");
 const { getSlug } = require("../utils");
-const { updateStatus } = require("../utils/preModel");
+const { updateStatusByCategory } = require("../utils/preModel");
 function createCategories(categories, parentId = null) {
     const categoryList = [];
     let category;
@@ -46,7 +46,7 @@ const deleteCategory = async (parentId) => {
     if (item.length) {
         item.forEach((key) => {
             Category.findByIdAndDelete({ _id: key._id }).then((data) => {
-                updateStatus(data._id, "category");
+                updateStatusByCategory(data._id);
                 deleteCategory(key._id);
             });
         });
@@ -97,7 +97,7 @@ exports.getOne = async (req, res) => {
 exports.delete = async (req, res) => {
     await Category.findByIdAndDelete({ _id: req.params.id }, (err, data) => {
         deleteCategory(req.params.id);
-        deleteProduct(data._id, "category");
+        deleteProduct(data._id);
         res.status(200).json({ data: [] });
     });
 };

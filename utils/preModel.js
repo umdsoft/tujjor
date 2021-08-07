@@ -18,16 +18,25 @@ exports.deleteProductByShop = (id) => {
         }
     });
 };
-exports.updateStatus = (id, model)=>{
-    let obj;
-    obj[`${model}`] = id;
-    Product.findOneAndUpdate(obj, {$set: {status: 0}}).exec((err, product) => {
+exports.updateStatusByCategory = (id)=>{
+    Product.findOneAndUpdate({category: id}, {$set: {status: 0}}).exec((err, product) => {
         if (err) {
             console.log(err);
             return;
         }
         if (product) {
-            exports.updateStatus(id, model);
+            exports.updateStatus(id);
+        }
+    })
+}
+exports.updateStatusByBrand = (id)=>{
+    Product.findOneAndUpdate({brand: id}, {$set: {status: 0}}).exec((err, product) => {
+        if (err) {
+            console.log(err);
+            return;
+        }
+        if (product) {
+            exports.updateStatus(id);
         }
     })
 }
