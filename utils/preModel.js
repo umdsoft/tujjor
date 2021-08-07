@@ -25,6 +25,7 @@ exports.updateStatusByCategory = (id)=>{
             return;
         }
         if (product) {
+            console.log("BY CATEGORY")
             exports.updateStatusByCategory(id);
         }
     })
@@ -36,6 +37,7 @@ exports.updateStatusByBrand = (id)=>{
             return;
         }
         if (product) {
+            console.log("BY BRAND")
             exports.updateStatusByBrand(id);
         }
     })
