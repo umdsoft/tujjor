@@ -1,6 +1,6 @@
 const Category = require("../models/category");
 const { getSlug } = require("../utils");
-const { deleteProduct } = require("../utils/preModel");
+const { updateStatus } = require("../utils/preModel");
 function createCategories(categories, parentId = null) {
     const categoryList = [];
     let category;
@@ -46,7 +46,7 @@ const deleteCategory = async (parentId) => {
     if (item.length) {
         item.forEach((key) => {
             Category.findByIdAndDelete({ _id: key._id }).then((data) => {
-                deleteProduct(data._id, "category");
+                updateStatus(data._id, "category");
                 deleteCategory(key._id);
             });
         });

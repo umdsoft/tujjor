@@ -4,10 +4,8 @@ const Size = require("../models/size");
 const ProductImage = require("../models/productImage");
 const FooterImage = require("../models/footerImage");
 const {deleteFile} = require("../utils");
-exports.deleteProduct = (id, model) => {
-    const obj = {};
-    obj[`${model}`] = id;
-    Product.findOneAndDelete(obj).exec((err, product) => {
+exports.deleteProductByShop = (id) => {
+    Product.findOneAndDelete({shop: id}).exec((err, product) => {
         if (err) {
             console.log(err);
             return;
@@ -16,10 +14,23 @@ exports.deleteProduct = (id, model) => {
             exports.deleteParam(product._id);
             exports.deleteImage(product._id);
             exports.deleteFooterImage(product._id);
-            exports.deleteProduct(id, model);
+            exports.deleteProduct(id);
         }
     });
 };
+exports.updateStatus = (id, model)=>{
+    let obj;
+    obj[`${model}`] = id;
+    Product.findOneAndUpdate(obj, {$set: {status: 0}}).exec((err, product) => {
+        if (err) {
+            console.log(err);
+            return;
+        }
+        if (product) {
+            exports.updateStatus(id, model);
+        }
+    })
+}
 exports.deleteParam = (id) => {
     Param.findOneAndDelete({ productId: id }).exec((err, param) => {
         if (err) {

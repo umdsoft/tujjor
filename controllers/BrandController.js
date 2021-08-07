@@ -2,7 +2,7 @@ const Brand = require("../models/brand");
 const sharp = require("sharp");
 const path = require("path");
 const { getSlug, deleteFile } = require("../utils");
-const { deleteProduct } = require("../utils/preModel");
+const { updateStatus } = require("../utils/preModel");
 exports.create = async (req, res) => {
     const { filename } = req.file;
     await sharp(path.join(path.dirname(__dirname) + `/public/temp/${filename}`))
@@ -79,7 +79,7 @@ exports.delete = async (req, res) => {
     await Brand.findByIdAndDelete({ _id: req.params.id }, (err, data) => {
         if (err) return res.status(400).json({ success: false, err });
         deleteFile(`/public${data.image}`);
-        deleteProduct(data._id, "brand");
+        updateStatus(data._id, "brand");
         res.status(200).json({ success: true, data: [] });
     });
 };

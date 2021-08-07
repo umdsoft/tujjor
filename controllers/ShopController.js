@@ -1,7 +1,7 @@
 const Shop = require("../models/shop");
 const User = require("../models/user");
 const { getSlug, deleteFile } = require("../utils");
-const { deleteProduct } = require("../utils/preModel");
+const { deleteProductByShop } = require("../utils/preModel");
 
 //for Admin
 exports.getShops = async (req, res) => {
@@ -160,7 +160,7 @@ exports.delete = async (req, res) => {
         deleteFile(`/public${data.fileContract}`);
         deleteFile(`/public${data.fileCertificate}`);
         deleteFile(`/public${data.image}`);
-        deleteProduct(data._id, "shop");
+        deleteProductByShop(data._id);
         await Shop.findByIdAndDelete({ _id: data._id }, async (err, data) => {
             if (data) {
                 await User.findOneAndUpdate(
