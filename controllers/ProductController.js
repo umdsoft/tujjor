@@ -324,7 +324,11 @@ exports.filter = async (req, res) => {
     if (page === 0 || limit === 0) {
         return res.status(400).json({ success: false, message: "Error page or limit" });
     }
-    let aggregateStart = [];
+    let aggregateStart = [{
+        $match: {
+            status: 1
+        }
+    }];
     let aggregateEnd = [];
     if (req.body.search && req.body.search.length) {
         aggregateStart.push({
@@ -539,7 +543,11 @@ exports.filter = async (req, res) => {
     });
 };
 exports.count = async (req, res) => {
-    let aggregateStart = [];
+    let aggregateStart = [{
+        $match: {
+            status: 1
+        }
+    }];
     let aggregateEnd = [];
     if (req.body.search && req.body.search.length) {
         aggregateStart.push({
