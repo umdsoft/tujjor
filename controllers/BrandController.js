@@ -76,9 +76,9 @@ exports.editImage = async (req, res) => {
     });
 };
 exports.delete = async (req, res) => {
-    await Brand.findById({ _id: req.params.id }, (err, data) => {
+    await Brand.findByIdAndDelete({ _id: req.params.id }, (err, data) => {
         if (err) return res.status(400).json({ success: false, err });
-        // deleteFile(`/public${data.image}`);
+        deleteFile(`/public${data.image}`);
         updateStatusByBrand(data._id);
         res.status(200).json({ success: true, data: [] });
     });
