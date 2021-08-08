@@ -833,86 +833,86 @@ exports.getOneClient = async (req, res) => {
                 as: "footerImages",
             },
         },
-        // {
-        //     $project: {
-        //         shop: {
-        //             shopName: 1
-        //         },
-        //         category: {
-        //             name: 1
-        //         },
-        //         brand: {
-        //             name: 1
-        //         },
-        //         images: {
-        //             image: 1,
-        //             smallImage: 1,
-        //             _id: 0
-        //         },
-        //         footerImages: {
-        //             image: 1,
-        //             _id: 0
-        //         }
-        //     },
-        // },
         {
-            $lookup: {
-                from: "params",
-                let: { productId: "$_id" },
-                pipeline: [
-                    {
-                        $match: {
-                            $expr: {
-                                $eq: ["$productId", "$$productId"],
-                            },
-                        },
-                    },
-                    {
-                        $project: {
-                            slug: 0,
-                            __v: 0,
-                            productId: 0,
-                        },
-                    },
-                    {
-                        $lookup: {
-                            from: "sizes",
-                            let: { paramId: "$_id" },
-                            pipeline: [
-                                {
-                                    $match: {
-                                        $expr: {
-                                            $eq: ["$paramId", "$$paramId"],
-                                        },
-                                    },
-                                },
-                                {
-                                    $project: {
-                                        price: 1,
-                                        size: 1,
-                                        count: 1,
-                                        discount: {
-                                            $cond: {
-                                                if: {
-                                                    $and: [
-                                                        {$gte: ["$discount_end", new Date()]},
-                                                        {$lte: ["$discount_start", new Date()]}
-                                                    ]
-                                                },
-                                                then: "$discount",
-                                                else: null
-                                            }
-                                        },
-                                    },
-                                },
-                            ],
-                            as: "sizes",
-                        },
-                    },
-                ],
-                as: "params",
+            $project: {
+                shop: {
+                    shopName: 1
+                },
+                category: {
+                    name: 1
+                },
+                brand: {
+                    name: 1
+                },
+                images: {
+                    image: 1,
+                    smallImage: 1,
+                    _id: 0
+                },
+                footerImages: {
+                    image: 1,
+                    _id: 0
+                }
             },
         },
+        // {
+        //     $lookup: {
+        //         from: "params",
+        //         let: { productId: "$_id" },
+        //         pipeline: [
+        //             {
+        //                 $match: {
+        //                     $expr: {
+        //                         $eq: ["$productId", "$$productId"],
+        //                     },
+        //                 },
+        //             },
+        //             {
+        //                 $project: {
+        //                     slug: 0,
+        //                     __v: 0,
+        //                     productId: 0,
+        //                 },
+        //             },
+        //             {
+        //                 $lookup: {
+        //                     from: "sizes",
+        //                     let: { paramId: "$_id" },
+        //                     pipeline: [
+        //                         {
+        //                             $match: {
+        //                                 $expr: {
+        //                                     $eq: ["$paramId", "$$paramId"],
+        //                                 },
+        //                             },
+        //                         },
+        //                         {
+        //                             $project: {
+        //                                 price: 1,
+        //                                 size: 1,
+        //                                 count: 1,
+        //                                 discount: {
+        //                                     $cond: {
+        //                                         if: {
+        //                                             $and: [
+        //                                                 {$gte: ["$discount_end", new Date()]},
+        //                                                 {$lte: ["$discount_start", new Date()]}
+        //                                             ]
+        //                                         },
+        //                                         then: "$discount",
+        //                                         else: null
+        //                                     }
+        //                                 },
+        //                             },
+        //                         },
+        //                     ],
+        //                     as: "sizes",
+        //                 },
+        //             },
+        //         ],
+        //         as: "params",
+        //     },
+        // },
     ]).exec((err, data) => {
         if (err) return res.status(400).json({ success: false, err });
 
