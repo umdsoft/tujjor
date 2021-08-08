@@ -836,10 +836,7 @@ exports.getOneClient = async (req, res) => {
         },
         {
             $project: {
-                shop: {
-                    _id: 1,
-                    shopName: 1
-                },
+                name: 1,
                 category: {
                     _id: 1,
                     name: 1
@@ -847,6 +844,10 @@ exports.getOneClient = async (req, res) => {
                 brand: {
                     _id: 1,
                     name: 1
+                },
+                shop: {
+                    _id: 1,
+                    shopName: 1
                 },
                 description: 1,
                 image:1,
