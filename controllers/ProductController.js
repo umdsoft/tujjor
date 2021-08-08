@@ -955,7 +955,7 @@ exports.getOneSeller = async (req, res) => {
     await Product.aggregate([
         { $match: { slug: req.params.slug } },
         {$project: {
-            createdAt: 0, updatedAt: 0, slug: 0, __v: 0, shop: 0
+            createdAt: 0, updatedAt: 0, slug: 0, __v: 0, shop:0
         }},
         {
             $lookup: {
@@ -964,7 +964,9 @@ exports.getOneSeller = async (req, res) => {
                 pipeline: [
                     {
                         $match: {
-                            productId: "$$productId"
+                            $expr: {
+                                $eq: ["$productId", "$$productId"],
+                            },
                         },
                     },
                     {
