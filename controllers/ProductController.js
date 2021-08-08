@@ -964,9 +964,7 @@ exports.getOneSeller = async (req, res) => {
                 pipeline: [
                     {
                         $match: {
-                            $expr: {
-                                $eq: ["$productId", "$$productId"],
-                            },
+                            productId: "$$productId"
                         },
                     },
                     {
