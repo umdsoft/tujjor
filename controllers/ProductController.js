@@ -779,11 +779,10 @@ exports.getAll = async (req, res) => {
 };
 exports.getOneClient = async (req, res) => {
     await Product.aggregate([
-        { $match: { slug: req.params.slug, status: 1 } },
+        { $match: { slug: req.params.slug } },
         {
             $project: {
                 slug: 0,
-                tags: 0,
                 createdAt: 0,
                 updatedAt: 0,
                 items: 0,
@@ -794,8 +793,11 @@ exports.getOneClient = async (req, res) => {
         {
             $lookup: {
                 from: "brands",
-                localField: "brand",
-                foreignField: "_id",
+                let: { brand: "$brand" },
+                pipeline: [
+                    { $match: { $expr: { $eq: ["$_id", "$$brand"] } } },
+                    { $project: { name: 1} },
+                ],
                 as: "brand",
             },
         },
@@ -803,8 +805,11 @@ exports.getOneClient = async (req, res) => {
         {
             $lookup: {
                 from: "categories",
-                localField: "category",
-                foreignField: "_id",
+                let: { category: "$category" },
+                pipeline: [
+                    { $match: { $expr: { $eq: ["$_id", "$$category"] } } },
+                    { $project: { name: 1 } },
+                ],
                 as: "category",
             },
         },
@@ -812,8 +817,15 @@ exports.getOneClient = async (req, res) => {
         {
             $lookup: {
                 from: "shops",
-                localField: "shop",
-                foreignField: "_id",
+                let: { shop: "$shop" },
+                pipeline: [
+                    { $match: { $expr: { $eq: ["$_id", "$$shop"] } } },
+                    {
+                        $project: {
+                            shopName: 1,
+                        },
+                    },
+                ],
                 as: "shop",
             },
         },
@@ -821,43 +833,35 @@ exports.getOneClient = async (req, res) => {
         {
             $lookup: {
                 from: "productimages",
-                localField: "_id",
-                foreignField: "productId",
+                let: { productId: "$_id" },
+                pipeline: [
+                    {
+                        $match: {
+                            $expr: { $eq: ["$productId", "$$productId"] },
+                        },
+                    },
+                    {
+                        $project: { productId: 0, __v: 0, _id: 0 },
+                    },
+                ],
                 as: "images",
             },
         },
         {
             $lookup: {
                 from: "footerimages",
-                localField: "_id",
-                foreignField: "productId",
+                let: { productId: "$_id" },
+                pipeline: [
+                    {
+                        $match: {
+                            $expr: { $eq: ["$productId", "$$productId"] },
+                        },
+                    },
+                    {
+                        $project: { productId: 0, __v: 0, _id: 0 },
+                    },
+                ],
                 as: "footerImages",
-            },
-        },
-        {
-            $project: {
-                name: 1,
-                category: {
-                    _id: 1,
-                    name: 1
-                },
-                brand: {
-                    _id: 1,
-                    name: 1
-                },
-                shop: {
-                    _id: 1,
-                    shopName: 1
-                },
-                description: 1,
-                image:1,
-                article: 1,
-                images: {
-                    image: 1
-                },
-                footerImages: {
-                    image: 1
-                }
             },
         },
         
