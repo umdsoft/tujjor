@@ -954,6 +954,9 @@ exports.getOneClient = async (req, res) => {
 exports.getOneSeller = async (req, res) => {
     await Product.aggregate([
         { $match: { slug: req.params.slug } },
+        {$project: {
+            createdAt: 0, updatedAt: 0, slug: 0, __v: 0, shop: 0
+        }},
         {
             $lookup: {
                 from: "params",
