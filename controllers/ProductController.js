@@ -856,16 +856,6 @@ exports.getOneClient = async (req, res) => {
             },
         },
         {
-            $project: {
-                slug: 0,
-                createdAt: 0,
-                updatedAt: 0,
-                items: 0,
-                status: 0,
-                __v: 0,
-            },
-        },
-        {
             $lookup: {
                 from: "params",
                 let: { productId: "$_id" },
