@@ -833,25 +833,25 @@ exports.getOneClient = async (req, res) => {
                 as: "footerImages",
             },
         },
-        {
-            $project: {
-                shop: {
-                    shopName: 1
-                },
-                category: {
-                    name: 1
-                },
-                brand: {
-                    name: 1
-                },
-                images: {
-                    image: 1
-                },
-                footerImages: {
-                    image: 1
-                }
-            },
-        },
+        // {
+        //     $project: {
+        //         shop: {
+        //             shopName: 1
+        //         },
+        //         category: {
+        //             name: 1
+        //         },
+        //         brand: {
+        //             name: 1
+        //         },
+        //         images: {
+        //             image: 1
+        //         },
+        //         footerImages: {
+        //             image: 1
+        //         }
+        //     },
+        // },
         
         {
             $lookup: {
