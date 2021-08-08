@@ -783,6 +783,7 @@ exports.getOneClient = async (req, res) => {
         {
             $project: {
                 slug: 0,
+                tags: 0,
                 createdAt: 0,
                 updatedAt: 0,
                 items: 0,
@@ -833,25 +834,31 @@ exports.getOneClient = async (req, res) => {
                 as: "footerImages",
             },
         },
-        // {
-        //     $project: {
-        //         shop: {
-        //             shopName: 1
-        //         },
-        //         category: {
-        //             name: 1
-        //         },
-        //         brand: {
-        //             name: 1
-        //         },
-        //         images: {
-        //             image: 1
-        //         },
-        //         footerImages: {
-        //             image: 1
-        //         }
-        //     },
-        // },
+        {
+            $project: {
+                shop: {
+                    _id: 1,
+                    shopName: 1
+                },
+                category: {
+                    _id: 1,
+                    name: 1
+                },
+                brand: {
+                    _id: 1,
+                    name: 1
+                },
+                description: 1,
+                image:1,
+                article: 1,
+                images: {
+                    image: 1
+                },
+                footerImages: {
+                    image: 1
+                }
+            },
+        },
         
         {
             $lookup: {
