@@ -728,6 +728,7 @@ exports.getAll = async (req, res) => {
             $project: {
                 name: 1,
                 image: 1,
+                status:1,
                 category: "$category.name",
                 slug: 1,
                 price: {
@@ -778,15 +779,22 @@ exports.getAll = async (req, res) => {
 };
 exports.getOneClient = async (req, res) => {
     await Product.aggregate([
-        { $match: { slug: req.params.slug } },
+        { $match: { slug: req.params.slug, status: 1 } },
+        {
+            $project: {
+                slug: 0,
+                createdAt: 0,
+                updatedAt: 0,
+                items: 0,
+                status: 0,
+                __v: 0,
+            },
+        },
         {
             $lookup: {
                 from: "brands",
-                let: { brand: "$brand" },
-                pipeline: [
-                    { $match: { $expr: { $eq: ["$_id", "$$brand"] } } },
-                    { $project: { name: 1, slug: 1, _id: 1 } },
-                ],
+                localField: "brand",
+                foreignField: "_id",
                 as: "brand",
             },
         },
@@ -794,11 +802,8 @@ exports.getOneClient = async (req, res) => {
         {
             $lookup: {
                 from: "categories",
-                let: { category: "$category" },
-                pipeline: [
-                    { $match: { $expr: { $eq: ["$_id", "$$category"] } } },
-                    { $project: { __v: 0, createdAt: 0, updatedAt: 0 } },
-                ],
+                localField: "category",
+                foreignField: "_id",
                 as: "category",
             },
         },
@@ -806,15 +811,8 @@ exports.getOneClient = async (req, res) => {
         {
             $lookup: {
                 from: "shops",
-                let: { shop: "$shop" },
-                pipeline: [
-                    { $match: { $expr: { $eq: ["$_id", "$$shop"] } } },
-                    {
-                        $project: {
-                            shopName: 1,
-                        },
-                    },
-                ],
+                localField: "shop",
+                foreignField: "_id",
                 as: "shop",
             },
         },
@@ -822,35 +820,39 @@ exports.getOneClient = async (req, res) => {
         {
             $lookup: {
                 from: "productimages",
-                let: { productId: "$_id" },
-                pipeline: [
-                    {
-                        $match: {
-                            $expr: { $eq: ["$productId", "$$productId"] },
-                        },
-                    },
-                    {
-                        $project: { productId: 0 },
-                    },
-                ],
+                localField: "_id",
+                foreignField: "productId",
                 as: "images",
             },
         },
         {
             $lookup: {
                 from: "footerimages",
-                let: { productId: "$_id" },
-                pipeline: [
-                    {
-                        $match: {
-                            $expr: { $eq: ["$productId", "$$productId"] },
-                        },
-                    },
-                    {
-                        $project: { productId: 0 },
-                    },
-                ],
+                localField: "_id",
+                foreignField: "productId",
                 as: "footerImages",
+            },
+        },
+        {
+            $project: {
+                shop: {
+                    shopName: 1
+                },
+                category: {
+                    name: 1
+                },
+                brand: {
+                    name: 1
+                },
+                images: {
+                    image: 1,
+                    smallImage: 1,
+                    _id: 0
+                },
+                footerImages: {
+                    image: 1,
+                    _id: 0
+                }
             },
         },
         {
@@ -858,6 +860,8 @@ exports.getOneClient = async (req, res) => {
                 slug: 0,
                 createdAt: 0,
                 updatedAt: 0,
+                items: 0,
+                status: 0,
                 __v: 0,
             },
         },
@@ -961,7 +965,6 @@ exports.getOneSeller = async (req, res) => {
                 as: "brand",
             },
         },
-        { $unwind: "$brand" },
         {
             $lookup: {
                 from: "categories",
@@ -973,7 +976,6 @@ exports.getOneSeller = async (req, res) => {
                 as: "category",
             },
         },
-        { $unwind: "$category" },
         {
             $lookup: {
                 from: "shops",
