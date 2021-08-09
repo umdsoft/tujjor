@@ -47,7 +47,7 @@ exports.create = async (req, res) => {
         })
         .catch((err) => {
             res.status(500).json({
-                message: err.message || "Something wrong while creating the product.",
+                message: err.message || "Something went wrong while creating the product.",
             });
         });
 };
@@ -67,7 +67,7 @@ exports.createParam = async (req, res) => {
             deleteFile(`/public/temp/${filename}`);
             deleteFile(`/public/uploads/products/colors/${filename}`);
             res.status(500).json({
-                message: err.message || "Something wrong while creating the param.",
+                message: err.message || "Something went wrong while creating the param.",
             });
         });
 };
@@ -85,7 +85,7 @@ exports.createSize = (req, res) => {
         })
         .catch((err) => {
             res.status(500).json({
-                message: err.message || "Something wrong while creating the size.",
+                message: err.message || "Something went wrong while creating the size.",
             });
         });
 };
@@ -106,7 +106,7 @@ exports.createImage = async (req, res) => {
         })
         .catch((err) => {
             res.status(500).json({
-                message: err.message || "Something wrong while creating the image.",
+                message: err.message || "Something went wrong while creating the image.",
             });
         });
 };
@@ -125,7 +125,7 @@ exports.createFooterImage = async (req, res) => {
         })
         .catch((err) => {
             res.status(500).json({
-                message: err.message || "Something wrong while creating the image.",
+                message: err.message || "Something went wrong while creating the image.",
             });
         });
 };
@@ -150,11 +150,11 @@ exports.commentCreate = async (req, res) => {
 //Discount
 exports.createDiscount = async (req, res) => {
     if(!(req.body.discount && req.body.start && req.body.end && req.body.products.length)){
-        return res.status(400).json({success: false, message: "Something wrong"})
+        return res.status(400).json({success: false, message: "Something went wrong"})
     }
     const shop = await Shop.findOne({user: mongoose.Types.ObjectId(req.user)}, {_id: 1})
     if(!shop){
-        return res.status(400).json({success: false, message: "Something wrong"})
+        return res.status(400).json({success: false, message: "Something went wrong"})
     }
     const products = await Promise.all( req.body.products.map( async (product) => {
         const temp = await Product.findOne({ _id: mongoose.Types.ObjectId(product)})
@@ -187,7 +187,7 @@ exports.createDiscount = async (req, res) => {
 };
 exports.createDiscountAll = async (req, res) => {
     if(!(req.body.discount && req.body.start && req.body.end)){
-       return res.status(400).json({success: false, message: "Something wrong"})
+       return res.status(400).json({success: false, message: "Something went wrong"})
     }
     const shop = await Shop.findOne({user: req.user}, {_id: 1})
     const products = await Product.find({ shop: shop._id}, {_id: 1})
@@ -237,7 +237,7 @@ exports.edit = (req, res) => {
                 });
             }
             return res.status(500).json({
-                message: "Something wrong updating note with id " + req.params.id,
+                message: "Something went wrong updating note with id " + req.params.id,
             });
         });
 };

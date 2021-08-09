@@ -14,7 +14,7 @@ exports.create = (req, res) => {
         .catch((err) => {
             deleteFile(`/public/uploads/banners/${req.file.filename}`);
             res.status(400).json({
-                message: err.message || "Something wrong while creating the banner.",
+                message: err.message || "Something went wrong while creating the banner.",
             });
         });
 };
@@ -26,7 +26,7 @@ exports.getAll = (req, res) => {
         })
         .catch((err) => {
             res.status(500).json({
-                message: err.message || "Something wrong while retrieving banner.",
+                message: err.message || "Something went wrong while retrieving banner.",
             });
         });
 };
@@ -48,7 +48,7 @@ exports.edit = async (req, res) => {
                 });
             }
             return res.status(500).json({
-                message: "Something wrong updating note with id " + req.params.id,
+                message: "Something went wrong updating note with id " + req.params.id,
             });
         });
 };

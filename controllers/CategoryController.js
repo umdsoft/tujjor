@@ -73,8 +73,8 @@ exports.create = (req, res) => {
         });
 };
 exports.getAll = async (req, res, next) => {
-    await Category.find().exec((error, categories) => {
-        if (error) res.status(400).json({ error });
+    await Category.find().exec((err, categories) => {
+        if (err) {return res.status(400).json({ success: false, err })}
         if (categories) {
             const categoryList = createCategories(categories);
             res.status(200).json({ success: true, data: categoryList });
@@ -83,11 +83,10 @@ exports.getAll = async (req, res, next) => {
 };
 exports.getOne = async (req, res) => {
     if (!req.params.id) {
-        res.status(400).json({ success: false, message: "Required" });
+        return res.status(400).json({ success: false, message: "Required" });
     }
-    console.log();
-    await Category.find().exec((error, categories) => {
-        if (error) res.status(400).json({ error });
+    await Category.find().exec((err, categories) => {
+        if (err) {return res.status(400).json({ err });}
         if (categories) {
             const categoryList = getCategoriesCreate(categories, req.params.id);
             res.status(200).json({ success: true, data: categoryList });

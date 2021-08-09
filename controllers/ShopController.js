@@ -35,11 +35,28 @@ exports.getOneAdmin = async (req, res) => {
 };
 exports.editStatus = async (req, res) => {
     if (!req.body || !req.body.category) {
-        return res.status(400).json({ success: false, data: "Something is wrong" });
+        return res.status(400).json({ success: false, data: "Something went wrong" });
     }
     await Shop.findOneAndUpdate(
         { _id: req.params.id },
         { $set: { status: 1, category: req.body.category } },
+        { new: true },
+        async (err, data) => {
+            if (err) {
+                return res.status(400).json({ success: false, data: "Not Found" });
+            }
+            await User.findOneAndUpdate({ _id: data.user }, { $set: { role: "seller" } });
+            res.status(200).json({ success: true, data });
+        }
+    );
+};
+exports.editToSeeProducts = async (req, res) => {
+    if(!(req.body.status === 1 || req.body.status === 2)){
+        return res.status(400).json({ success: false, data: "Something went wrong" });
+    }
+    await Shop.findOneAndUpdate(
+        { _id: req.params.id },
+        { $set: { status: req.body.status} },
         { new: true },
         async (err, data) => {
             if (err) {

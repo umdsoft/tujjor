@@ -167,7 +167,7 @@ exports.edit = async (req, res) => {
     }
     User.findByIdAndUpdate({ _id: req.user }, { $set: obj }, { new: true }).exec((err, data) => {
         if (err) {
-            res.status(400).json({ success: false, err });
+            return res.status(400).json({ success: false, err });
         }
         res.status(201).json({ success: true, data: data });
     });

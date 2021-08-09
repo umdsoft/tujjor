@@ -25,7 +25,7 @@ exports.create = async (req, res) => {
         })
         .catch((err) => {
             res.status(500).json({
-                message: err.message || "Something wrong while creating the slider.",
+                message: err.message || "Something went wrong while creating the slider.",
             });
         });
 };
@@ -37,7 +37,7 @@ exports.getAll = (req, res) => {
         })
         .catch((err) => {
             res.status(500).json({
-                message: err.message || "Something wrong while retrieving slider.",
+                message: err.message || "Something went wrong while retrieving slider.",
             });
         });
 };
@@ -75,7 +75,7 @@ exports.edit = async (req, res) => {
                 });
             }
             return res.status(500).json({
-                message: "Something wrong updating note with id " + req.params.id,
+                message: "Something went wrong updating note with id " + req.params.id,
             });
         });
 };
