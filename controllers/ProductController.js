@@ -780,7 +780,7 @@ exports.getAll = async (req, res) => {
 };
 exports.getOneClient = async (req, res) => {
     let product = await Product.findOne({ slug: req.params.slug })
-        product.views += 1;
+        product.views = product.views + 1;
         product.save();
     await Product.aggregate([
         { $match: { slug: req.params.slug, status: 1 } },
