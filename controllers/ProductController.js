@@ -330,6 +330,8 @@ exports.filter = async (req, res) => {
             status: 1
         }
     }];
+    let lookupSizeStart = [];
+    let lookupSizeEnd = [];
     let aggregateEnd = [];
     if (req.body.search && req.body.search.length) {
         aggregateStart.push({
@@ -452,8 +454,7 @@ exports.filter = async (req, res) => {
             }
         }
     }
-    await Product.aggregate([
-        ...aggregateStart,
+    const sizeLookup = [
         {
             $lookup: {
                 from: "sizes",
@@ -512,9 +513,19 @@ exports.filter = async (req, res) => {
                 },
             },
         },
+    ]
+    if(req.body.start || req.body.end || req.body.sort === "priceUp" || req.body.sort === "priceDown"){
+        lookupSizeStart = [...sizeLookup];
+    } else {
+        lookupSizeEnd = [...sizeLookup];
+    }
+    await Product.aggregate([
+        ...aggregateStart,
+        ...lookupSizeStart,
         ...aggregateEnd,
         { $skip: (page - 1) * limit },
         { $limit: limit },
+        ...lookupSizeEnd,
         {
             $lookup:
                 {
