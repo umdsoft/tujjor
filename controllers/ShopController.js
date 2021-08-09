@@ -62,7 +62,6 @@ exports.editToSeeProducts = async (req, res) => {
             if (err) {
                 return res.status(400).json({ success: false, data: "Not Found" });
             }
-            await User.findOneAndUpdate({ _id: data.user }, { $set: { role: "seller" } });
             res.status(200).json({ success: true, data });
         }
     );

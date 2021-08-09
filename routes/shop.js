@@ -21,6 +21,7 @@ router.get("/all", protectAdmin, ShopController.getShops);
 router.get("/contract/all", protectAdmin, ShopController.getContracts);
 router.get("/one/:id", protectAdmin, ShopController.getOneAdmin);
 router.put("/status/:id", protectAdmin, ShopController.editStatus);
+router.put("/product/show", protectAdmin, ShopController.editToSeeProducts);
 
 //seller
 router.post("/image/upload", protectSeller, upload.single("image"), validateFile, ShopController.imageUpload )

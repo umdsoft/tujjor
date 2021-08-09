@@ -200,6 +200,7 @@ exports.createDiscountAll = async (req, res) => {
             },)
         sizes.forEach((key, index)=>{
             let obj = key;
+            obj['discount_percent'] = req.body.discount;
             obj['discount'] = key.price* (100 - req.body.discount)/100
             obj['discount_start'] = new Date(req.body.start)
             obj['discount_end'] = new Date(req.body.end)
@@ -778,8 +779,11 @@ exports.getAll = async (req, res) => {
     });
 };
 exports.getOneClient = async (req, res) => {
+    let product = await Product.findOne({ slug: req.params.slug })
+        product.views += 1;
+        product.save();
     await Product.aggregate([
-        { $match: { slug: req.params.slug } },
+        { $match: { slug: req.params.slug, status: 1 } },
         {
             $project: {
                 slug: 0,

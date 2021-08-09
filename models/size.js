@@ -16,6 +16,7 @@ const SizeSchema = new mongoose.Schema({
     price: { type: Number, index: true, required: true},
     count: { type: Number, index: true, required: true},
     discount: Number ,
+    discount_percent: Number,
     discount_start: Date,
     discount_end: Date,
 });

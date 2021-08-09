@@ -17,6 +17,7 @@ const ProductSchema = new mongoose.Schema(
             uz: { type: String, index: true },
             ru: { type: String, index: true },
         },
+        views: { type: Number, default: 0},
         image: { type: String, required: true },
         items: { type: String},
         article: { type: String, index: true, unique: true, required: true },
