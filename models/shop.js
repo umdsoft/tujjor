@@ -28,6 +28,7 @@ const ShopSchema = new mongoose.Schema(
             ref: "Category",
             required: true,
         },
+        percent: { type: Number, default: 0}, 
         status: { type: Number, enum: [0, 1, 2], default: 0 },
         slug: { type: String, unique: true, required: true },
         fileCertificate: { type: String, required: true },
