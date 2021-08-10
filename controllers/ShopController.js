@@ -67,7 +67,10 @@ exports.editToSeeProducts = async (req, res) => {
                 Product.updateMany(
                     { shop: data._id },
                     { $set: { shopIsActive: req.body.status === 2 ? 1 : 0 } }
-                );
+                ).exec((err, data) => {
+                    if (err) console.log(err);
+                    else console.log(data);
+                });
             }
             res.status(200).json({ success: true, data });
         }
