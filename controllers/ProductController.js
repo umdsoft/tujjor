@@ -24,9 +24,13 @@ const {
 exports.create = async (req, res) => {
     const { filename } = req.file;
     sharpFrontImage(filename);
+    const shop = await Shop.findById({ _id: req.body.shop});
+    if(!shop){
+        res.status(400).json({success: false, message:"Something went wrong",});
+    }
     const product = new Product({
         name: req.body.name,
-        shop: req.body.shop,
+        shop: shop._id,
         category: req.body.category,
         brand: req.body.brand,
         description: req.body.description,
@@ -36,7 +40,7 @@ exports.create = async (req, res) => {
         slug: getSlug(req.body.name ? req.body.name.ru : ""),
         items: req.body.items,
         status: req.body.status,
-        shopIsActive: req.body.shopIsActive,
+        shopIsActive: (shop.status === 2) ? 1 : 0,
     });
     product
         .save()
@@ -47,7 +51,7 @@ exports.create = async (req, res) => {
             });
         })
         .catch((err) => {
-            res.status(500).json({
+            res.status(400).json({
                 message:
                     err.message || "Something went wrong while creating the product.",
             });
