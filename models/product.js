@@ -9,21 +9,32 @@ const ProductSchema = new mongoose.Schema(
             type: mongoose.Schema.ObjectId,
             ref: "Category",
             required: true,
-            index: true
+            index: true,
         },
-        shop: { type: mongoose.Schema.ObjectId, ref: "Shop", required: true, index: true },
-        brand: { type: mongoose.Schema.ObjectId, ref: "Brand", required: true, index: true },
+        shop: {
+            type: mongoose.Schema.ObjectId,
+            ref: "Shop",
+            required: true,
+            index: true,
+        },
+        brand: {
+            type: mongoose.Schema.ObjectId,
+            ref: "Brand",
+            required: true,
+            index: true,
+        },
         description: {
             uz: { type: String, index: true },
             ru: { type: String, index: true },
         },
-        views: { type: Number, default: 0},
+        views: { type: Number, default: 0 },
         image: { type: String, required: true },
-        items: { type: String},
+        items: { type: String },
         article: { type: String, index: true, unique: true, required: true },
         slug: { type: String, index: true, unique: true, required: true },
         tags: [{ type: mongoose.Schema.ObjectId, ref: "Tag", index: true }],
-        status: { type: Number, required: true, enum: [0, 1] },
+        status: { type: Number, required: true, index: true, enum: [0, 1] },
+        shopIsActive: { type: Number, required: true, index: true, enum: [0, 1] },
     },
     { timestamps: true }
 );

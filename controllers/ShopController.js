@@ -51,16 +51,22 @@ exports.editStatus = async (req, res) => {
     );
 };
 exports.editToSeeProducts = async (req, res) => {
-    if(!(req.body.status === 1 || req.body.status === 2)){
+    if (!(req.body.status === 1 || req.body.status === 2)) {
         return res.status(400).json({ success: false, data: "Something went wrong" });
     }
     await Shop.findOneAndUpdate(
         { _id: req.params.id },
-        { $set: { status: req.body.status} },
+        { $set: { status: req.body.status } },
         { new: true },
         async (err, data) => {
             if (err) {
                 return res.status(400).json({ success: false, data: "Not Found" });
+            }
+            if (data) {
+                Product.updateMany(
+                    { shop: data._id },
+                    { $set: { shopIsActive: req.body.status === 2 ? 1 : 0 } }
+                );
             }
             res.status(200).json({ success: true, data });
         }
@@ -85,13 +91,13 @@ exports.getOne = async (req, res) => {
 };
 
 exports.edit = async (req, res) => {
-    if(req.body.status || req.body.category){
-        return res.status(400).json({ success: false, message: "Something went wrong" })
+    if (req.body.status || req.body.category) {
+        return res.status(400).json({ success: false, message: "Something went wrong" });
     }
     await Shop.findOneAndUpdate(
         { user: req.user },
-        { $set: req.body},
-        { new : true },
+        { $set: req.body },
+        { new: true },
         (err, data) => {
             if (err) {
                 return res.status(400).json({ success: false, data: "Not Found" });
@@ -102,8 +108,8 @@ exports.edit = async (req, res) => {
 };
 exports.imageUpload = async (req, res) => {
     const image = `/uploads/shops/${req.file.filename}`;
-    res.status(201).json({success: true, image})
-}
+    res.status(201).json({ success: true, image });
+};
 
 //for client
 exports.create = async (req, res) => {

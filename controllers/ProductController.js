@@ -5,6 +5,7 @@ const Size = require("../models/size");
 const Shop = require("../models/shop");
 const ProductImage = require("../models/productImage");
 const FooterImage = require("../models/footerImage");
+const Comment = require("../models/Comment");
 const { getSlug, deleteFile } = require("../utils");
 const {
     sharpFrontImage,
@@ -19,7 +20,6 @@ const {
     deleteFooterImage,
     deleteSizeByParam,
 } = require("../utils/preModel");
-const Comment = require("../models/Comment");
 //create
 exports.create = async (req, res) => {
     const { filename } = req.file;
@@ -36,6 +36,7 @@ exports.create = async (req, res) => {
         slug: getSlug(req.body.name ? req.body.name.ru : ""),
         items: req.body.items,
         status: req.body.status,
+        shopIsActive: req.body.shopIsActive,
     });
     product
         .save()
@@ -47,7 +48,8 @@ exports.create = async (req, res) => {
         })
         .catch((err) => {
             res.status(500).json({
-                message: err.message || "Something went wrong while creating the product.",
+                message:
+                    err.message || "Something went wrong while creating the product.",
             });
         });
 };
@@ -146,72 +148,76 @@ exports.commentCreate = async (req, res) => {
         });
 };
 
-
 //Discount
 exports.createDiscount = async (req, res) => {
-    if(!(req.body.discount && req.body.start && req.body.end && req.body.products.length)){
-        return res.status(400).json({success: false, message: "Something went wrong"})
+    if (
+        !(req.body.discount && req.body.start && req.body.end && req.body.products.length)
+    ) {
+        return res.status(400).json({ success: false, message: "Something went wrong" });
     }
-    const shop = await Shop.findOne({user: mongoose.Types.ObjectId(req.user)}, {_id: 1})
-    if(!shop){
-        return res.status(400).json({success: false, message: "Something went wrong"})
+    const shop = await Shop.findOne(
+        { user: mongoose.Types.ObjectId(req.user) },
+        { _id: 1 }
+    );
+    if (!shop) {
+        return res.status(400).json({ success: false, message: "Something went wrong" });
     }
-    const products = await Promise.all( req.body.products.map( async (product) => {
-        const temp = await Product.findOne({ _id: mongoose.Types.ObjectId(product)})
-        if(!temp) return;
-        if(temp.shop.toString() === shop._id.toString()){
-            return product;
-        }
-    }))
-    try {
-        const sizes = await Size.find(
-            {
-                productId: {
-                    $in: products.map((key) => mongoose.Types.ObjectId(key)),
-                },
-            },)
-        sizes.forEach((key, index)=>{
-            let obj = key;
-            obj['discount'] = key.price* (100 - req.body.discount)/100
-            obj['discount_start'] = new Date(req.body.start)
-            obj['discount_end'] = new Date(req.body.end)
-    
-            obj.save()
-            if(index === sizes.length-1){
-                res.status(201).json({success: true})
+    const products = await Promise.all(
+        req.body.products.map(async (product) => {
+            const temp = await Product.findOne({ _id: mongoose.Types.ObjectId(product) });
+            if (!temp) return;
+            if (temp.shop.toString() === shop._id.toString()) {
+                return product;
             }
         })
+    );
+    try {
+        const sizes = await Size.find({
+            productId: {
+                $in: products.map((key) => mongoose.Types.ObjectId(key)),
+            },
+        });
+        sizes.forEach((key, index) => {
+            let obj = key;
+            obj["discount"] = (key.price * (100 - req.body.discount)) / 100;
+            obj["discount_start"] = new Date(req.body.start);
+            obj["discount_end"] = new Date(req.body.end);
+
+            obj.save();
+            if (index === sizes.length - 1) {
+                res.status(201).json({ success: true });
+            }
+        });
     } catch (err) {
-        res.status(500).json({success: false, err})
+        res.status(500).json({ success: false, err });
     }
 };
 exports.createDiscountAll = async (req, res) => {
-    if(!(req.body.discount && req.body.start && req.body.end)){
-       return res.status(400).json({success: false, message: "Something went wrong"})
+    if (!(req.body.discount && req.body.start && req.body.end)) {
+        return res.status(400).json({ success: false, message: "Something went wrong" });
     }
-    const shop = await Shop.findOne({user: req.user}, {_id: 1})
-    const products = await Product.find({ shop: shop._id}, {_id: 1})
+    const shop = await Shop.findOne({ user: req.user }, { _id: 1 });
+    const products = await Product.find({ shop: shop._id }, { _id: 1 });
     try {
-        const sizes = await Size.find(
-            {
-                productId: {
-                    $in: products.map((key) => mongoose.Types.ObjectId(key._id)),
-                },
-            },)
-        sizes.forEach((key, index)=>{
+        const sizes = await Size.find({
+            productId: {
+                $in: products.map((key) => mongoose.Types.ObjectId(key._id)),
+            },
+        });
+        sizes.forEach((key, index) => {
             let obj = key;
-            obj['discount_percent'] = req.body.discount;
-            obj['discount'] = key.price* (100 - req.body.discount)/100
-            obj['discount_start'] = new Date(req.body.start)
-            obj['discount_end'] = new Date(req.body.end)
-            obj.save()
-            if(index === sizes.length-1){
-                res.status(201).json({success: true})
+            obj["discount_percent"] = req.body.discount;
+            obj["discount"] = (key.price * (100 - req.body.discount)) / 100;
+            obj["discount_start"] = new Date(req.body.start);
+            obj["discount_end"] = new Date(req.body.end);
+            obj.save();
+            if (index === sizes.length - 1) {
+                res.status(201).json({ success: true });
             }
-        })
+        });
     } catch (err) {
-        console.log(err)
-        res.status(500).json({success: false, err})
+        console.log(err);
+        res.status(500).json({ success: false, err });
     }
 };
 
@@ -325,11 +331,13 @@ exports.filter = async (req, res) => {
     if (page === 0 || limit === 0) {
         return res.status(400).json({ success: false, message: "Error page or limit" });
     }
-    let aggregateStart = [{
-        $match: {
-            status: 1
-        }
-    }];
+    let aggregateStart = [
+        {
+            $match: {
+                status: 1,
+            },
+        },
+    ];
     let lookupSizeStart = [];
     let lookupSizeEnd = [];
     let aggregateEnd = [];
@@ -350,7 +358,7 @@ exports.filter = async (req, res) => {
                         },
                     },
                     {
-                        "items": {
+                        items: {
                             $regex: `.*${req.body.search}.*`,
                             $options: "i",
                         },
@@ -465,24 +473,26 @@ exports.filter = async (req, res) => {
                             $expr: { $eq: ["$productId", "$$productId"] },
                         },
                     },
-                    {$sort: { price: 1 }},
-                    {$limit: 1},
-                    { $project: {
-                        discount: {
-                            $cond: {
-                                if: {
-                                    $and: [
-                                        {$gte: ["$discount_end", new Date()]},
-                                        {$lte: ["$discount_start", new Date()]}
-                                    ]
+                    { $sort: { price: 1 } },
+                    { $limit: 1 },
+                    {
+                        $project: {
+                            discount: {
+                                $cond: {
+                                    if: {
+                                        $and: [
+                                            { $gte: ["$discount_end", new Date()] },
+                                            { $lte: ["$discount_start", new Date()] },
+                                        ],
+                                    },
+                                    then: "$discount",
+                                    else: null,
                                 },
-                                then: "$discount",
-                                else: null
-                            }
+                            },
+                            price: 1,
+                            _id: 0,
                         },
-                        price: 1, 
-                        _id: 0 
-                    } },
+                    },
                 ],
                 as: "sizes",
             },
@@ -490,7 +500,7 @@ exports.filter = async (req, res) => {
         {
             $project: {
                 name: 1,
-                category:1,
+                category: 1,
                 image: 1,
                 slug: 1,
                 createdAt: 1,
@@ -513,8 +523,13 @@ exports.filter = async (req, res) => {
                 },
             },
         },
-    ]
-    if(req.body.start || req.body.end || req.body.sort === "priceUp" || req.body.sort === "priceDown"){
+    ];
+    if (
+        req.body.start ||
+        req.body.end ||
+        req.body.sort === "priceUp" ||
+        req.body.sort === "priceDown"
+    ) {
         lookupSizeStart = [...sizeLookup];
     } else {
         lookupSizeEnd = [...sizeLookup];
@@ -527,19 +542,18 @@ exports.filter = async (req, res) => {
         { $limit: limit },
         ...lookupSizeEnd,
         {
-            $lookup:
-                {
-                    from: "categories",
-                    localField: "category",
-                    foreignField: "_id",
-                    as: "category"
-                }
+            $lookup: {
+                from: "categories",
+                localField: "category",
+                foreignField: "_id",
+                as: "category",
+            },
         },
         { $unwind: "$category" },
         {
             $project: {
                 name: 1,
-                category:"$category.name",
+                category: "$category.name",
                 image: 1,
                 slug: 1,
                 price: 1,
@@ -550,16 +564,18 @@ exports.filter = async (req, res) => {
         if (err) return res.status(400).json({ success: false, err });
         res.status(200).json({
             success: true,
-            data
+            data,
         });
     });
 };
 exports.count = async (req, res) => {
-    let aggregateStart = [{
-        $match: {
-            status: 1
-        }
-    }];
+    let aggregateStart = [
+        {
+            $match: {
+                status: 1,
+            },
+        },
+    ];
     let aggregateEnd = [];
     if (req.body.search && req.body.search.length) {
         aggregateStart.push({
@@ -578,7 +594,7 @@ exports.count = async (req, res) => {
                         },
                     },
                     {
-                        "items": {
+                        items: {
                             $regex: `.*${req.body.search}.*`,
                             $options: "i",
                         },
@@ -654,7 +670,7 @@ exports.count = async (req, res) => {
                             $expr: { $eq: ["$productId", "$$productId"] },
                         },
                     },
-                    {$sort: { price: 1 },},  
+                    { $sort: { price: 1 } },
                 ],
                 as: "sizes",
             },
@@ -669,7 +685,7 @@ exports.count = async (req, res) => {
                         },
                         in: "$$size.price",
                     },
-                }
+                },
             },
         },
         ...aggregateEnd,
@@ -717,18 +733,24 @@ exports.getAll = async (req, res) => {
                             $expr: { $eq: ["$productId", "$$productId"] },
                         },
                     },
-                    { $project: { price: 1, _id: 0, discount: {
-                            $cond: {
-                                if: {
-                                    $and: [
-                                        {$gte: ["$discount_end", new Date()]},
-                                        {$lte: ["$discount_start", new Date()]}
-                                    ]
+                    {
+                        $project: {
+                            price: 1,
+                            _id: 0,
+                            discount: {
+                                $cond: {
+                                    if: {
+                                        $and: [
+                                            { $gte: ["$discount_end", new Date()] },
+                                            { $lte: ["$discount_start", new Date()] },
+                                        ],
+                                    },
+                                    then: "$discount",
+                                    else: null,
                                 },
-                                then: "$discount",
-                                else: null
-                            }
-                        }, } },
+                            },
+                        },
+                    },
                     {
                         $sort: { price: 1 },
                     },
@@ -740,7 +762,7 @@ exports.getAll = async (req, res) => {
             $project: {
                 name: 1,
                 image: 1,
-                status:1,
+                status: 1,
                 category: "$category.name",
                 slug: 1,
                 price: {
@@ -790,9 +812,9 @@ exports.getAll = async (req, res) => {
     });
 };
 exports.getOneClient = async (req, res) => {
-    let product = await Product.findOne({ slug: req.params.slug })
-        product.views = product.views + 1;
-        product.save();
+    let product = await Product.findOne({ slug: req.params.slug });
+    product.views = product.views + 1;
+    product.save();
     await Product.aggregate([
         { $match: { slug: req.params.slug, status: 1 } },
         {
@@ -811,7 +833,7 @@ exports.getOneClient = async (req, res) => {
                 let: { brand: "$brand" },
                 pipeline: [
                     { $match: { $expr: { $eq: ["$_id", "$$brand"] } } },
-                    { $project: { name: 1} },
+                    { $project: { name: 1 } },
                 ],
                 as: "brand",
             },
@@ -879,7 +901,7 @@ exports.getOneClient = async (req, res) => {
                 as: "footerImages",
             },
         },
-        
+
         {
             $lookup: {
                 from: "params",
@@ -920,13 +942,23 @@ exports.getOneClient = async (req, res) => {
                                             $cond: {
                                                 if: {
                                                     $and: [
-                                                        {$gte: ["$discount_end", new Date()]},
-                                                        {$lte: ["$discount_start", new Date()]}
-                                                    ]
+                                                        {
+                                                            $gte: [
+                                                                "$discount_end",
+                                                                new Date(),
+                                                            ],
+                                                        },
+                                                        {
+                                                            $lte: [
+                                                                "$discount_start",
+                                                                new Date(),
+                                                            ],
+                                                        },
+                                                    ],
                                                 },
                                                 then: "$discount",
-                                                else: null
-                                            }
+                                                else: null,
+                                            },
                                         },
                                     },
                                 },
@@ -969,9 +1001,15 @@ exports.getOneClient = async (req, res) => {
 exports.getOneSeller = async (req, res) => {
     await Product.aggregate([
         { $match: { slug: req.params.slug } },
-        {$project: {
-            createdAt: 0, updatedAt: 0, slug: 0, __v: 0, shop:0
-        }},
+        {
+            $project: {
+                createdAt: 0,
+                updatedAt: 0,
+                slug: 0,
+                __v: 0,
+                shop: 0,
+            },
+        },
         {
             $lookup: {
                 from: "params",
