@@ -1,5 +1,6 @@
 const Shop = require("../models/shop");
 const User = require("../models/user");
+const Product = require("../models/product");
 const { getSlug, deleteFile } = require("../utils");
 const { deleteProductByShop } = require("../utils/preModel");
 
