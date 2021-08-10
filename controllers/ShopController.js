@@ -54,7 +54,7 @@ exports.editToSeeProducts = async (req, res) => {
     if (!(req.body.status === 1 || req.body.status === 2)) {
         return res.status(400).json({ success: false, data: "Something went wrong" });
     }
-    await Shop.findOneAndUpdate(
+    await Shop.findByIdAndUpdate(
         { _id: req.params.id },
         { $set: { status: req.body.status } },
         { new: true },
