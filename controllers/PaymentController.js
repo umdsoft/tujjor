@@ -4,7 +4,9 @@ const Size = require("../models/size");
 const Transaction = require("../models/transaction");
 const PayedList = require("../models/payedList");
 exports.payme = async (req, res) => {
-    const PAYCOM_PASSWORD = "zBnGw3@28ByVqDM?ib7ojWN9PCvuI3%PW&AG";
+    // merchant ID: 6113b418754e932e68fd87ad
+    // const PAYCOM_PASSWORD = "&ibgXksdw0S9#aORZ80Vb0HO0SQNFYmEEkgq" //test
+    const PAYCOM_PASSWORD = "Pb61wSM%ajGhIhxqEsDAWOW8Hg0hkbjG9JCJ" //production
     const body = req.body;
     if (req.method !== "POST") {
         return sendResponse(Errors.TransportError, null);

@@ -283,16 +283,13 @@ exports.editSize = async (req, res) => {
 
 // Delete
 exports.delete = (req, res) => {
-    Product.findByIdAndDelete({ _id: req.params.id })
+    Product.findByIdAndUpdate({ _id: req.params.id }, {$set: {isDelete: true}})
         .then((product) => {
             if (!product) {
                 return res.status(404).json({
                     message: "Product not found with id " + req.params.id,
                 });
             }
-            deleteParam(product._id);
-            deleteImage(product._id);
-            deleteFooterImage(product._id);
             res.json({ message: "Product deleted successfully!" });
         })
         .catch((err) => {
@@ -347,7 +344,7 @@ exports.filter = async (req, res) => {
     let aggregateStart = [
         {
             $match: {
-                status: 1,
+                status: 1, isDelete: false, shopIsActive: 1
             },
         },
     ];
@@ -585,7 +582,7 @@ exports.count = async (req, res) => {
     let aggregateStart = [
         {
             $match: {
-                status: 1,
+                status: 1, isDelete: false, shopIsActive: 1
             },
         },
     ];
@@ -722,7 +719,7 @@ exports.getAll = async (req, res) => {
     const page = parseInt(req.query.page);
     const limit = parseInt(req.query.limit);
     await Product.aggregate([
-        { $match: { shop: mongoose.Types.ObjectId(req.query.shop) } },
+        { $match: { shop: mongoose.Types.ObjectId(req.query.shop), isDelete: false } },
         { $sort: { createdAt: -1 } },
         {
             $lookup: {
@@ -832,7 +829,7 @@ exports.getOneClient = async (req, res) => {
     product.views = product.views + 1;
     product.save();
     await Product.aggregate([
-        { $match: { slug: req.params.slug, status: 1 } },
+        { $match: { slug: req.params.slug, status: 1, isDelete: false, shopIsActive: 1 } },
         {
             $project: {
                 slug: 0,
@@ -1016,7 +1013,7 @@ exports.getOneClient = async (req, res) => {
 };
 exports.getOneSeller = async (req, res) => {
     await Product.aggregate([
-        { $match: { slug: req.params.slug } },
+        { $match: { slug: req.params.slug, isDelete: false } },
         {
             $project: {
                 createdAt: 0,

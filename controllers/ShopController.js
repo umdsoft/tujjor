@@ -3,18 +3,19 @@ const User = require("../models/user");
 const Product = require("../models/product");
 const { getSlug, deleteFile } = require("../utils");
 const { deleteProductByShop } = require("../utils/preModel");
+const shop = require("../models/shop");
 
 //for Admin
 exports.getShops = async (req, res) => {
     res.status(200).json({
         success: true,
-        data: await Shop.find({ status: { $gte: 1 } }).select({ __v: 0 }),
+        data: await Shop.find({ status: { $gte: 1 }, isDelete: false }).select({ __v: 0 }),
     });
 };
 exports.getContracts = async (req, res) => {
     res.status(200).json({
         success: true,
-        data: await Shop.find({ status: 0 })
+        data: await Shop.find({ status: 0, isDelete: false })
             .populate([{ path: "user", select: { name: 1, phone: 1, _id: 0 } }])
             .select({ __v: 0 }),
     });
@@ -182,19 +183,29 @@ exports.delete = async (req, res) => {
         if (err || !data) {
             return res.status(404).json({ success: false, message: "Not Found this Id" });
         }
-
-        deleteFile(`/public${data.fileContract}`);
-        deleteFile(`/public${data.fileCertificate}`);
-        deleteFile(`/public${data.image}`);
-        deleteProductByShop(data._id);
-        await Shop.findByIdAndDelete({ _id: data._id }, async (err, data) => {
-            if (data) {
-                await User.findOneAndUpdate(
-                    { _id: data.user },
-                    { $set: { role: "client" } }
-                );
-            }
-        });
+        if(data.status === 0){
+            deleteFile(`/public${data.fileContract}`);
+            deleteFile(`/public${data.fileCertificate}`);
+            deleteFile(`/public${data.image}`);
+            deleteProductByShop(data._id);
+            await Shop.findByIdAndDelete({ _id: data._id }, async (err, data) => {
+                if (data) {
+                    await User.findOneAndUpdate(
+                        { _id: data.user },
+                        { $set: { role: "client" } }
+                    );
+                }
+            });
+        } else {
+            await Shop.findByIdUpdate({ _id: data._id }, {$set: {isDelete: true}}, async (err, data) => {
+                if (data) {
+                    await User.findOneAndUpdate(
+                        { _id: data.user },
+                        { $set: { role: "client" } }
+                    );
+                }
+            });
+        }
         res.status(200).json({
             success: true,
             data: [],

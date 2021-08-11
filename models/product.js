@@ -35,6 +35,7 @@ const ProductSchema = new mongoose.Schema(
         tags: [{ type: mongoose.Schema.ObjectId, ref: "Tag", index: true }],
         status: { type: Number, required: true, index: true, enum: [0, 1] },
         shopIsActive: { type: Number, required: true, index: true, enum: [0, 1] },
+        isDelete: {type: Boolean, default: false}
     },
     { timestamps: true }
 );

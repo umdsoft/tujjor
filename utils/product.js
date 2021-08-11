@@ -1,13 +1,9 @@
 const sharp = require("sharp");
 const path = require("path");
 const { deleteFile } = require(".");
-const Size = require("../models/size");
 exports.sharpProductImage = async (filename) => {
     await sharp(path.join(path.dirname(__dirname) + `/public/temp/${filename}`))
         .resize(500, 450)
-        .jpeg({
-            quality: 100,
-        })
         .toFile(
             path.join(path.dirname(__dirname) + `/public/uploads/products/${filename}`),
             (err) => {}
@@ -31,10 +27,7 @@ exports.sharpProductImage = async (filename) => {
 };
 exports.sharpParamImage = async (filename) => {
     await sharp(path.join(path.dirname(__dirname) + `/public/temp/${filename}`))
-        .resize(100, 100)
-        .jpeg({
-            quality: 50,
-        })
+        .resize(500, 450)
         .toFile(
             path.join(
                 path.dirname(__dirname) + `/public/uploads/products/colors/${filename}`
@@ -51,7 +44,7 @@ exports.sharpFrontImage = async (filename) => {
     await sharp(path.join(path.dirname(__dirname) + `/public/temp/${filename}`))
         .resize(222, 222)
         .jpeg({
-            quality: 60,
+            quality: 80,
         })
         .toFile(
             path.join(

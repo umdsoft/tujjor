@@ -33,6 +33,7 @@ const ShopSchema = new mongoose.Schema(
         slug: { type: String, unique: true, required: true },
         fileCertificate: { type: String, required: true },
         fileContract: { type: String, required: true },
+        isDelete: { type: Boolean, default: false}
     },
     { timestamps: true }
 );
