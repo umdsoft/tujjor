@@ -815,7 +815,7 @@ exports.getOneClient = async (req, res) => {
     console.log(req.params.slug);
     let product = await Product.findOne({ slug: req.params.slug });
     console.log(product);
-    if(!!product){
+    if(!product){
         return res.status(404).json({success: false, message: "Not Found this product"})
     }
     product.views = product.views + 1;
