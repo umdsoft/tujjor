@@ -30,7 +30,6 @@ const ProductSchema = new mongoose.Schema(
         views: { type: Number, default: 0 },
         image: { type: String, required: true },
         items: { type: String },
-        article: { type: String, index: true, unique: true, required: true },
         slug: { type: String, index: true, unique: true, required: true },
         tags: [{ type: mongoose.Schema.ObjectId, ref: "Tag", index: true }],
         status: { type: Number, required: true, index: true, enum: [0, 1] },

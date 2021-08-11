@@ -21,15 +21,6 @@ const {
     deleteSizeByParam,
 } = require("../utils/preModel");
 //create
-exports.checkArticul = async (req, res) => {
-    Product.find({article: req.body.article}, (err, data)=>{
-        if(data.length){
-            res.status(200).json({success: true})
-        } else {
-            res.status(200).json({success: false})
-        }
-    })
-}
 exports.create = async (req, res) => {
     const { filename } = req.file;
     sharpFrontImage(filename);
@@ -44,7 +35,6 @@ exports.create = async (req, res) => {
         brand: req.body.brand,
         description: req.body.description,
         image: `/uploads/products/cards/${filename}`,
-        article: req.body.article,
         tags: req.body.tags,
         slug: getSlug(req.body.name ? req.body.name.ru : ""),
         items: req.body.items,
