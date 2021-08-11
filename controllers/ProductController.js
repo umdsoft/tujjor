@@ -21,6 +21,15 @@ const {
     deleteSizeByParam,
 } = require("../utils/preModel");
 //create
+exports.checkArticul = async (req, res) => {
+    Product.find({article: req.body.article}, (err, data)=>{
+        if(data){
+            res.status(200).json({success: true})
+        } else {
+            res.status(200).json({success: false})
+        }
+    })
+}
 exports.create = async (req, res) => {
     const { filename } = req.file;
     sharpFrontImage(filename);

@@ -26,6 +26,7 @@ router.post("/count", ProductController.count);
 //create
 router.post("/comment/create", protectClient, ProductController.commentCreate);
 router.post("/create", upload.single("image"), validateFile, ProductController.create);
+router.post("/check", ProductController.checkArticul);
 router.post(
     "/param/create",
     upload.single("image"),
