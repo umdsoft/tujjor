@@ -96,7 +96,7 @@ exports.getOne = async (req, res) => {
 exports.delete = async (req, res) => {
     await Category.findByIdAndDelete({ _id: req.params.id }, (err, data) => {
         deleteCategory(req.params.id);
-        deleteProduct(data._id);
+        updateStatusByCategory(data._id);
         res.status(200).json({ data: [] });
     });
 };
