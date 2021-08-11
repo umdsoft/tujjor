@@ -23,7 +23,7 @@ const {
 //create
 exports.checkArticul = async (req, res) => {
     Product.find({article: req.body.article}, (err, data)=>{
-        if(data){
+        if(data.length){
             res.status(200).json({success: true})
         } else {
             res.status(200).json({success: false})
