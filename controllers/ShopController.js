@@ -9,7 +9,7 @@ const shop = require("../models/shop");
 exports.getShops = async (req, res) => {
     res.status(200).json({
         success: true,
-        data: await Shop.find({ status: { $gte: 1 }, isDelete: false }).select({ __v: 0 }),
+        data: await Shop.find({ status: { $gte: 1 }, isDelete: false }).select({ __v: 0, isDelete: 0}),
     });
 };
 exports.getContracts = async (req, res) => {
@@ -17,7 +17,7 @@ exports.getContracts = async (req, res) => {
         success: true,
         data: await Shop.find({ status: 0, isDelete: false })
             .populate([{ path: "user", select: { name: 1, phone: 1, _id: 0 } }])
-            .select({ __v: 0 }),
+            .select({ __v: 0, isDelete: 0 }),
     });
 };
 exports.getOneAdmin = async (req, res) => {
