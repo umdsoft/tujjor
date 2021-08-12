@@ -2,7 +2,7 @@ const Shop = require("../models/shop");
 const User = require("../models/user");
 const Product = require("../models/product");
 const { getSlug, deleteFile } = require("../utils");
-const { deleteProductByShop } = require("../utils/preModel");
+const { deleteProductByShop, updateStatusByShop } = require("../utils/preModel");
 const shop = require("../models/shop");
 
 //for Admin
@@ -35,14 +35,30 @@ exports.getOneAdmin = async (req, res) => {
             return res.status(500).json({ success: false, message: err });
         });
 };
+exports.updateItems = async (req, res) => {
+    await Shop.findOneAndUpdate(
+        { _id: req.params.id },
+        { $set: {category: req.body.category, percent: req.body.percent } },
+        { 
+            new: true, 
+            fields: { isDelete: 0, __v: 0 }
+        },
+        async (err, data) => {
+            if (err) {
+                return res.status(400).json({ success: false, data: "Not Found" });
+            }
+            res.status(200).json({ success: true, data });
+        }
+    );
+}
 exports.editStatus = async (req, res) => {
-    if (!req.body || !req.body.category) {
+    if (!req.body || !req.body.category || !req.body.percent) {
         return res.status(400).json({ success: false, data: "Something went wrong" });
     }
     await Shop.findOneAndUpdate(
         { _id: req.params.id },
-        { $set: { status: 1, category: req.body.category } },
-        { new: true },
+        { $set: { status: 1, category: req.body.category, percent: req.body.percent } },
+        { new: true, fields: { isDelete: 0, __v: 0 } },
         async (err, data) => {
             if (err) {
                 return res.status(400).json({ success: false, data: "Not Found" });
@@ -59,7 +75,7 @@ exports.editToSeeProducts = async (req, res) => {
     await Shop.findByIdAndUpdate(
         { _id: req.params.id },
         { $set: { status: req.body.status } },
-        { new: true },
+        { new: true, fields: { isDelete: 0, __v: 0 } },
         async (err, data) => {
             if (err) {
                 return res.status(400).json({ success: false, data: "Not Found" });
@@ -68,10 +84,7 @@ exports.editToSeeProducts = async (req, res) => {
                 Product.updateMany(
                     { shop: data._id },
                     { $set: { shopIsActive: req.body.status === 2 ? 1 : 0 } }
-                ).exec((err, data) => {
-                    if (err) console.log(err);
-                    else console.log(data);
-                });
+                )
             }
             res.status(200).json({ success: true, data });
         }
@@ -133,7 +146,7 @@ exports.create = async (req, res) => {
             uz: req.body.description ? req.body.description.uz : "",
             ru: req.body.description ? req.body.description.ru : "",
         },
-        category: req.body.category || "Not selected",
+        category: ["Not Selected"],
         slug: req.body.shopName ? getSlug(req.body.shopName) : "",
         fileContract: `/uploads/shops/${req.files.fileContract[0].filename}`,
         fileCertificate: `/uploads/shops/${req.files.fileCertificate[0].filename}`,
@@ -199,6 +212,7 @@ exports.delete = async (req, res) => {
         } else {
             await Shop.findByIdUpdate({ _id: data._id }, {$set: {isDelete: true}}, async (err, data) => {
                 if (data) {
+                    updateStatusByShop(data._id)
                     await User.findOneAndUpdate(
                         { _id: data.user },
                         { $set: { role: "client" } }

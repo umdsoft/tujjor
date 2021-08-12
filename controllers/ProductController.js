@@ -283,7 +283,6 @@ exports.delete = (req, res) => {
             res.json({ message: "Product deleted successfully!" });
         })
         .catch((err) => {
-            console.log("Product Delete Error ... ", err);
             res.status(500).json({ message: err });
         });
 };
@@ -812,9 +811,7 @@ exports.getAll = async (req, res) => {
     });
 };
 exports.getOneClient = async (req, res) => {
-    console.log(req.params.slug);
     let product = await Product.findOne({ slug: req.params.slug });
-    console.log(product);
     if(!product){
         return res.status(404).json({success: false, message: "Not Found this product"})
     }

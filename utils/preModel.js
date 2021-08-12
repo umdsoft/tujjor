@@ -25,7 +25,6 @@ exports.updateStatusByShop = (id)=>{
             return;
         }
         if (product) {
-            console.log("BY CATEGORY")
             exports.updateStatusByShop(id);
         }
     })

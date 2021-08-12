@@ -24,9 +24,12 @@ const ShopSchema = new mongoose.Schema(
             ru: { type: String },
         },
         category: {
-            type: mongoose.Schema.ObjectId,
-            ref: "Category",
-            required: true,
+            type: [{
+                type: mongoose.Schema.ObjectId,
+                ref: "Category",
+                required: true,
+            }],
+            validate: (v) => Array.isArray(v) && v.length > 0,
         },
         percent: { type: Number, default: 0}, 
         status: { type: Number, enum: [0, 1, 2], default: 0 },
