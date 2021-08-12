@@ -98,6 +98,9 @@ exports.payme = async (req, res) => {
             }
 
             if (data) {
+                if(param.id !== data.tid){
+                    return sendResponse(Errors.YesTransaction, null);
+                }
                 if (data.state === 1) {
                     if (data.time > params.time) {
                         await Transaction.updateOne(

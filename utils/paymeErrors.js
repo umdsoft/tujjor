@@ -35,7 +35,11 @@ module.exports = {
     },
     YesTransaction: {
         code: -31099,
-        message: "Kuting",
+        message: {
+            ru: "В ожидании оплаты",
+            uz: "To'lov kutilmoqda",
+            en: "Awaiting payment",
+        },
     },
     IncorrectAmount: {
         code: -31001,
