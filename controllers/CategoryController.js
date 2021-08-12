@@ -23,21 +23,25 @@ function createCategories(categories, parentId = null) {
     }
     return categoryList;
 }
-function getCategoriesCreate(categories, parentId) {
-    const categoryList = [];
-    let category;
-    category = categories.filter((cat) => cat.parentId == parentId);
+function getCategoriesCreate(parentId) {
+    let categories = []
+    Category.find({parentId: parentId}).then(category=>{
+        if(category.length){
+            category.forEach(key=>{
+                categories.push({
+                    _id: key._id,
+                    name: key.name,
+                    parentId: key.parentId,
+                    slug: key.slug,
+                    children: getCategoriesCreate(key._id),
+                });
+            })
+        }
+    })
+    return categories;
+
     for (let cate of category) {
-        categoryList.push({
-            _id: cate._id,
-            name: {
-                uz: cate.name.uz,
-                ru: cate.name.ru,
-            },
-            parentId: cate.parentId,
-            slug: cate.slug,
-            children: createCategories(categories, cate._id),
-        });
+        
     }
     return categoryList;
 }
