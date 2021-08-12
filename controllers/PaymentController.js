@@ -216,7 +216,7 @@ exports.payme = async (req, res) => {
                         },
                     },
                     {new : true},
-                    (err, newTransaction)=>{
+                    async (err, newTransaction)=>{
                         await Order.findOneAndUpdate(
                         { orderId: newTransaction.order },
                         {
