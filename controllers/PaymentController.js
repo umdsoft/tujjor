@@ -201,6 +201,7 @@ exports.payme = async (req, res) => {
     }
 
     async function CancelTransaction(params) {
+        console.log(params)
         await Transaction.findOne({ tid: params.id }, async (err, transaction) => {
             if (err || !transaction){
                 return sendResponse(Errors.TransactionNotFound, null);
