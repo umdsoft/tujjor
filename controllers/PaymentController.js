@@ -202,8 +202,9 @@ exports.payme = async (req, res) => {
 
     async function CancelTransaction(params) {
         await Transaction.findOne({ tid: params.id }, async (err, transaction) => {
-            if (err || !transaction)
+            if (err || !transaction){
                 return sendResponse(Errors.TransactionNotFound, null);
+            } else 
             if (transaction.state === 1) {
                 await Transaction.updateOne(
                     { tid: transaction.tid },
@@ -215,25 +216,9 @@ exports.payme = async (req, res) => {
                         },
                     }
                 );
-                await Transaction.findOne({ tid: transaction.tid }, async () => {
-                    await Order.updateOne(
+                await Order.findOneAndDelete(
                         { orderId: transaction.order },
-                        {
-                            $set: {
-                                payed: 0,
-                            },
-                        },
                         async (err, data) => {
-                            if (err) return sendResponse(err, null);
-                            const ord = await Order.find({
-                                orderId: transaction.order,
-                            });
-                            await Order.findOneAndDelete(
-                                { _id: ord._id },
-                                (err, data) => {
-                                    if (err) return sendResponse(err, null);
-                                }
-                            );
                             return sendResponse(null, {
                                 state: data.state,
                                 cancel_time: data.cancel_time,
@@ -243,7 +228,6 @@ exports.payme = async (req, res) => {
                             });
                         }
                     );
-                });
             } else {
                 if (transaction.state === 2) {
                     await Order.findOne(
