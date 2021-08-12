@@ -87,13 +87,16 @@ exports.getOne = async (req, res) => {
     if (!req.params.id) {
         return res.status(400).json({ success: false, message: "Required" });
     }
-    await Category.find().exec((err, categories) => {
+    await Category.find({}, {slug: 0}).exec((err, categories) => {
         if (err) {return res.status(400).json({ err });}
         if (categories) {
             const category = categories.find((cat) => cat._id == req.params.id);
-            console.log(category);
             const categoryList = getCategoriesCreate(categories, req.params.id);
-            res.status(200).json({ success: true, data: categoryList });
+            res.status(200).json({ success: true, data: {
+                _id: category._id,
+                name: category.name,
+                children: categoryList,
+            } });
         }
     });
 };
