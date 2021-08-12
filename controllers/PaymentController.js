@@ -88,6 +88,7 @@ exports.payme = async (req, res) => {
                                     perform_time: transaction.perform_time,
                                     cancel_time: transaction.cancel_time,
                                     receivers: transaction.receivers,
+                                    test: true
                                 });
                             })
                             .catch((err) => {
@@ -98,8 +99,9 @@ exports.payme = async (req, res) => {
             }
 
             if (data) {
-                // if(params.id !== data.tid){
-                // }
+                if(params.id !== data.tid){
+                    return sendResponse(Errors.YesTransaction, null);
+                }
                 if (data.state === 1) {
                     if (data.time > params.time) {
                         await Transaction.updateOne(
@@ -118,16 +120,15 @@ exports.payme = async (req, res) => {
                             }
                         );
                     } else {
-                        return sendResponse(Errors.YesTransaction, null);
-
-                        // return sendResponse(null, {
-                        //     state: data.state,
-                        //     create_time: data.create_time,
-                        //     transaction: data.transaction,
-                        //     perform_time: data.perform_time || 0,
-                        //     cancel_time: data.cancel_time || 0,
-                        //     receivers: data.receivers,
-                        // });
+                        return sendResponse(null, {
+                            state: data.state,
+                            create_time: data.create_time,
+                            transaction: data.transaction,
+                            perform_time: data.perform_time || 0,
+                            cancel_time: data.cancel_time || 0,
+                            receivers: data.receivers,
+                            test: false
+                        });
                     }
                 } else {
                     return sendResponse(Errors.UnexpectedTransactionState, null);
