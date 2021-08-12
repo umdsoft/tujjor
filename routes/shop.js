@@ -22,7 +22,7 @@ router.get("/contract/all", protectAdmin, ShopController.getContracts);
 router.get("/one/:id", protectAdmin, ShopController.getOneAdmin);
 router.put("/status/:id", protectAdmin, ShopController.editStatus);
 router.put("/product/show/:id", protectAdmin, ShopController.editToSeeProducts);
-router.put("admin/update/:id", protectAdmin, ShopController.updateItems);
+router.put("/admin/update/:id", protectAdmin, ShopController.updateItems);
 
 //seller
 router.post(
