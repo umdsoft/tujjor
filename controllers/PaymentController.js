@@ -263,7 +263,8 @@ exports.payme = async (req, res) => {
                                             reason: params.reason,
                                             cancel_time: Date.now(),
                                         },
-                                    }
+                                    },
+                                    {new: true}
                                 ).exec((err, transac) => {
                                     return sendResponse(null, {
                                         state: transac.state,
