@@ -216,18 +216,14 @@ exports.payme = async (req, res) => {
                         },
                     }
                 );
-                await Order.findOneAndDelete(
-                        { orderId: transaction.order },
-                        async (err, data) => {
-                            return sendResponse(null, {
-                                state: data.state,
-                                cancel_time: data.cancel_time,
-                                transaction: data.transaction,
-                                create_time: data.create_time,
-                                perform_time: data.perform_time || 0,
-                            });
-                        }
-                    );
+                await Order.findOneAndDelete({ orderId: transaction.order });
+                return sendResponse(null, {
+                    state: transaction.state,
+                    cancel_time: transaction.cancel_time,
+                    transaction: transaction.transaction,
+                    create_time: transaction.create_time,
+                    perform_time: transaction.perform_time || 0,
+                });
             } else {
                 if (transaction.state === 2) {
                     await Order.findOne(
