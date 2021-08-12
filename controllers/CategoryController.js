@@ -24,7 +24,6 @@ function createCategories(categories, parentId = null) {
     return categoryList;
 }
 function getCategoriesCreate(parentId) {
-    console.log(parentId)
     let categories = []
     Category.find({parentId: parentId}).then(category=>{
         if(category.length){
@@ -39,12 +38,8 @@ function getCategoriesCreate(parentId) {
             })
         }
     })
+    console.log(categories)
     return categories;
-
-    for (let cate of category) {
-        
-    }
-    return categoryList;
 }
 const deleteCategory = async (parentId) => {
     let item = await Category.find({ parentId });
