@@ -24,6 +24,7 @@ function createCategories(categories, parentId = null) {
     return categoryList;
 }
 function getCategoriesCreate(parentId) {
+    console.log(parentId)
     let categories = []
     Category.find({parentId: parentId}).then(category=>{
         if(category.length){
