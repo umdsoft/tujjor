@@ -47,7 +47,7 @@ exports.payme = async (req, res) => {
     async function CreateTransaction(params) {
         await Transaction.findOne({ order: params.account.order }, async (err, data) => {
             const receivers = [];
-            if (err || !data) {
+            if (!data) {
                 await Order.findOne({orderId: params.account.order},async (err,order)=>{
                     if(err || !order ) return sendResponse(Errors.OrderNotFound,null);
                     if(order.payed === 1) return sendResponse(Errors.OrderAvailable,null);
