@@ -98,9 +98,8 @@ exports.payme = async (req, res) => {
             }
 
             if (data) {
-                if(params.id !== data.tid){
-                    return sendResponse(Errors.YesTransaction, null);
-                }
+                // if(params.id !== data.tid){
+                // }
                 if (data.state === 1) {
                     if (data.time > params.time) {
                         await Transaction.updateOne(
@@ -119,14 +118,16 @@ exports.payme = async (req, res) => {
                             }
                         );
                     } else {
-                        return sendResponse(null, {
-                            state: data.state,
-                            create_time: data.create_time,
-                            transaction: data.transaction,
-                            perform_time: data.perform_time || 0,
-                            cancel_time: data.cancel_time || 0,
-                            receivers: data.receivers,
-                        });
+                        return sendResponse(Errors.YesTransaction, null);
+
+                        // return sendResponse(null, {
+                        //     state: data.state,
+                        //     create_time: data.create_time,
+                        //     transaction: data.transaction,
+                        //     perform_time: data.perform_time || 0,
+                        //     cancel_time: data.cancel_time || 0,
+                        //     receivers: data.receivers,
+                        // });
                     }
                 } else {
                     return sendResponse(Errors.UnexpectedTransactionState, null);
