@@ -36,12 +36,12 @@ exports.getOneAdmin = async (req, res) => {
         });
 };
 exports.updateItems = async (req, res) => {
-    if (!req.body || !req.body.category.length || !req.body.percent) {
+    if (!req.body || !req.body.category.length) {
         return res.status(400).json({ success: false, data: "Something went wrong" });
     }
     await Shop.findOneAndUpdate(
         { _id: req.params.id },
-        { $set: {category: req.body.category, percent: req.body.percent } },
+        { $set: {category: req.body.category, percent: req.body.percent || 0 } },
         { 
             new: true, 
             fields: { isDelete: 0, __v: 0 }
