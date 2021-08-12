@@ -26,7 +26,7 @@ function createCategories(categories, parentId = null) {
 function getCategoriesCreate(parentId) {
     
     return Promise.all(
-        Category.find({parentId: parentId}).then(category=>{
+        Category.find({parentId: parentId}).then( async category=>{
             let categories = []
             if(category.length){
                 category.forEach(key=>{
@@ -35,7 +35,7 @@ function getCategoriesCreate(parentId) {
                         name: key.name,
                         parentId: key.parentId,
                         slug: key.slug,
-                        children: getCategoriesCreate(key._id),
+                        children: await getCategoriesCreate(key._id),
                     });
                 })
             }
