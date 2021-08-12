@@ -91,13 +91,12 @@ exports.getOne = async (req, res) => {
     if (!req.params.id) {
         return res.status(400).json({ success: false, message: "Required" });
     }
-    await Category.find().exec((err, categories) => {
+    await Category.findOne({ _id: req.params.id}).exec((err, category) => {
         if (err) {return res.status(400).json({ err });}
-        if (categories) {
-            let category = {...([...categories]).filter(key=>{key._id.toString() === req.params.id.toString()})[0]}
-            console.log(category)
-            category['children'] = getCategoriesCreate(categories, req.params.id);
-            res.status(200).json({ success: true, data: category });
+        if (category) {
+            console.log(category);
+            const categoryList = createCategories(category._id)
+            res.status(200).json({success: true, data:categoryList})
         }
     });
 };
