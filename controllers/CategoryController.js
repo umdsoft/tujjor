@@ -24,22 +24,26 @@ function createCategories(categories, parentId = null) {
     return categoryList;
 }
 function getCategoriesCreate(parentId) {
-    let categories = []
-    Category.find({parentId: parentId}).then(category=>{
-        if(category.length){
-            category.forEach(key=>{
-                categories.push({
-                    _id: key._id,
-                    name: key.name,
-                    parentId: key.parentId,
-                    slug: key.slug,
-                    children: getCategoriesCreate(key._id),
-                });
-            })
-        }
-    })
-    console.log(categories)
-    return categories;
+    
+    return Promise.all(
+        Category.find({parentId: parentId}).then(category=>{
+            let categories = []
+            if(category.length){
+                category.forEach(key=>{
+                    categories.push({
+                        _id: key._id,
+                        name: key.name,
+                        parentId: key.parentId,
+                        slug: key.slug,
+                        children: getCategoriesCreate(key._id),
+                    });
+                })
+            }
+            console.log(categories)
+            return categories;
+        })
+    ) 
+    
 }
 const deleteCategory = async (parentId) => {
     let item = await Category.find({ parentId });
