@@ -90,7 +90,7 @@ exports.getOne = async (req, res) => {
     await Category.find().exec((err, categories) => {
         if (err) {return res.status(400).json({ err });}
         if (categories) {
-            let category = {...categories.filter(key=>{key._id.toString() === req.params.id.toString()})[0]}
+            let category = {...([...categories]).filter(key=>{key._id.toString() === req.params.id.toString()})[0]}
             console.log(category)
             category['children'] = getCategoriesCreate(categories, req.params.id);
             res.status(200).json({ success: true, data: category });
