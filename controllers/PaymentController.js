@@ -265,7 +265,7 @@ exports.payme = async (req, res) => {
                                         $set: {
                                             state: -2,
                                             reason: params.reason,
-                                            cancel_time: Dacte.now(),
+                                            cancel_time: Date.now(),
                                         },
                                     },
                                     {new: true}
