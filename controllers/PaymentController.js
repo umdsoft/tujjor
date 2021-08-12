@@ -47,17 +47,18 @@ exports.payme = async (req, res) => {
     async function CreateTransaction(params) {
         await Transaction.findOne({ tid: params.id }, async (err, data) => {
             const receivers = [];
-            if (!data) {
+            if (err || !data) {
                 await Order.findOne(
                     { orderId: params.account.order },
-                    async (err, data) => {
-                        if (err || !data) return sendResponse(Errors.OrderNotFound, null);
-                        if (data.status) {
+                    async (err, order) => {
+                        if (err || !order) return sendResponse(Errors.OrderNotFound, null);
+                        
+                        if (order.status) {
                             return sendResponse(Errors.OrderAvailable, null);
                         }
-                        if (data.amount !== params.amount / 100)
+                        if (order.amount !== params.amount / 100)
                             return sendResponse(Errors.IncorrectAmount, null);
-                        data.products.forEach((key) => {
+                        order.products.forEach((key) => {
                             receivers.push({
                                 id: key.account,
                                 amount: key.count * key.amount * 100,
@@ -98,6 +99,9 @@ exports.payme = async (req, res) => {
             }
 
             if (data) {
+                if(params.id !== data.tid){
+                    return sendResponse(Errors.YesTransaction, null);
+                }
                 if (data.state === 1) {
                     if (data.time > params.time) {
                         await Transaction.updateOne(
