@@ -45,57 +45,49 @@ exports.payme = async (req, res) => {
     }
 
     async function CreateTransaction(params) {
-        await Transaction.findOne({ tid: params.id }, async (err, data) => {
+        await Transaction.findOne({ order: params.account.order }, async (err, data) => {
             const receivers = [];
             if (err || !data) {
-                await Order.findOne(
-                    { orderId: params.account.order },
-                    async (err, order) => {
-                        if (err || !order) return sendResponse(Errors.OrderNotFound, null);
-                        
-                        if (order.status) {
-                            return sendResponse(Errors.OrderAvailable, null);
-                        }
-                        if (order.amount !== params.amount / 100)
-                            return sendResponse(Errors.IncorrectAmount, null);
-                        order.products.forEach((key) => {
-                            receivers.push({
-                                id: key.account,
-                                amount: key.count * key.amount * 100,
-                            });
+                await Order.findOne({orderId: params.account.order},async (err,order)=>{
+                    if(err || !order ) return sendResponse(Errors.OrderNotFound,null);
+                    if(order.payed === 1) return sendResponse(Errors.OrderAvailable,null);
+                    if(order.amount !== params.amount / 100)  return sendResponse(Errors.IncorrectAmount,null);
+                    order.products.forEach((key) => {
+                        receivers.push({
+                            id: key.account,
+                            amount: key.count * key.amount * 100,
                         });
-
-                        const transaction = new Transaction({
-                            tid: params.id,
-                            amount: params.amount / 100,
-                            transaction: Math.floor(
-                                Math.random() * 1000000000
-                            ).toString(),
-                            state: 1,
-                            perform_time: 0,
-                            cancel_time: 0,
-                            create_time: Date.now(),
-                            order: parseInt(params.account.order),
-                            time: params.time,
-                            receivers: receivers,
+                    })
+                })
+                const transaction = new Transaction({
+                    tid: params.id,
+                    amount: params.amount / 100,
+                    transaction: Math.floor(
+                        Math.random() * 1000000000
+                    ).toString(),
+                    state: 1,
+                    perform_time: 0,
+                    cancel_time: 0,
+                    create_time: Date.now(),
+                    order: parseInt(params.account.order),
+                    time: params.time,
+                    receivers: receivers,
+                });
+                transaction
+                    .save()
+                    .then(() => {
+                        return sendResponse(null, {
+                            transaction: transaction.transaction,
+                            state: transaction.state,
+                            create_time: transaction.create_time,
+                            perform_time: transaction.perform_time,
+                            cancel_time: transaction.cancel_time,
+                            receivers: transaction.receivers
                         });
-                        transaction
-                            .save()
-                            .then(() => {
-                                return sendResponse(null, {
-                                    transaction: transaction.transaction,
-                                    state: transaction.state,
-                                    create_time: transaction.create_time,
-                                    perform_time: transaction.perform_time,
-                                    cancel_time: transaction.cancel_time,
-                                    receivers: transaction.receivers
-                                });
-                            })
-                            .catch((err) => {
-                                console.log(err);
-                            });
-                    }
-                );
+                    })
+                    .catch((err) => {
+                        console.log(err);
+                    });
             }
 
             if (data) {
