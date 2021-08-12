@@ -95,7 +95,7 @@ exports.getOne = async (req, res) => {
         if (err) {return res.status(400).json({ err });}
         if (category) {
             console.log(category);
-            const categoryList = createCategories(category._id)
+            const categoryList = getCategoriesCreate(category._id)
             res.status(200).json({success: true, data:categoryList})
         }
     });
