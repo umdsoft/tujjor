@@ -47,7 +47,7 @@ exports.payme = async (req, res) => {
     async function CreateTransaction(params) {
         await Transaction.findOne({ tid: params.id }, async (err, data) => {
             const receivers = [];
-            if (err || !data) {
+            if (!data) {
                 await Order.findOne(
                     { orderId: params.account.order },
                     async (err, data) => {
@@ -87,8 +87,7 @@ exports.payme = async (req, res) => {
                                     create_time: transaction.create_time,
                                     perform_time: transaction.perform_time,
                                     cancel_time: transaction.cancel_time,
-                                    receivers: transaction.receivers,
-                                    test: true
+                                    receivers: transaction.receivers
                                 });
                             })
                             .catch((err) => {
@@ -99,9 +98,6 @@ exports.payme = async (req, res) => {
             }
 
             if (data) {
-                if(params.id !== data.tid){
-                    return sendResponse(Errors.YesTransaction, null);
-                }
                 if (data.state === 1) {
                     if (data.time > params.time) {
                         await Transaction.updateOne(
@@ -126,8 +122,7 @@ exports.payme = async (req, res) => {
                             transaction: data.transaction,
                             perform_time: data.perform_time || 0,
                             cancel_time: data.cancel_time || 0,
-                            receivers: data.receivers,
-                            test: false
+                            receivers: data.receivers
                         });
                     }
                 } else {
