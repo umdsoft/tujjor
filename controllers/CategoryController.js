@@ -26,10 +26,10 @@ function createCategories(categories, parentId = null) {
 function getCategoriesCreate(parentId) {
     
     return Promise.all(
-        Category.find({parentId: parentId}).then( async category=>{
+        Category.find({parentId: parentId}).then(category=>{
             let categories = []
             if(category.length){
-                category.forEach(key=>{
+                category.forEach(async key=>{
                     categories.push({
                         _id: key._id,
                         name: key.name,
