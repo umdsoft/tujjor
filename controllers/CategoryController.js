@@ -91,6 +91,7 @@ exports.getOne = async (req, res) => {
         if (err) {return res.status(400).json({ err });}
         console.log(categories)
         if (categories) {
+            const category = categories.filter((cat) => cat._id == req.params.id);
             const categoryList = getCategoriesCreate(categories, req.params.id);
             res.status(200).json({ success: true, data: categoryList });
         }
