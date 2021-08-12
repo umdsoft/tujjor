@@ -206,7 +206,7 @@ exports.payme = async (req, res) => {
                 return sendResponse(Errors.TransactionNotFound, null);
             } else 
             if (transaction.state === 1) {
-                await Transaction.updateOne(
+                await Transaction.findOneAndUpdate(
                     { tid: transaction.tid },
                     {
                         $set: {
@@ -214,16 +214,40 @@ exports.payme = async (req, res) => {
                             reason: params.reason,
                             cancel_time: Date.now(),
                         },
+                    },
+                    {new : true},
+                    (err, newTransaction)=>{
+                        await Order.findOneAndUpdate(
+                        { orderId: newTransaction.order },
+                        {
+                            $set: {
+                                payed: 0,
+                            },
+                        },
+                        {new: true},
+                        async (err, data) => {
+                            if (err || !data) return sendResponse(err, null);
+                            const ord = await Order.find({
+                                orderId: transaction.order,
+                            });
+                            await Order.findOneAndDelete(
+                                { _id: ord._id },
+                                (err, data) => {
+                                    if (err) return sendResponse(err, null);
+                                }
+                            );
+                            return sendResponse(null, {
+                                state: newTransaction.state,
+                                cancel_time: newTransaction.cancel_time,
+                                transaction: newTransaction.transaction,
+                                create_time: newTransaction.create_time,
+                                perform_time: newTransaction.perform_time || 0,
+                            });
+                        }
+                    );
                     }
                 );
-                await Order.findOneAndDelete({ orderId: transaction.order });
-                return sendResponse(null, {
-                    state: transaction.state,
-                    cancel_time: transaction.cancel_time,
-                    transaction: transaction.transaction,
-                    create_time: transaction.create_time,
-                    perform_time: transaction.perform_time || 0,
-                });
+                
             } else {
                 if (transaction.state === 2) {
                     await Order.findOne(
