@@ -257,13 +257,15 @@ exports.payme = async (req, res) => {
                         async (err, order) => {
                             if (err) return sendResponse(err, null);
                             if (order.payed === 0) {
+                                return sendResponse(Errors.OrderNotСanceled, null);
+                            } else {
                                 await Transaction.updateOne(
                                     { tid: params.id },
                                     {
                                         $set: {
                                             state: -2,
                                             reason: params.reason,
-                                            cancel_time: Date.now(),
+                                            cancel_time: Dacte.now(),
                                         },
                                     },
                                     {new: true}
@@ -277,8 +279,7 @@ exports.payme = async (req, res) => {
                                         perform_time: transac.perform_time || 0,
                                     });
                                 });
-                            } else {
-                                return sendResponse(Errors.OrderNotСanceled, null);
+
                             }
                         }
                     );
