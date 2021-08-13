@@ -22,7 +22,6 @@ exports.create = async (req, res) => {
     const brand = new Brand({
         name: req.body.name,
         slug: getSlug(req.body.name),
-        category: req.body.category,
         image: `/uploads/brands/${filename}`,
     });
     brand
@@ -38,7 +37,7 @@ exports.create = async (req, res) => {
 exports.getAll = async (req, res) => {
     return res
         .status(200)
-        .json({ success: true, data: await Brand.find().populate("category") });
+        .json({ success: true, data: await Brand.find({},{ name: 1, image: 1 })});
 };
 exports.getAllClient = async (req, res) => {
     return res
@@ -51,7 +50,7 @@ exports.getOne = async (req, res) => {
     }
     res.status(200).json({
         success: true,
-        data: await Brand.findOne({ slug: req.params.slug }).populate("category"),
+        data: await Brand.findOne({ slug: req.params.slug }),
     });
 };
 exports.edit = async (req, res) => {
