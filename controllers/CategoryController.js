@@ -92,11 +92,16 @@ exports.getOne = async (req, res) => {
         if (categories) {
             const category = categories.find((cat) => cat._id == req.params.id);
             const categoryList = getCategoriesCreate(categories, req.params.id);
-            res.status(200).json({ success: true, data: {
-                _id: category._id,
-                name: category.name,
-                children: categoryList,
-            } });
+            if(!!category){
+                console.log(category);
+                res.status(200).json({ success: true, data: {
+                    _id: category._id,
+                    name: category.name,
+                    children: categoryList,
+                } });
+            } else {
+                res.status(200).json({ success: true, data: [] });
+            }
         }
     });
 };
