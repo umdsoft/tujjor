@@ -226,11 +226,35 @@ exports.createDiscountAll = async (req, res) => {
 
 //Edit
 exports.edit = (req, res) => {
+    Product.findByIdAndUpdate(
+        { _id: req.params.id },
+        { $set: req.body }
+    )
+        .then((data) => {
+            if (!data) {
+                return res.status(404).json({
+                    message: "Product not found with id " + req.params.id,
+                });
+            }
+            res.status(200).json({ success: true });
+        })
+        .catch((err) => {
+            if (err.kind === "ObjectId") {
+                return res.status(404).json({
+                    message: "Product not found with id " + req.params.id,
+                });
+            }
+            return res.status(500).json({
+                message: "Something went wrong updating note with id " + req.params.id,
+            });
+        });
+};
+exports.editCardImage = (req, res) => {
     const { filename } = req.file;
     sharpFrontImage(filename);
     Product.findByIdAndUpdate(
         { _id: req.params.id },
-        { $set: { ...req.body, image: `/uploads/products/cards/${filename}` } }
+        { $set: { image: `/uploads/products/cards/${filename}` } }
     )
         .then((data) => {
             if (!data) {

@@ -51,7 +51,8 @@ router.post("/discount/create", protectSeller, ProductController.createDiscount)
 router.post("/discount/create/all", protectSeller, ProductController.createDiscountAll);
 
 //update
-router.put("/:id", upload.single("image"), validateFile, ProductController.edit);
+router.put("/:id",  ProductController.edit);
+router.put("/cardImage/:id", upload.single("image"), validateFile, ProductController.editCardImage);
 router.put(
     "/param/:id",
     upload.single("image"),
