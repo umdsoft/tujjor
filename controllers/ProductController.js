@@ -535,6 +535,7 @@ exports.filter = async (req, res) => {
     if (
         req.body.start ||
         req.body.end ||
+        req.body.discount ||
         req.body.sort === "priceUp" ||
         req.body.sort === "priceDown"
     ) {
