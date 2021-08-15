@@ -388,7 +388,7 @@ exports.filter = async (req, res) => {
     if (req.body.discount) {
         aggregateEnd.push({
             $match: {
-                discount: {$gte: 0}
+                discount: {$ne:null}
             },
         });
     }
