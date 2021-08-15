@@ -385,6 +385,13 @@ exports.filter = async (req, res) => {
             },
         });
     }
+    if (req.body.discount) {
+        aggregateEnd.push({
+            $match: {
+                discount: {$gte: 0}
+            },
+        });
+    }
     if (req.body.category && req.body.category.length) {
         aggregateStart.push({
             $match: {
