@@ -859,6 +859,7 @@ exports.getOneClient = async (req, res) => {
                 status: 0,
                 createdAt: 0,
                 updatedAt: 0,
+                views: 0,
                 items: 0,
                 __v: 0,
             },
@@ -1039,6 +1040,7 @@ exports.getOneSeller = async (req, res) => {
         { $match: { slug: req.params.slug, isDelete: false } },
         {
             $project: {
+                views: 0,
                 slug: 0,
                 isDelete: 0,
                 shopIsActive: 0,
