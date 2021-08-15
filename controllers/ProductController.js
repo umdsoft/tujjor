@@ -174,7 +174,6 @@ exports.createDiscount = async (req, res) => {
             }
         })
     );
-    console.log("products ",products);
     try {
         const sizes = await Size.find({
             productId: {
