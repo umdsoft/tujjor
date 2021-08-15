@@ -31,7 +31,7 @@ const ProductSchema = new mongoose.Schema(
         image: { type: String, required: true },
         items: { type: String },
         slug: { type: String, index: true, unique: true, required: true },
-        tags: [{ type: mongoose.Schema.ObjectId, ref: "Tag", index: true }],
+        tags: [{ type: String }],
         status: { type: Number, required: true, index: true, enum: [0, 1] },
         shopIsActive: { type: Number, required: true, index: true, enum: [0, 1] },
         isDelete: {type: Boolean, default: false}
