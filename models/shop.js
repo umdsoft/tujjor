@@ -4,12 +4,12 @@ const ShopSchema = new mongoose.Schema(
     {
         fullNameDirector: { type: String, required: true },
         shopName: { type: String, required: true, trim: true, unique: true },
-        shopId: { type: String, required: true, unique: true },
+        shopId: { type: String, required: true},
         address: { type: String, required: true },
-        phone: { type: String, required: true, unique: true },
+        phone: { type: String, required: true},
         bankName: { type: String, required: true },
-        inn: { type: String, required: true, unique: true },
-        email: { type: String, required: true, unique: true },
+        inn: { type: String, required: true},
+        email: { type: String, required: true},
         user: {
             type: mongoose.Schema.ObjectId,
             ref: "User",
