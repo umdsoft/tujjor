@@ -43,11 +43,9 @@ function getCategoriesCreate(categories, parentId) {
 }
 const deleteCategory = async (parentId) => {
     let item = await Category.find({ parentId });
-    console.log(item.length)
     if (item.length) {
         item.forEach((key) => {
             Category.findByIdAndDelete({ _id: key._id }).then((data) => {
-                console.log("deleteCategory", key.name.uz)
                 updateStatusByCategory(data._id);
                 deleteCategory(key._id);
             });
@@ -93,7 +91,6 @@ exports.getOne = async (req, res) => {
             const category = categories.find((cat) => cat._id == req.params.id);
             const categoryList = getCategoriesCreate(categories, req.params.id);
             if(!!category){
-                console.log(category);
                 res.status(200).json({ success: true, data: {
                     _id: category._id,
                     name: category.name,
