@@ -854,10 +854,12 @@ exports.getOneClient = async (req, res) => {
         {
             $project: {
                 slug: 0,
+                isDelete: 0,
+                shopIsActive: 0,
+                status: 0,
                 createdAt: 0,
                 updatedAt: 0,
                 items: 0,
-                status: 0,
                 __v: 0,
             },
         },
@@ -1037,11 +1039,47 @@ exports.getOneSeller = async (req, res) => {
         { $match: { slug: req.params.slug, isDelete: false } },
         {
             $project: {
+                slug: 0,
+                isDelete: 0,
+                shopIsActive: 0,
                 createdAt: 0,
                 updatedAt: 0,
-                slug: 0,
+                items: 0,
                 __v: 0,
-                shop: 0,
+            },
+        },
+        {
+            $lookup: {
+                from: "productimages",
+                let: { productId: "$_id" },
+                pipeline: [
+                    {
+                        $match: {
+                            $expr: { $eq: ["$productId", "$$productId"] },
+                        },
+                    },
+                    {
+                        $project: { productId: 0, __v: 0, _id: 0 },
+                    },
+                ],
+                as: "images",
+            },
+        },
+        {
+            $lookup: {
+                from: "footerimages",
+                let: { productId: "$_id" },
+                pipeline: [
+                    {
+                        $match: {
+                            $expr: { $eq: ["$productId", "$$productId"] },
+                        },
+                    },
+                    {
+                        $project: { productId: 0, __v: 0, _id: 0 },
+                    },
+                ],
+                as: "footerImages",
             },
         },
         {
