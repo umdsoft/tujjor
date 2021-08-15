@@ -386,6 +386,7 @@ exports.filter = async (req, res) => {
         });
     }
     if (req.body.discount) {
+        console.log("WORKING");
         aggregateEnd.push({
             $match: {
                 discount: {$ne:null}
@@ -428,6 +429,7 @@ exports.filter = async (req, res) => {
             },
         });
     }
+    console.log(aggregateEnd);
     if (req.body.sort) {
         switch (req.body.sort) {
             case "new": {
