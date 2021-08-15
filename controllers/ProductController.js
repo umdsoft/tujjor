@@ -1051,34 +1051,16 @@ exports.getOneSeller = async (req, res) => {
         {
             $lookup: {
                 from: "productimages",
-                let: { productId: "$_id" },
-                pipeline: [
-                    {
-                        $match: {
-                            $expr: { $eq: ["$productId", "$$productId"] },
-                        },
-                    },
-                    {
-                        $project: { productId: 0, __v: 0, _id: 0 },
-                    },
-                ],
+                localField: "_id",
+                foreignField: "productId",
                 as: "images",
             },
         },
         {
             $lookup: {
                 from: "footerimages",
-                let: { productId: "$_id" },
-                pipeline: [
-                    {
-                        $match: {
-                            $expr: { $eq: ["$productId", "$$productId"] },
-                        },
-                    },
-                    {
-                        $project: { productId: 0, __v: 0, _id: 0 },
-                    },
-                ],
+                localField: "_id",
+                foreignField: "productId",
                 as: "footerImages",
             },
         },
