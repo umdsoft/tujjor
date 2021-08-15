@@ -7,7 +7,6 @@ const ProductImageSchema = new mongoose.Schema({
         index: true
     },
     image: { type: String, required: true },
-    smallImage: { type: String, required: true },
 });
 
 module.exports = mongoose.model("ProductImage", ProductImageSchema);

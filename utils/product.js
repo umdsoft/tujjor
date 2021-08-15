@@ -6,17 +6,6 @@ exports.sharpProductImage = async (filename) => {
         .resize(500, 450)
         .toFile(
             path.join(path.dirname(__dirname) + `/public/uploads/products/${filename}`),
-            (err) => {}
-        );
-    await sharp(path.join(path.dirname(__dirname) + `/public/temp/${filename}`))
-        .resize(100, 100)
-        .jpeg({
-            quality: 75,
-        })
-        .toFile(
-            path.join(
-                path.dirname(__dirname) + `/public/uploads/products/smalls/${filename}`
-            ),
             (err) => {
                 if (err) {
                     console.log(err);

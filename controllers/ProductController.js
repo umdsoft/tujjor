@@ -100,14 +100,13 @@ exports.createImage = async (req, res) => {
 
     const image = new ProductImage({
         productId: req.body.productId,
-        image: `/uploads/products/${filename}`,
-        smallImage: `/uploads/products/smalls/${filename}`,
+        image: `/uploads/products/${filename}`
     });
 
     image
         .save()
         .then(() => {
-            res.status(200).json({ success: true });
+            res.status(200).json({ success: true, data: image });
         })
         .catch((err) => {
             res.status(500).json({
@@ -126,7 +125,7 @@ exports.createFooterImage = async (req, res) => {
     image
         .save()
         .then(() => {
-            res.status(200).json({ success: true });
+            res.status(200).json({ success: true, data: image });
         })
         .catch((err) => {
             res.status(500).json({
