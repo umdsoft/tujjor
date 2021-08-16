@@ -24,7 +24,7 @@ exports.TEST = async (req, res) => {
     Product.find({shop: shop._id}).sort({createdAt: 1}).then(data=>{
         data.forEach((key, index)=>{
             console.log("WORKING")
-            key['article'] = `${shop.code}${getText (count + 1, 5)}`
+            key['article'] = `${shop.code}${getText (index + 1, 5)}`
             key.save();
         })
     })
