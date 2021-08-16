@@ -19,10 +19,12 @@ const {
 
 //TEST
 exports.TEST = async (req, res) => {
-    
-    Product.find({shop: req.body.shop}).sort({createdAt: 1}).then(data=>{
+    const shop = await Shop.findById({ _id: req.body.shop});
+    if(!shop) return res.status(400).json({ success: false})
+    Product.find({shop: shop._id}).sort({createdAt: 1}).then(data=>{
         data.forEach((key, index)=>{
-            key['article'] = getText(index+1, 5)
+            console.log("WORKING")
+            key['article'] = `${shop.code}${getText (count + 1, 5)}`
             key.save();
         })
     })
