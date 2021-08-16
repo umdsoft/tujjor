@@ -908,7 +908,7 @@ exports.getOneClient = async (req, res) => {
                 as: "brand",
             },
         },
-        // { $unwind: "$brand", preserveNullAndEmptyArrays: true },
+        { $unwind: "$brand", preserveNullAndEmptyArrays: true },
         {
             $lookup: {
                 from: "categories",
@@ -917,6 +917,7 @@ exports.getOneClient = async (req, res) => {
                 as: "category",
             },
         },
+        { $unwind: "$category", preserveNullAndEmptyArrays: true },
         // {
         //     $lookup: {
         //         from: "categories",
@@ -928,7 +929,6 @@ exports.getOneClient = async (req, res) => {
         //         as: "category",
         //     },
         // },
-        // { $unwind: "$category", preserveNullAndEmptyArrays: true },
         {
             $lookup: {
                 from: "shops",
@@ -944,7 +944,7 @@ exports.getOneClient = async (req, res) => {
                 as: "shop",
             },
         },
-        // { $unwind: "$shop", preserveNullAndEmptyArrays: true },
+        { $unwind: "$shop", preserveNullAndEmptyArrays: true },
         {
             $lookup: {
                 from: "productimages",
