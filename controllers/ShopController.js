@@ -3,7 +3,6 @@ const User = require("../models/user");
 const Product = require("../models/product");
 const { getSlug, deleteFile } = require("../utils");
 const { deleteProductByShop, updateStatusByShop } = require("../utils/preModel");
-const shop = require("../models/shop");
 
 //for Admin
 exports.getShops = async (req, res) => {
@@ -58,9 +57,10 @@ exports.editStatus = async (req, res) => {
     if (!req.body || !req.body.category || !req.body.percent) {
         return res.status(400).json({ success: false, data: "Something went wrong" });
     }
+    const count = Shop.countDocuments({status: {$gte: 1}})
     await Shop.findOneAndUpdate(
         { _id: req.params.id },
-        { $set: { status: 1, category: req.body.category, percent: req.body.percent } },
+        { $set: { status: 1, category: req.body.category, percent: req.body.percent, code: getText (count + 1, 3) } },
         { new: true, fields: { isDelete: 0, __v: 0 } },
         async (err, data) => {
             if (err) {

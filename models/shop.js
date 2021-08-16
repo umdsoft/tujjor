@@ -31,6 +31,7 @@ const ShopSchema = new mongoose.Schema(
             }],
             validate: (v) => Array.isArray(v) && v.length > 0,
         },
+        code: { type: String},
         percent: { type: Number, default: 0}, 
         status: { type: Number, enum: [0, 1, 2], default: 0 },
         slug: { type: String, unique: true, required: true },

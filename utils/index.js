@@ -51,3 +51,14 @@ exports.getSlug = (str) => {
 exports.deleteFile = (url) => {
     fs.unlink(path.join(path.dirname(__dirname) + url), (err) => {});
 };
+
+
+exports.getText = (number, length) => {
+    let str = number.toString();
+    for (let index = 0; index < length; index++) {
+        if(index > str.length-1){
+            str = "0" + str
+        }
+    }
+    return str;
+}
