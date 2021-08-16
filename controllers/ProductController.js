@@ -15,6 +15,9 @@ const {
 } = require("../utils/product");
 const {
     deleteSizeByParam,
+    deleteFooterImage,
+    deleteImage,
+    deleteParam
 } = require("../utils/preModel");
 
 //TEST
@@ -24,12 +27,18 @@ exports.TEST = async (req, res) => {
     Product.find({shop: shop._id}).sort({createdAt: 1}).then(data=>{
         data.forEach((key, index)=>{
             console.log("WORKING")
-            key['article'] = `${shop.code}${getText (index + 1, 5)}`
+            key['article'] = `${shop.code}${getText(index + 1, 5)}`
             key.save();
         })
     })
 }
-
+exports.REMOVE = async (req, res) => {
+    Product.findByIdAndDelete({_id: req.body.product}).then(data=>{
+        deleteFooterImage(data._id)
+        deleteImage(data._id)
+        deleteParam(data._id)
+    })
+}
 
 //create
 exports.create = async (req, res) => {
@@ -40,6 +49,7 @@ exports.create = async (req, res) => {
         res.status(400).json({success: false, message:"Something went wrong",});
     }
     const count = Product.countDocuments({shop: shop._id})
+    console.log(count)
     const product = new Product({
         name: req.body.name,
         shop: shop._id,
