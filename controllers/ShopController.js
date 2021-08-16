@@ -1,7 +1,7 @@
 const Shop = require("../models/shop");
 const User = require("../models/user");
 const Product = require("../models/product");
-const { getSlug, deleteFile } = require("../utils");
+const { getSlug, deleteFile, getText } = require("../utils");
 const { deleteProductByShop, updateStatusByShop } = require("../utils/preModel");
 
 //for Admin
@@ -60,7 +60,7 @@ exports.editStatus = async (req, res) => {
     const count = Shop.countDocuments({status: {$gte: 1}})
     await Shop.findOneAndUpdate(
         { _id: req.params.id },
-        { $set: { status: 1, category: req.body.category, percent: req.body.percent, code: getText (count + 1, 3) } },
+        { $set: { status: 1, category: req.body.category, percent: req.body.percent, code: getText(count + 1, 3) } },
         { new: true, fields: { isDelete: 0, __v: 0 } },
         async (err, data) => {
             if (err) {
