@@ -6,7 +6,7 @@ const Shop = require("../models/shop");
 const ProductImage = require("../models/productImage");
 const FooterImage = require("../models/footerImage");
 const Comment = require("../models/Comment");
-const { getSlug, deleteFile } = require("../utils");
+const { getSlug, deleteFile, getText } = require("../utils");
 const {
     sharpFrontImage,
     sharpParamImage,
@@ -14,12 +14,21 @@ const {
     sharpFooterImage,
 } = require("../utils/product");
 const {
-    deleteParam,
-    deleteSizeByProduct,
-    deleteImage,
-    deleteFooterImage,
     deleteSizeByParam,
 } = require("../utils/preModel");
+
+//TEST
+exports.TEST = async (req, res) => {
+    
+    Product.find({shop: req.body.shop}).sort({createdAt: 1}).then(data=>{
+        data.forEach((key, index)=>{
+            key['article'] = getText(index+1, 5)
+            key.save();
+        })
+    })
+}
+
+
 //create
 exports.create = async (req, res) => {
     const { filename } = req.file;
