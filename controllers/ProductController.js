@@ -889,46 +889,31 @@ exports.getOneClient = async (req, res) => {
                 __v: 0,
             },
         },
-        // {
-        //     $lookup: {
-        //         from: "brands",
-        //         let: { brand: "$brand" },
-        //         pipeline: [
-        //             { $match: { $expr: { $eq: ["$_id", "$$brand"] } } },
-        //             { $project: { name: 1 } },
-        //         ],
-        //         as: "brand",
-        //     },
-        // },
         {
             $lookup: {
                 from: "brands",
-                localField: "brand",
-                foreignField: "_id",
+                let: { brand: "$brand" },
+                pipeline: [
+                    { $match: { $expr: { $eq: ["$_id", "$$brand"] } } },
+                    { $project: { name: 1 } },
+                ],
                 as: "brand",
             },
         },
-        { $unwind: "$brand", preserveNullAndEmptyArrays: true },
+        { $unwind: "$brand"},
         {
             $lookup: {
                 from: "categories",
-                localField: "category",
-                foreignField: "_id",
+                let: { category: "$category" },
+                pipeline: [
+                    { $match: { $expr: { $eq: ["$_id", "$$category"] } } },
+                    { $project: { name: 1 } },
+                ],
                 as: "category",
             },
         },
-        { $unwind: "$category", preserveNullAndEmptyArrays: true },
-        // {
-        //     $lookup: {
-        //         from: "categories",
-        //         let: { category: "$category" },
-        //         pipeline: [
-        //             { $match: { $expr: { $eq: ["$_id", "$$category"] } } },
-        //             { $project: { name: 1 } },
-        //         ],
-        //         as: "category",
-        //     },
-        // },
+        { $unwind: "$category"},
+        
         {
             $lookup: {
                 from: "shops",
@@ -944,7 +929,7 @@ exports.getOneClient = async (req, res) => {
                 as: "shop",
             },
         },
-        { $unwind: "$shop", preserveNullAndEmptyArrays: true },
+        { $unwind: "$shop"},
         {
             $lookup: {
                 from: "productimages",
