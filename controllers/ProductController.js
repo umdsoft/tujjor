@@ -48,7 +48,10 @@ exports.create = async (req, res) => {
     if(!shop){
         res.status(400).json({success: false, message:"Something went wrong",});
     }
-    const count = Product.countDocuments({shop: shop._id})
+    let count = 0;
+    await Product.countDocuments({shop: shop._id}).then(c=>{
+        count = c;
+    })
     console.log("count",count)
     const product = new Product({
         name: req.body.name,
