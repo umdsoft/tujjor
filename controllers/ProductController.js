@@ -900,7 +900,7 @@ exports.getOneClient = async (req, res) => {
                 as: "brand",
             },
         },
-        { $unwind: "$brand" },
+        { $unwind: "$brand", preserveNullAndEmptyArrays: true },
         {
             $lookup: {
                 from: "categories",
@@ -912,7 +912,7 @@ exports.getOneClient = async (req, res) => {
                 as: "category",
             },
         },
-        { $unwind: "$category" },
+        { $unwind: "$category", preserveNullAndEmptyArrays: true },
         {
             $lookup: {
                 from: "shops",
@@ -928,7 +928,7 @@ exports.getOneClient = async (req, res) => {
                 as: "shop",
             },
         },
-        { $unwind: "$shop" },
+        { $unwind: "$shop", preserveNullAndEmptyArrays: true },
         {
             $lookup: {
                 from: "productimages",
