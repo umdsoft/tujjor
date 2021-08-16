@@ -43,7 +43,7 @@ exports.create = async (req, res) => {
     const product = new Product({
         name: req.body.name,
         shop: shop._id,
-        article: `${shop.code}${getText (count + 1, 5)}`,
+        article: `${shop.code}${getText(count + 1, 5)}`,
         category: req.body.category,
         brand: req.body.brand,
         description: req.body.description,
