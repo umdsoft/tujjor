@@ -45,7 +45,19 @@ exports.getAll = async (req, res) => {
                             $expr: { $eq: ["$_id", "$$size"] },
                         },
                     },
-                    { $project: { size: 1, price: 1, count: 1, _id: 1 } },
+                    { $project: { size: 1, price: 1, count: 1, _id: 1, 
+                        discount: {
+                            $cond: {
+                                if: {
+                                    $and: [
+                                        { $gte: ["$discount_end", new Date()] },
+                                        { $lte: ["$discount_start", new Date()] },
+                                    ],
+                                },
+                                then: "$discount",
+                                else: null,
+                            },
+                        }, } },
                 ],
                 as: "size",
             },
