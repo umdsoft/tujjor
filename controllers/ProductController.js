@@ -889,30 +889,46 @@ exports.getOneClient = async (req, res) => {
                 __v: 0,
             },
         },
+        // {
+        //     $lookup: {
+        //         from: "brands",
+        //         let: { brand: "$brand" },
+        //         pipeline: [
+        //             { $match: { $expr: { $eq: ["$_id", "$$brand"] } } },
+        //             { $project: { name: 1 } },
+        //         ],
+        //         as: "brand",
+        //     },
+        // },
         {
             $lookup: {
                 from: "brands",
-                let: { brand: "$brand" },
-                pipeline: [
-                    { $match: { $expr: { $eq: ["$_id", "$$brand"] } } },
-                    { $project: { name: 1 } },
-                ],
+                localField: "brand",
+                foreignField: "_id",
                 as: "brand",
             },
         },
-        { $unwind: "$brand", preserveNullAndEmptyArrays: true },
+        // { $unwind: "$brand", preserveNullAndEmptyArrays: true },
         {
             $lookup: {
                 from: "categories",
-                let: { category: "$category" },
-                pipeline: [
-                    { $match: { $expr: { $eq: ["$_id", "$$category"] } } },
-                    { $project: { name: 1 } },
-                ],
+                localField: "category",
+                foreignField: "_id",
                 as: "category",
             },
         },
-        { $unwind: "$category", preserveNullAndEmptyArrays: true },
+        // {
+        //     $lookup: {
+        //         from: "categories",
+        //         let: { category: "$category" },
+        //         pipeline: [
+        //             { $match: { $expr: { $eq: ["$_id", "$$category"] } } },
+        //             { $project: { name: 1 } },
+        //         ],
+        //         as: "category",
+        //     },
+        // },
+        // { $unwind: "$category", preserveNullAndEmptyArrays: true },
         {
             $lookup: {
                 from: "shops",
@@ -928,7 +944,7 @@ exports.getOneClient = async (req, res) => {
                 as: "shop",
             },
         },
-        { $unwind: "$shop", preserveNullAndEmptyArrays: true },
+        // { $unwind: "$shop", preserveNullAndEmptyArrays: true },
         {
             $lookup: {
                 from: "productimages",
