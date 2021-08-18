@@ -462,7 +462,7 @@ exports.filter = async (req, res) => {
     if (req.body.start && req.body.start != 0) {
         aggregateEnd.push({
             $match: {
-                price: {
+                sortPrice: {
                     $gte: parseInt(req.body.start),
                 },
             },
@@ -471,7 +471,7 @@ exports.filter = async (req, res) => {
     if (req.body.end && req.body.end != 0) {
         aggregateEnd.push({
             $match: {
-                price: {
+                sortPrice: {
                     $lte: parseInt(req.body.end),
                 },
             },
@@ -514,6 +514,12 @@ exports.filter = async (req, res) => {
                 break;
             }
             default: {
+                aggregateStart.push({
+                    $sort: {
+                        createdAt: -1,
+                    },
+                });
+                break;
             }
         }
     }
@@ -689,7 +695,7 @@ exports.count = async (req, res) => {
                 shop: mongoose.Types.ObjectId(req.body.shop),
             },
         });
-    }
+    }  
     if (req.body.brand && req.body.brand.length) {
         aggregateStart.push({
             $match: {
@@ -708,10 +714,17 @@ exports.count = async (req, res) => {
             },
         });
     }
+    if (req.body.discount) {
+        aggregateEnd.push({
+            $match: {
+                discount: {$ne:null}
+            },
+        });
+    }
     if (req.body.start && req.body.start != 0) {
         aggregateEnd.push({
             $match: {
-                price: {
+                sortPrice: {
                     $gte: parseInt(req.body.start),
                 },
             },
@@ -720,7 +733,7 @@ exports.count = async (req, res) => {
     if (req.body.end && req.body.end != 0) {
         aggregateEnd.push({
             $match: {
-                price: {
+                sortPrice: {
                     $lte: parseInt(req.body.end),
                 },
             },
@@ -739,6 +752,32 @@ exports.count = async (req, res) => {
                         },
                     },
                     { $sort: { price: 1 } },
+                    { $limit : 1},
+                    {
+                        $project: {
+                            discount: {
+                                $cond: {
+                                    if: {
+                                        $and: [
+                                            { $gte: ["$discount_end", new Date()] },
+                                            { $lte: ["$discount_start", new Date()] },
+                                        ],
+                                    },
+                                    then: "$discount",
+                                    else: null,
+                                },
+                            },
+                            price: 1,
+                            _id: 0,
+                        },
+                    },
+                    {
+                        $project: {
+                            discount: 1,
+                            price: 1,
+                            sortPrice: { $ifNull: [ "$discount", "$price" ] }
+                        }
+                    }
                 ],
                 as: "sizes",
             },
@@ -746,16 +785,22 @@ exports.count = async (req, res) => {
         {
             $project: {
                 brand: 1,
-                price: {
+                size: {
                     $let: {
                         vars: {
                             size: { $arrayElemAt: ["$sizes", 0] },
-                        },
-                        in: "$$size.price",
-                    },
-                },
+                        }, 
+                        in: "$$size"
+                    }
+                }
             },
         },
+        {$project: { 
+            brand: 1,
+            price: "$size.price",
+            discount: "$size.discount",
+            sortPrice: "$size.sortPrice"
+        }},
         ...aggregateEnd,
         {
             $group: {
