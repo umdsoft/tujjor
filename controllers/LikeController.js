@@ -83,9 +83,7 @@ exports.getAll = async (req, res) => {
                         vars: {
                             size: { $arrayElemAt: ["$sizes", 0] },
                         },
-                        in: {
-                            price: "$$size.price",
-                        },
+                        in: "$$size.price"
                     },
                 },
                 discount: {
@@ -93,9 +91,7 @@ exports.getAll = async (req, res) => {
                         vars: {
                             size: { $arrayElemAt: ["$sizes", 0] },
                         },
-                        in: {
-                            price: "$$size.discount",
-                        },
+                        in: "$$size.discount"
                     },
                 },
             },
