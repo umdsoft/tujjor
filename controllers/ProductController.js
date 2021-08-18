@@ -567,22 +567,27 @@ exports.filter = async (req, res) => {
                 slug: 1,
                 createdAt: 1,
                 views: 1,
-                price: {
+                size: {
                     $let: {
                         vars: {
                             size: { $arrayElemAt: ["$sizes", 0] },
-                        },
-                        in: "$$size.price",
-                    },
+                        }, 
+                        in: "$$size"
+                    }
                 },
-                discount: {
-                    $let: {
-                        vars: {
-                            size: { $arrayElemAt: ["$sizes", 0] },
-                        },
-                        in: "$$size.discount",
-                    },
-                },
+            },
+        },
+        {
+            $project: {
+                name: 1,
+                category: 1,
+                image: 1,
+                slug: 1,
+                createdAt: 1,
+                views: 1,
+                price: "$size.price",
+                discount: "$size.discount",
+                sortPrice: "$size.sortPrice"
             },
         },
     ];
