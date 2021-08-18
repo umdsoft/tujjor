@@ -27,7 +27,18 @@ exports.getAll = async (req, res) => {
                         },
                     },
                     { $sort: { price: 1 } },
-                    { $project: { price: 1, _id: 0 } },
+                    { $project: { price: 1, _id: 0, discount: {
+                            $cond: {
+                                if: {
+                                    $and: [
+                                        { $gte: ["$discount_end", new Date()] },
+                                        { $lte: ["$discount_start", new Date()] },
+                                    ],
+                                },
+                                then: "$discount",
+                                else: null,
+                            },
+                        }, } },
                 ],
                 as: "sizes",
             },
@@ -74,6 +85,16 @@ exports.getAll = async (req, res) => {
                         },
                         in: {
                             price: "$$size.price",
+                        },
+                    },
+                },
+                discount: {
+                    $let: {
+                        vars: {
+                            size: { $arrayElemAt: ["$sizes", 0] },
+                        },
+                        in: {
+                            price: "$$size.discount",
                         },
                     },
                 },

@@ -98,8 +98,8 @@ const OrderSchema = new mongoose.Schema(
                     count: { type: Number, required: true },
                     amount: { type: Number, required: true },
                     description: {
-                        uz: { type: String, required: true },
-                        ru: { type: String, required: true },
+                        uz: { type: String},
+                        ru: { type: String},
                     },
                 },
             ],
