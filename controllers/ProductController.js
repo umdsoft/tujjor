@@ -513,15 +513,13 @@ exports.filter = async (req, res) => {
                 });
                 break;
             }
-            default: {
-                aggregateStart.push({
-                    $sort: {
-                        createdAt: -1,
-                    },
-                });
-                break;
-            }
         }
+    }else {
+        aggregateStart.push({
+            $sort: {
+                createdAt: -1,
+            },
+        })
     }
     const sizeLookup = [
         {
