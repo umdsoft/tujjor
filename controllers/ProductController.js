@@ -499,7 +499,7 @@ exports.filter = async (req, res) => {
             case "priceUp": {
                 aggregateEnd.push({
                     $sort: {
-                        price: 1,
+                        sortPrice: 1,
                     },
                 });
                 break;
@@ -508,7 +508,7 @@ exports.filter = async (req, res) => {
             case "priceDown": {
                 aggregateEnd.push({
                     $sort: {
-                        price: -1,
+                        sortPrice: -1,
                     },
                 });
                 break;
@@ -548,6 +548,13 @@ exports.filter = async (req, res) => {
                             _id: 0,
                         },
                     },
+                    {
+                        $project: {
+                            discount: 1,
+                            price: 1,
+                            sortPrice: { $ifNull: [ "$discount", "$price" ] }
+                        }
+                    }
                 ],
                 as: "sizes",
             },
