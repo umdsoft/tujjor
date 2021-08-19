@@ -110,7 +110,6 @@ exports.getOne = async (req, res) => {
             return res.status(500).json({ success: false, message: err });
         });
 };
-
 exports.edit = async (req, res) => {
     if (req.body.status || req.body.category) {
         return res.status(400).json({ success: false, message: "Something went wrong" });
@@ -166,21 +165,51 @@ exports.create = async (req, res) => {
         });
 };
 exports.getShopsClient = async (req, res) => {
-    res.status(200).json({
-        success: true,
-        data: await Shop.find({ status: { $gte: 2 } }).select({
-            _id: 0,
-            address: 1,
-            shopName: 1,
-            phone: 1,
-            image: 1,
-            slug: 1,
-            description: 1,
-        }),
-    });
+    const page = parseInt(req.body.page);
+    const limit = parseInt(req.body.limit);
+    Shop.aggregate([
+        {
+            $match: {
+                status: 2, isDelete: false
+            }
+        },
+        {
+            $project: {
+                _id: 0,
+                address: 1,
+                shopName: 1,
+                phone: 1,
+                image: 1,
+                slug: 1,
+                description: 1,
+            }
+        },
+        {
+            $facet: {
+                count: [{ $group: { _id: null, count: { $sum: 1 } } }],
+                data: [{ $skip: (page - 1) * limit }, { $limit: limit }],
+            },
+        },
+        {
+            $project: {
+                count: {
+                    $let: {
+                        vars: {
+                            count: { $arrayElemAt: ["$count", 0] },
+                        },
+                        in: "$$count.count",
+                    },
+                },
+                data: 1,
+            },
+        },
+    ]).exec((err,data)=>{
+        if(err) return res.status(400).json({ success: false, err })
+        res.status(200).json({success: true, data})
+    })
 };
 exports.getOneClient = async (req, res) => {
-    await Shop.findOne({ slug: req.params.slug })
+    await Shop.findOne({ slug: req.params.slug, status: 2, isDelete: false })
         .select({ shopName: 1, address: 1, phone: 1, email: 1, description: 1, image: 1 })
         .then((data) => {
             if (!data) {
