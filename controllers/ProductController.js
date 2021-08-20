@@ -52,7 +52,6 @@ exports.create = async (req, res) => {
     await Product.countDocuments({shop: shop._id}).then(c=>{
         count = c;
     })
-    console.log("count",count)
     const product = new Product({
         name: req.body.name,
         shop: shop._id,

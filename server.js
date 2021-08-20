@@ -12,6 +12,9 @@ connect();
 // Settings
 dotenv.config({ path: "./config/config.env" });
 app.use(express.static(path.join(__dirname, "public")));
+app.use(logger('common', {
+    stream: fs.createWriteStream('./access.log', {flags: 'a'})
+}));    
 app.use(logger("dev"));
 app.use(bodyParser.json());
 app.use(cors());
