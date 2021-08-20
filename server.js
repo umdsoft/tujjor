@@ -15,10 +15,10 @@ dotenv.config({ path: "./config/config.env" });
 app.use(express.static(path.join(__dirname, "public")));
 app.use(logger('combined', {
     stream: fs.createWriteStream('./access.log', {flags: 'a'}),
-    'skip': (req, res) => req.method === "OPTIONS" || req.method === "GET" || res.status < 400
+    'skip': (req, res) => req.method === "OPTIONS" || res.status < 400
 }));    
 app.use(logger("dev", {
-    'skip': (req, res) => req.method === "OPTIONS" || req.method === "GET" || res.status < 400
+    'skip': (req, res) => req.method === "OPTIONS" || res.status < 400
 }));
 app.use(bodyParser.json());
 app.use(cors());
