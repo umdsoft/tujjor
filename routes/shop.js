@@ -48,8 +48,8 @@ router.post(
     validateFile,
     ShopController.create
 );
-router.get("/client/:slug", protectClient, ShopController.getOneClient);
-router.get("/all/filter", protectClient, ShopController.getShopsClient);
+router.get("/client/:slug", ShopController.getOneClient);
+router.get("/all/filter", ShopController.getShopsClient);
 router.delete("/:id", protectClient, ShopController.delete);
 
 module.exports = router;
