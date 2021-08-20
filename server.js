@@ -13,12 +13,12 @@ connect();
 // Settings
 dotenv.config({ path: "./config/config.env" });
 app.use(express.static(path.join(__dirname, "public")));
-app.use(logger('combined', {
+app.use(logger('dev', {
     stream: fs.createWriteStream('./access.log', {flags: 'a'}),
-    'skip': (req, res) => req.method === "OPTIONS" || res.status < 400
+    'skip': (req, res) => req.method === "OPTIONS"
 }));    
 app.use(logger("dev", {
-    'skip': (req, res) => req.method === "OPTIONS" || res.status < 400
+    'skip': (req, res) => req.method === "OPTIONS"
 }));
 app.use(bodyParser.json());
 app.use(cors());
