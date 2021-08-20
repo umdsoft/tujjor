@@ -6,6 +6,7 @@ const cors = require("cors");
 const dotenv = require("dotenv");
 const connect = require("./config/db");
 const path = require("path");
+const fs = require("fs")
 //Connect MongoDB
 connect();
 
