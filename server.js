@@ -17,9 +17,9 @@ app.use(logger('common', {
     stream: fs.createWriteStream('./access.log', {flags: 'a'}),
     'skip': (req, res) => req.method === 'OPTIONS'
 }));    
-app.use(logger("dev"), {
+app.use(logger("dev", {
     'skip': (req, res) => req.method === 'OPTIONS'
-});
+}));
 app.use(bodyParser.json());
 app.use(cors());
 
