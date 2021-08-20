@@ -13,7 +13,7 @@ connect();
 // Settings
 dotenv.config({ path: "./config/config.env" });
 app.use(express.static(path.join(__dirname, "public")));
-app.use(logger('dev', {
+app.use(logger('combined', {
     stream: fs.createWriteStream('./access.log', {flags: 'a'}),
     'skip': (req, res) => req.status < 400
 }));    
