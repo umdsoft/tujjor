@@ -49,7 +49,7 @@ router.post(
     ShopController.create
 );
 router.get("/client/:slug", ShopController.getOneClient);
-router.get("/all/filter", ShopController.getShopsClient);
+router.get("/client/all", ShopController.getShopsClient);
 router.delete("/:id", protectClient, ShopController.delete);
 
 module.exports = router;
