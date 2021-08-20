@@ -76,6 +76,7 @@ exports.create = async (req, res) => {
             });
         })
         .catch((err) => {
+            console.log(err);
             res.status(400).json({
                 message:
                     err.message || "Something went wrong while creating the product.",
