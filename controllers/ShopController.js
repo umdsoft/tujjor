@@ -210,7 +210,7 @@ exports.getShopsClient = async (req, res) => {
 };
 exports.getOneClient = async (req, res) => {
     await Shop.findOne({ slug: req.params.slug, status: 2, isDelete: false })
-        .select({ shopName: 1, address: 1, phone: 1, email: 1, description: 1, image: 1 })
+        .select({ shopName: 1, address: 1, phone: 1, email: 1, description: 1, image: 1, logo: 1, logotip: 1 })
         .then((data) => {
             if (!data) {
                 return res
