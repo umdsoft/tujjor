@@ -165,8 +165,8 @@ exports.create = async (req, res) => {
         });
 };
 exports.getShopsClient = async (req, res) => {
-    const page = parseInt(req.body.page);
-    const limit = parseInt(req.body.limit);
+    const page = parseInt(req.query.page);
+    const limit = parseInt(req.query.limit);
     Shop.aggregate([
         {
             $match: {
