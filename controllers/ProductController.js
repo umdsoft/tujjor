@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+fs = require('fs');
 const Product = require("../models/product");
 const Param = require("../models/param");
 const Size = require("../models/size");
@@ -77,7 +78,6 @@ exports.create = async (req, res) => {
         })
         .catch((err) => {
             console.log(err);
-            fs = require('fs');
             fs.writeFile('errors.txt', `${Date.now()} ${JSON.stringify(err)}`);
             res.status(400).json({
                 message:
