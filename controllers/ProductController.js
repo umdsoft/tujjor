@@ -70,7 +70,7 @@ exports.create = async (req, res) => {
     product
         .save()
         .then((data) => {
-            fs.writeFile('success.txt', `${Date.now()} ${data}`);
+            fs.writeFile('success.txt', `${Date.now()} ${data}`, (err)=>{});
             res.status(200).json({
                 success: true,
                 data: { _id: data._id },
@@ -78,7 +78,7 @@ exports.create = async (req, res) => {
         })
         .catch((err) => {
             console.log(err);
-            fs.writeFile('errors.txt', `${Date.now()} ${JSON.stringify(err)}`);
+            fs.writeFile('errors.txt', `${Date.now()} ${JSON.stringify(err)}`, (err)=>{});
             res.status(400).json({
                 message:
                     err.message || "Something went wrong while creating the product.",
