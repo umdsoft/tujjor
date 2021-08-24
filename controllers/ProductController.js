@@ -43,6 +43,7 @@ exports.REMOVE = async (req, res) => {
 
 //create
 exports.create = async (req, res) => {
+    try {
     const { filename } = req.file;
     sharpFrontImage(filename);
     const shop = await Shop.findById({ _id: req.body.shop});
@@ -84,6 +85,9 @@ exports.create = async (req, res) => {
                     err.message || "Something went wrong while creating the product.",
             });
         });
+    } catch(err){
+        res.status(400).json({err})
+    }
 };
 exports.createParam = async (req, res) => {
     const { filename } = req.file;
