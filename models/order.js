@@ -41,70 +41,7 @@ const OrderSchema = new mongoose.Schema(
             type: Number,
             enum: [0, 1],
             default: 0,
-        },
-        status: {
-            type: Number,
-            enum: [0, 1, 2, 3, 4, 5],
-            default: 0,
-        },
-        products: {
-            type: [
-                {
-                    productId: {
-                        type: mongoose.Schema.ObjectId,
-                        ref: "Product",
-                        required: true,
-                        index: true,
-                    },
-                    paramId: {
-                        type: mongoose.Schema.ObjectId,
-                        ref: "Param",
-                        required: true,
-                        index: true,
-                    },
-                    sizeId: {
-                        type: mongoose.Schema.ObjectId,
-                        ref: "Size",
-                        required: true,
-                        index: true,
-                    },
-                    shop: {
-                        type: mongoose.Schema.ObjectId,
-                        ref: "Shop",
-                        required: true,
-                        index: true,
-                    },
-                    category: {
-                        type: mongoose.Schema.ObjectId,
-                        ref: "Brand",
-                        required: true,
-                        index: true,
-                    },
-                    brand: {
-                        type: mongoose.Schema.ObjectId,
-                        ref: "Brand",
-                        required: true,
-                        index: true,
-                    },
-
-                    account: { type: String, required: true },
-                    name: {
-                        uz: { type: String, required: true },
-                        ru: { type: String, required: true },
-                    },
-                    image: { type: String, required: true },
-                    color: { type: String, required: true },
-                    size: { type: String, required: true },
-                    count: { type: Number, required: true },
-                    amount: { type: Number, required: true },
-                    description: {
-                        uz: { type: String},
-                        ru: { type: String},
-                    },
-                },
-            ],
-            validate: (v) => Array.isArray(v) && v.length > 0,
-        },
+        }
     },
     {
         timestamps: true,
