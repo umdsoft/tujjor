@@ -35,6 +35,7 @@ exports.register = async (req, res) => {
         .save()
         .then(() => {
             sendTokenResponse(user, 200, res);
+            
         })
         .catch((err) => {
             res.status(400).json({
