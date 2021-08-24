@@ -23,6 +23,7 @@ router.post(
 );
 router.get("/all", SliderController.getAll);
 router.delete("/:id", SliderController.delete);
-router.put("/:id", upload.single("image"), validateFile, SliderController.edit);
+router.put("/:id",  SliderController.edit);
+router.put("/image/:id", upload.single("image"), validateFile, SliderController.editImage);
 
 module.exports = router;

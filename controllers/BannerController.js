@@ -4,6 +4,7 @@ const { deleteFile } = require("../utils");
 exports.create = (req, res) => {
     const banner = new Banner({
         image: `/uploads/banners/${req.file.filename}`,
+        url: req.body.url,
         position: req.body.position,
     });
     banner
@@ -20,7 +21,7 @@ exports.create = (req, res) => {
 };
 
 exports.getAll = (req, res) => {
-    Banner.find()
+    Banner.find({},{__v: 0})
         .then((data) => {
             res.status(200).json({ success: true, data });
         })

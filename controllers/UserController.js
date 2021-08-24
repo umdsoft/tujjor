@@ -34,9 +34,7 @@ exports.register = async (req, res) => {
     await user
         .save()
         .then(() => {
-            res.status(201).json({
-                success: true,
-            });
+            sendTokenResponse(user, 200, res);
         })
         .catch((err) => {
             res.status(400).json({
@@ -141,7 +139,6 @@ exports.delete = async (req, res) => {
     deleteFile(`/public${result.image}`);
     return res.status(200).json({ success: true, data: [] });
 };
-
 exports.edit = async (req, res) => {
     let filename, obj;
 

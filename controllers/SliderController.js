@@ -31,7 +31,7 @@ exports.create = async (req, res) => {
 };
 
 exports.getAll = (req, res) => {
-    Slider.find()
+    Slider.find({},{__v: 0})
         .then((data) => {
             res.status(200).json({ success: true, data });
         })
@@ -41,25 +41,8 @@ exports.getAll = (req, res) => {
             });
         });
 };
-
 exports.edit = async (req, res) => {
-    const { filename } = req.file;
-    const img = { image: `/uploads/sliders/${filename}` };
-    await Slider.findById({ _id: req.params.id }, async (err, data) => {
-        if (err) return res.status(200).json({ success: false, err });
-        deleteFile(`/public${data.image}`);
-        await sharp(path.join(path.dirname(__dirname) + `/public/temp/${filename}`))
-            .jpeg({
-                quality: 70,
-            })
-            .toFile(path.join(path.dirname(__dirname) + `/public/uploads/sliders/${filename}`), (err) => {
-                if (err) {
-                    console.log(err);
-                }
-                deleteFile(`/public/temp/${filename}`);
-            });
-    });
-    await Slider.findByIdAndUpdate({ _id: req.params.id }, { $set: { ...req.body, ...img } })
+    await Slider.findByIdAndUpdate({ _id: req.params.id }, { $set: req.body })
         .then((data) => {
             if (!data) {
                 return res.status(404).json({
@@ -80,6 +63,17 @@ exports.edit = async (req, res) => {
         });
 };
 
+exports.editImage = async (req, res) => {
+    const img = { image: `/uploads/sliders/${req.file.filename}` };
+    await Slider.findById({ _id: req.params.id }, async (err, data) => {
+        if (err) return res.status(200).json({ success: false, err });
+        deleteFile(`/public${data.image}`);
+    });
+    await Slider.findByIdAndUpdate({ _id: req.params.id }, { $set: img }).exec((err, data) => {
+        if (err) return res.status(400).json({ success: false, err });
+        return res.status(200).json({ success: true, data });
+    });
+};
 exports.delete = (req, res) => {
     Slider.findByIdAndRemove(req.params.id)
         .then((slider) => {
