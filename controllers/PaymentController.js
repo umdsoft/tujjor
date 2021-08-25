@@ -62,13 +62,14 @@ exports.payme = async (req, res) => {
                         orderProducts.forEach((key) => {
                             const tujjorPrice = key.count * key.amount * key.percent;
                             const shopPrice = key.count * key.amount * (100 - key.percent)
-                            receivers[0].amount += tujjorPrice
+                            receivers[0].amount = receivers[0].amount + parseInt(tujjorPrice)
                             receivers.push({
                                 id: key.account,
-                                amount: shopPrice,
+                                amount: parseInt(shopPrice),
                             });
                         })
                     })
+                    console.log("RECIVERS ",receivers)
                 })
                 const transaction = new Transaction({
                     tid: params.id,
