@@ -6,7 +6,7 @@ const Product = require("../models/product");
 const Param = require("../models/param");
 const mongoose = require("mongoose");
 exports.create = (req, res) => {
-    if(!(req.body.products && req.body.product.length)){
+    if(!(req.body.products && req.body.products.length)){
         return res
             .status(400)
             .json({ success: false, message: "Something went wrong" });
