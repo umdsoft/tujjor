@@ -6,6 +6,11 @@ const OrderProductsSchema = new mongoose.Schema(
             enum: [0, 1, 2, 3, 4, 5],
             default: 0,
         },
+        payed: {
+            type: Number,
+            enum: [0, 1],
+            default: 0,
+        },
         orderId: {
             type: Number,
             required: true, 

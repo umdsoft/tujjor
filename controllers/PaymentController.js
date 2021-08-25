@@ -183,6 +183,7 @@ exports.payme = async (req, res) => {
                         },
                     }
                 );
+                await OrderProducts.updateMany({orderId: order.orderId}, {$set: {payed: 1}})
                 await Transaction.updateOne(
                     { tid: transaction.tid },
                     {

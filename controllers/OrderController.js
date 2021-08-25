@@ -121,52 +121,60 @@ exports.getAll = async (req, res) => {
     const payed = parseInt(req.query.payed);
     const shop = await Shop.findOne({user: req.user})
      
-    Order.aggregate([
-        { $match: { payed: payed} },
+    OrderProducts.aggregate([
+        { $match: { status: status, shopId: shop._id, payed: payed} },
         {$sort: {createdAt: -1}},
         {$project: {
-            updatedAt: 0,
-            __v: 0,
-            payed: 0
+            name: 1,
+            image: 1,
+            paramImage: 1,
+            size: 1,
+            amount: 1,
+            count: 1,
+            description: 1,
+            status: 1,
         }},
-        {$lookup:{
-            from : "orderproducts",
-            let: {orderId: "$orderId"},
-            pipeline: [
-                { $match: { $expr: { $and:[{$eq: ["$orderId", "$$orderId"]},{$eq: ["$status", status]}, {$eq: ["$shopId", mongoose.Types.ObjectId(shop._id)]}] } } },   
-                {$project: {
-                    name: 1,
-                    image: 1,
-                    paramImage: 1,
-                    size: 1,
-                    amount: 1,
-                    count: 1,
-                    description: 1,
-                    status: 1,
+        { $skip: (page - 1) * limit }, 
+        { $limit: limit }
 
-                }}
-            ],
-            as: "products"
-        }},
-        {
-            $facet: {
-                count: [{ $group: { _id: null, count: { $sum: 1 } } }],
-                data: [{ $skip: (page - 1) * limit }, { $limit: limit }],
-            },
-        },
-        {
-            $project: {
-                count: {
-                    $let: {
-                        vars: {
-                            count: { $arrayElemAt: ["$count", 0] },
-                        },
-                        in: "$$count.count",
-                    },
-                },
-                data: 1,
-            },
-        },
+    //     {$lookup:{
+    //         from : "orderproducts",
+    //         let: {orderId: "$orderId"},
+    //         pipeline: [
+    //             { $match: { $expr: { $and:[{$eq: ["$orderId", "$$orderId"]},{$eq: ["$status", status]}, {$eq: ["$shopId", mongoose.Types.ObjectId(shop._id)]}] } } },   
+    //             {$project: {
+    //                 name: 1,
+    //                 image: 1,
+    //                 paramImage: 1,
+    //                 size: 1,
+    //                 amount: 1,
+    //                 count: 1,
+    //                 description: 1,
+    //                 status: 1,
+
+    //             }}
+    //         ],
+    //         as: "products"
+    //     }},
+    //     {
+    //         $facet: {
+    //             count: [{ $group: { _id: null, count: { $sum: 1 } } }],
+    //             data: [{ $skip: (page - 1) * limit }, { $limit: limit }],
+    //         },
+    //     },
+    //     {
+    //         $project: {
+    //             count: {
+    //                 $let: {
+    //                     vars: {
+    //                         count: { $arrayElemAt: ["$count", 0] },
+    //                     },
+    //                     in: "$$count.count",
+    //                 },
+    //             },
+    //             data: 1,
+    //         },
+    //     },
     ]).exec((err, data) => {
         if (err) return res.status(400).json({ success: false, err });
         res.status(200).json({
