@@ -147,7 +147,7 @@ exports.getAll = async (req, res) => {
             foreignField: "orderId",
             as: "order"
         }},
-        {$unwind: "$orderId"},
+        {$unwind: "$order"},
         {$project: {
             products: 1,
             order: 1
