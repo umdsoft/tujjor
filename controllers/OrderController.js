@@ -149,12 +149,10 @@ exports.getAll = async (req, res) => {
         }},
         {$unwind: "$order"},
         {$project: {
-            products:{ 
-                orderId: 0
-            },
+            products: 1,
             amount: "$order.amount",
             address: "$order.address",
-            createdAt: "$order.createdAt",
+            createdAt: "$order.createdAt"
         }},
         
     //     {$lookup:{
