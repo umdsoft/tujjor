@@ -120,7 +120,7 @@ exports.edit = async (req, res) => {
         { new: true },
         (err, data) => {
             if (err) {
-                return res.status(400).json({ success: false, data: "Not Found" });
+                return res.status(400).json({ success: false, err });
             }
             res.status(200).json({ success: true, data });
         }
