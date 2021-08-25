@@ -152,7 +152,8 @@ exports.getAll = async (req, res) => {
             products: 1,
             amount: "$order.amount",
             address: "$order.address",
-            createdAt: "$order.createdAt"
+            createdAt: "$order.createdAt",
+            _id: 0
         }},
         
     //     {$lookup:{
