@@ -159,10 +159,11 @@ exports.payme = async (req, res) => {
                 const order = await Order.findOne({
                     orderId: transaction.order,
                 });
-                order.products.forEach( async(key) => {
+                const products = await OrderProducts.find({orderId: order.orderId})
+                products.forEach( async(key) => {
                     new PayedList({
                         user: order.user,
-                        shop: key.shop,
+                        shop: key.shopId,
                         category: key.category,
                         brand: key.brand,
                         amount: key.amount,
