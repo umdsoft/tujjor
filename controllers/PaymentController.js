@@ -60,6 +60,7 @@ exports.payme = async (req, res) => {
                     await OrderProducts.find({orderId: order.orderId}, (err, orderProducts)=>{
                         if(err || !orderProducts ) return sendResponse(Errors.OrderNotFound,null);
                         orderProducts.forEach((key) => {
+                            console.log("CONSOLE  ", key.count, key.amount, key.percent)
                             const tujjorPrice = key.count * key.amount * key.percent;
                             const shopPrice = key.count * key.amount * (100 - key.percent)
                             receivers[0].amount = receivers[0].amount + parseInt(tujjorPrice)
