@@ -141,12 +141,18 @@ exports.getAll = async (req, res) => {
             _id: "$orderId",
             products: {$push: "$$ROOT"}
         }},
+        {$lookup: {
+            from: "orders",
+            localField: "_id",
+            foreignField: "orderId",
+            as: "order"
+        }},
+        {$unwind: "$orderId"},
         {$project: {
             products: 1,
-            orderId: "$_id",
-            _id: 0
-        }}
-
+            order: 1
+        }},
+        
     //     {$lookup:{
     //         from : "orderproducts",
     //         let: {orderId: "$orderId"},
