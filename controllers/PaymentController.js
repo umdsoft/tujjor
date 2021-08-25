@@ -165,7 +165,6 @@ exports.payme = async (req, res) => {
                     {
                         $set: {
                             payed: 1,
-                            status: 1,
                             paySystem: "payme",
                         },
                     }
@@ -228,15 +227,7 @@ exports.payme = async (req, res) => {
                         {new: true},
                         async (err, data) => {
                             if (err || !data) return sendResponse(err, null);
-                            const ord = await Order.find({
-                                orderId: transaction.order,
-                            });
-                            await Order.findOneAndDelete(
-                                { _id: ord._id },
-                                (err, data) => {
-                                    if (err) return sendResponse(err, null);
-                                }
-                            );
+                            
                             return sendResponse(null, {
                                 state: newTransaction.state,
                                 cancel_time: newTransaction.cancel_time,
