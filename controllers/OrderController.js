@@ -115,7 +115,7 @@ exports.getAll = async (req, res) => {
     const status = parseInt(req.query.status);
     const shop = await Shop.findOne({user: req.user})
     Order.aggregate([
-        { $match: { payed: 1} },
+        { $match: { payed: 0} },
         {$sort: {createdAt: -1}},
         {$project: {
             updatedAt: 0,
