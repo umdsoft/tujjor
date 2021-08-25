@@ -113,9 +113,10 @@ exports.getAll = async (req, res) => {
     const page = parseInt(req.query.page);
     const limit = parseInt(req.query.limit);
     const status = parseInt(req.query.status);
+    const payed = parseInt(req.query.payed);
     const shop = await Shop.findOne({user: req.user})
     Order.aggregate([
-        { $match: { payed: 0} },
+        { $match: { payed: payed} },
         {$sort: {createdAt: -1}},
         {$project: {
             updatedAt: 0,
