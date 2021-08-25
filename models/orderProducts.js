@@ -17,25 +17,25 @@ const OrderProductsSchema = new mongoose.Schema(
             required: true,
             index: true,
         },
-        product: {
+        productId: {
             type: mongoose.Schema.ObjectId,
             ref: "Product",
             required: true,
             index: true,
         },
-        param: {
+        paramId: {
             type: mongoose.Schema.ObjectId,
             ref: "Param",
             required: true,
             index: true,
         },
-        size: {
+        sizeId: {
             type: mongoose.Schema.ObjectId,
             ref: "Size",
             required: true,
             index: true,
         },
-        shop: {
+        shopId: {
             type: mongoose.Schema.ObjectId,
             ref: "Shop",
             required: true,
@@ -58,7 +58,7 @@ const OrderProductsSchema = new mongoose.Schema(
             ru: { type: String, required: true },
         },
         image: { type: String, required: true },
-        color: { type: String, required: true },
+        paramImage: { type: String, required: true },
         size: { type: String, required: true },
         count: { type: Number, required: true },
         amount: { type: Number, required: true },

@@ -1,8 +1,16 @@
 const Order = require("../models/order");
+const OrderProducts = require("../models/orderProducts");
 const Shop = require("../models/shop");
 const Size = require("../models/size");
+const Product = require("../models/product");
+const Param = require("../models/param");
 const mongoose = require("mongoose");
 exports.create = (req, res) => {
+    if(!(req.body.products && req.body.product.length)){
+        return res
+            .status(400)
+            .json({ success: false, message: "Something went wrong" });
+    }
     Order.countDocuments({}, async (err, count) => {
         let summ = 0;
         const order = await new Order({
@@ -15,49 +23,65 @@ exports.create = (req, res) => {
                 address: req.body.address ? req.body.address.address : null,
                 phone: req.body.address ? req.body.address.phone : null,
             },
-            products: req.body.products
-                ? await Promise.all(
-                      req.body.products.map(async (element) => {
-                          let shop = await Shop.findById({ _id: element.shop });
-                          let size = await Size.findById({
-                              _id: element.sizeId,
-                          });
-                          if(size.discount && new Date(size.discount_start) <= new Date() && new Date(size.discount_end) >= new Date()){
-                            if (size.discount !== element.amount) {
-                                return;
-                            } else {
-                                summ += size.discount * element.count
-                            }               
-                          } else {
-                              if (size.price !== element.amount) {
-                                  return;
-                              } else {
-                                  summ += size.price*element.count
-                              }
-                          }
-                          ;
-                          return {
-                              ...element,
-                              account: shop.shopId,
-                          };
-                      })
-                  )
-                : [],
         });
-
-        if (summ !== req.body.amount) {
+        const products = await Promise.all(
+            req.body.products.map(async (element) => {
+                let shop = await Shop.findById({ _id: element.shop });
+                let size = await Size.findById({_id: element.size});
+                let product = await Product.findById({_id: element.product});
+                let param = await Param.findById({_id: element.param});
+                if(size.discount && new Date(size.discount_start) <= new Date() && new Date(size.discount_end) >= new Date()){
+                if (size.discount !== element.amount) {
+                    return;
+                } else {
+                    summ += size.discount * element.count
+                }               
+                } else {
+                    if (size.price !== element.amount) {
+                        return;
+                    } else {
+                        summ += size.price*element.count
+                    }
+                }
+                ;
+                return {
+                    status: 0,
+                    orderId: count,
+                    user: req.user,
+                    //product Items
+                    productId: product._id,
+                    name: product.name,
+                    image: product.image,
+                    description: product.description,
+                    category: product.category,
+                    brand: product.brand,
+                    //param Items
+                    paramId: param._id,
+                    paramImage: param.image,
+                    //size Items
+                    sizeId: size._id,
+                    size: size.size,
+                    amount: req.body.amount,
+                    //shop Items
+                    shopId: shop._id,
+                    account: shop.shopId,
+                };
+            })
+        )
+        if (summ !== req.body.amount || !products.length) {
             return res
                 .status(400)
                 .json({ success: false, message: "Something went wrong" });
         }
-        order
-            .save()
-            .then((order) => {
-                res.status(201).json({ success: true, data: order });
-            })
-            .catch((err) => {
-                res.status(400).json({ success: false, err });
-            });
+        console.log(products, order)
+        res.status(200).json({success: true})
+        // order.save()
+        //     .then((order) => {
+        //         res.status(201).json({ success: true, data: order });
+        //     })
+        //     .catch((err) => {
+        //         res.status(400).json({ success: false, err });
+        //     });
     });
 };
 
