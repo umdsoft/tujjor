@@ -120,6 +120,7 @@ exports.getAll = async (req, res) => {
     const status = parseInt(req.query.status);
     const payed = parseInt(req.query.payed);
     const shop = await Shop.findOne({user: req.user})
+    // ,{$eq: ["$status", status]}, {$eq: ["$shopId", mongoose.Types.ObjectId(shop._id)]}
     Order.aggregate([
         { $match: { payed: payed} },
         {$sort: {createdAt: -1}},
@@ -132,7 +133,7 @@ exports.getAll = async (req, res) => {
             from : "orderproducts",
             let: {orderId: "$orderId"},
             pipeline: [
-                { $match: { $expr: { $and:[{$eq: ["$orderId", "$$orderId"]},{$eq: ["$status", status]}, {$eq: ["$shopId", mongoose.Types.ObjectId(shop._id)]}] } } },   
+                { $match: { $expr: { $and:[{$eq: ["$orderId", "$$orderId"]}] } } },   
             ],
             as: "products"
         }},
