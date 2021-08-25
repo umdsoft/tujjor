@@ -65,6 +65,7 @@ exports.create = (req, res) => {
                     //shop Items
                     shopId: shop._id,
                     account: shop.shopId,
+                    percent: shop.percent
                 };
             })
         )

@@ -1,10 +1,12 @@
 const Errors = require("../utils/paymeErrors");
 const Order = require("../models/order");
+const OrderProducts = require("../models/orderProducts");
 const Size = require("../models/size");
 const Transaction = require("../models/transaction");
 const PayedList = require("../models/payedList");
 exports.payme = async (req, res) => {
-    // merchant ID: 6113b418754e932e68fd87ad
+    let SummAmount = 0;
+    const MERCHANT_ID = "6113b418754e932e68fd87ad";
     const PAYCOM_PASSWORD = "&ibgXksdw0S9#aORZ80Vb0HO0SQNFYmEEkgq" //test
     // const PAYCOM_PASSWORD = "Pb61wSM%ajGhIhxqEsDAWOW8Hg0hkbjG9JCJ" //production
     const body = req.body;
@@ -46,17 +48,26 @@ exports.payme = async (req, res) => {
 
     async function CreateTransaction(params) {
         await Transaction.findOne({ order: params.account.order }, async (err, data) => {
-            const receivers = [];
+            let receivers = [{
+                id: MERCHANT_ID,
+                amount: 0
+            }];
             if (!data) {
                 await Order.findOne({orderId: params.account.order},async (err,order)=>{
                     if(err || !order ) return sendResponse(Errors.OrderNotFound,null);
                     if(order.payed === 1) return sendResponse(Errors.OrderAvailable,null);
                     if(order.amount !== params.amount / 100)  return sendResponse(Errors.IncorrectAmount,null);
-                    order.products.forEach((key) => {
-                        receivers.push({
-                            id: key.account,
-                            amount: key.count * key.amount * 100,
-                        });
+                    await OrderProducts.find({orderId: order.orderId}, (err, orderProducts)=>{
+                        if(err || !orderProducts ) return sendResponse(Errors.OrderNotFound,null);
+                        orderProducts.forEach((key) => {
+                            const tujjorPrice = key.count * key.amount * key.percent;
+                            const shopPrice = key.count * key.amount * (100 - key.percent)
+                            receivers[0].amount += tujjorPrice
+                            receivers.push({
+                                id: key.account,
+                                amount: shopPrice,
+                            });
+                        })
                     })
                 })
                 const transaction = new Transaction({
