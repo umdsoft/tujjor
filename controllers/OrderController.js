@@ -71,15 +71,24 @@ exports.create = (req, res) => {
         if (summ !== req.body.amount || !products.length) {
             return res.status(400).json({ success: false, message: "Something went wrong" });
         }
-        console.log(products, order)
-        res.status(200).json({success: true})
-        // order.save()
-        //     .then((order) => {
-        //         res.status(201).json({ success: true, data: order });
-        //     })
-        //     .catch((err) => {
-        //         res.status(400).json({ success: false, err });
-        //     });
+        order.save()
+            .then((order) => {
+                products.forEach((element, index)=>{
+                    if(index === products.length-1){
+                        new OrderProducts(element).save().then(()=>{
+                            res.status(201).json({ success: true, data: order });
+                        }).catch(err=>{
+                            res.status(400).json({ success: false, err });
+                        })
+                    } else {
+                        new OrderProducts(element).save()
+                    }
+                })
+            })
+            .catch((err) => {
+                res.status(400).json({ success: false, err });
+            });
+        
     });
 };
 
