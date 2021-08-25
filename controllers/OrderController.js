@@ -122,7 +122,7 @@ exports.getAll = async (req, res) => {
     const shop = await Shop.findOne({user: req.user})
      
     OrderProducts.aggregate([
-        { $match: { status: status, shopId: shop._id, payed: payed} },
+        { $match: { status: status, shopId: mongoose.Types.ObjectId(shop._id), payed: payed} },
         {$sort: {createdAt: -1}},
         {$project: {
             name: 1,
