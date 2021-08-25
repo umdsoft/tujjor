@@ -133,9 +133,19 @@ exports.getAll = async (req, res) => {
             count: 1,
             description: 1,
             status: 1,
+            orderId: 1
         }},
         { $skip: (page - 1) * limit }, 
-        { $limit: limit }
+        { $limit: limit },
+        {$group: {
+            _id: "$orderId",
+            products: {$push: "$$ROOT"}
+        }},
+        {$project: {
+            products: 1,
+            orderId: "$_id",
+            _id: 0
+        }}
 
     //     {$lookup:{
     //         from : "orderproducts",
