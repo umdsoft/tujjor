@@ -151,6 +151,7 @@ exports.getAll = async (req, res) => {
         {$project: {
             products: 1,
             amount: "$order.amount",
+            orderId: "$order.orderId",
             address: "$order.address",
             createdAt: "$order.createdAt",
             _id: 0
