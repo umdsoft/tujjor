@@ -72,23 +72,27 @@ exports.create = (req, res) => {
         if (summ !== req.body.amount || !products.length) {
             return res.status(400).json({ success: false, message: "Something went wrong" });
         }
-        order.save()
-            .then((order) => {
-                products.forEach((element, index)=>{
-                    if(index === products.length-1){
-                        new OrderProducts(element).save().then(()=>{
-                            res.status(201).json({ success: true, data: order });
-                        }).catch(err=>{
-                            res.status(400).json({ success: false, err });
-                        })
-                    } else {
-                        new OrderProducts(element).save()
-                    }
+        products.forEach((element, index)=>{
+            if(index === products.length-1){
+                new OrderProducts(element).save().then(()=>{
+                order.save().then(() => {
+                        return res.status(201).json({ success: true, data: order });
+                    })
+                    .catch((err) => {
+                       return res.status(400).json({ success: false, err });
+                    });
+                }).catch(err=>{
+                    OrderProducts.deleteMany({orderId: order.orderId})
+                    return res.status(400).json({ success: false, err });
                 })
-            })
-            .catch((err) => {
-                res.status(400).json({ success: false, err });
-            });
+            } else {
+                new OrderProducts(element).save().catch(err=>{
+                    OrderProducts.deleteMany({orderId: order.orderId})
+                    return res.status(400).json({ success: false, err });
+                })
+            }
+        })
+        
         
     });
 };
