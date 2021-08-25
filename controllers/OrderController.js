@@ -126,7 +126,7 @@ exports.getAll = async (req, res) => {
             from : "orderproducts",
             let: {orderId: "$orderId"},
             pipeline: [
-                { $match: { $expr: { $and:[{$eq: ["$orderId", "$$orderId"]},{$eq: ["$shopId", mongoose.Types.ObjectId(shop._id)]}] } } },   
+                { $match: { $expr: { $and:[{$eq: ["$orderId", "$$orderId"]},{$eq: ["$status", status]}, {$eq: ["$shopId", mongoose.Types.ObjectId(shop._id)]}] } } },   
             ],
             as: "products"
         }},
