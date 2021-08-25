@@ -26,10 +26,10 @@ exports.create = (req, res) => {
         });
         const products = await Promise.all(
             req.body.products.map(async (element) => {
-                let shop = await Shop.findById({ _id: element.shop });
                 let size = await Size.findById({_id: element.size});
                 let product = await Product.findById({_id: element.product});
                 let param = await Param.findById({_id: element.param});
+                let shop = await Shop.findById({ _id: product.shop });
                 if(size.discount && new Date(size.discount_start) <= new Date() && new Date(size.discount_end) >= new Date()){
                 if (size.discount !== element.amount) {
                     return;
@@ -42,12 +42,12 @@ exports.create = (req, res) => {
                     } else {
                         summ += size.price*element.count
                     }
-                }
-                ;
+                };
                 return {
                     status: 0,
                     orderId: count,
                     user: req.user,
+                    count: element.count,
                     //product Items
                     productId: product._id,
                     name: product.name,
@@ -61,7 +61,7 @@ exports.create = (req, res) => {
                     //size Items
                     sizeId: size._id,
                     size: size.size,
-                    amount: req.body.amount,
+                    amount: element.amount,
                     //shop Items
                     shopId: shop._id,
                     account: shop.shopId,
@@ -69,9 +69,7 @@ exports.create = (req, res) => {
             })
         )
         if (summ !== req.body.amount || !products.length) {
-            return res
-                .status(400)
-                .json({ success: false, message: "Something went wrong" });
+            return res.status(400).json({ success: false, message: "Something went wrong" });
         }
         console.log(products, order)
         res.status(200).json({success: true})
