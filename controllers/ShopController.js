@@ -168,7 +168,12 @@ exports.getShopsClient = async (req, res) => {
     Shop.aggregate([
         {
             $match: {
-                status: 2, isDelete: false, logo: {$ne: null}, logotip: {$ne: null}, image: {$ne: null}
+                status: 2, 
+                isDelete: false, 
+                logo: {$ne: null}, 
+                logotip: {$ne: null}, 
+                image: {$ne: null},
+                description: {$ne: null}
             }
         },
         {
