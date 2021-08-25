@@ -15,6 +15,7 @@ const ShopSchema = new mongoose.Schema(
             ref: "User",
             unique: true,
             required: true,
+            index: true
         },
         image:  {type: String},
         logo: { type: String },
