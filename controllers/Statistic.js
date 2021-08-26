@@ -192,7 +192,7 @@ exports.dashboardAdmin = async (req, res) => {
 }
 exports.dashboardShop = async (req, res) => {
     const shop = await Shop.findOne({user: req.user});
-    const lastOrders = await OrderProducts.find({payed: 1, shop: shop._id}, 
+    const lastOrders = await OrderProducts.find({payed: 1, shopId: shop._id}, 
         {name: 1, amount: 1, status: 1, size: 1, paramImage: 1, image: 1, description: 1}).sort({createdAt: -1}).limit(5)
     res.status(200).json({
         success: true,
