@@ -99,7 +99,11 @@ exports.create = (req, res) => {
 
 exports.getById = async (req, res) => {
     const shop = await Shop.findOne({user: req.user})
-    const order = await Order.findOne({orderId: req.params.orderId, payed: 1},{amount: 1, orderId: 1, address: 1})
+    console.log(shop);
+    const order = await Order.findOne({
+        orderId: req.params.orderId,
+        payed: 1
+    },{amount: 1, orderId: 1, address: 1})
     await OrderProducts.aggregate([
         {$match: { shopId: mongoose.Types.ObjectId(shop._id), payed: 1, orderId: req.params.orderId} },
         {$project: {
