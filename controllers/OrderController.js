@@ -104,7 +104,7 @@ exports.getById = async (req, res) => {
         payed: 1
     },{amount: 1, orderId: 1, address: 1})
     await OrderProducts.aggregate([
-        {$match: { shopId: mongoose.Types.ObjectId(shop._id), payed: 1} },
+        {$match: { shopId: mongoose.Types.ObjectId(shop._id), payed: 1, orderId: parseInt(req.params.orderId)} },
         {$project: {
             name: 1,
             image: 1,
