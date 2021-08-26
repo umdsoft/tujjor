@@ -185,6 +185,6 @@ exports.dashboardAdmin = async (req, res) => {
         users,
         shops,
         products,
-        oders
+        orders
     })
 }
