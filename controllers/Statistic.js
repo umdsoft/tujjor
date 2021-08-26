@@ -179,12 +179,13 @@ exports.dashboardAdmin = async (req, res) => {
     const shops = await Shop.countDocuments({status: {$ne: 0}, isDelete: false});
     const products = await Product.countDocuments({status: 1, isDelete: false});
     const orders = await Order.countDocuments({payed: 1});
-
+    const lastOrders = OrderProducts.find({payed: 1}).sort({createdAt: -1}).limit(5)
     res.status(200).json({
         success: true,
         users,
         shops,
         products,
-        orders
+        orders,
+        lastOrders
     })
 }
