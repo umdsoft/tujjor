@@ -1,5 +1,9 @@
 const PayedList = require("../models/payedList");
-
+const OrderProducts = require("../models/orderProducts")
+const Order = require("../models/order")
+const Shop = require("../models/shop")
+const Product = require("../models/product")
+const User = require("../models/user")
 exports.statShop = async (req, res) => {
     PayedList.aggregate([
         {
@@ -46,7 +50,6 @@ exports.statShop = async (req, res) => {
         });
     });
 };
-
 exports.statBrand = async (req, res) => {
     PayedList.aggregate([
         {
@@ -88,7 +91,6 @@ exports.statBrand = async (req, res) => {
         });
     });
 };
-
 exports.statUser = async (req, res) => {
     PayedList.aggregate([
         {
@@ -130,7 +132,6 @@ exports.statUser = async (req, res) => {
         });
     });
 };
-
 exports.statCategory = async (req, res) => {
     PayedList.aggregate([
         {
@@ -172,3 +173,18 @@ exports.statCategory = async (req, res) => {
         });
     });
 };
+
+exports.dashboardAdmin = async (req, res) => {
+    const users = await User.countDocuments({role: "client"});
+    const shops = await Shop.countDocuments({status: {$ne: 0}, isDelete: false});
+    const products = await Product.countDocuments({status: 1, isDelete: false});
+    const orders = await Order.countDocuments({payed: 1});
+
+    res.status(200).json({
+        success: true,
+        users,
+        shops,
+        products,
+        oders
+    })
+}
