@@ -1,10 +1,10 @@
 const router = require("express").Router();
 const Statistic = require("../controllers/Statistic");
-
-router.post("/shops", Statistic.statShop);
-router.post("/brands", Statistic.statBrand);
-router.post("/users", Statistic.statUser);
-router.post("/category", Statistic.statCategory);
-router.get("/dashboard", Statistic.dashboardAdmin);
+const { protectAdmin, protectSeller} = require("../middleware/auth")
+router.post("/shops",protectAdmin, Statistic.statShop);
+router.post("/brands",protectAdmin, Statistic.statBrand);
+router.post("/users",protectAdmin, Statistic.statUser);
+router.post("/category",protectAdmin, Statistic.statCategory);
+router.get("/dashboard",protectAdmin, Statistic.dashboardAdmin);
 
 module.exports = router;
