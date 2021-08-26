@@ -6,5 +6,6 @@ router.post("/brands",protectAdmin, Statistic.statBrand);
 router.post("/users",protectAdmin, Statistic.statUser);
 router.post("/category",protectAdmin, Statistic.statCategory);
 router.get("/dashboard",protectAdmin, Statistic.dashboardAdmin);
+router.get("/shop/dashboard",protectSeller, Statistic.dashboardShop);
 
 module.exports = router;
