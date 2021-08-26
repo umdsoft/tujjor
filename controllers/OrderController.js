@@ -98,16 +98,7 @@ exports.create = (req, res) => {
 };
 
 exports.getById = async (req, res) => {
-    Order.findById({_id: req.params.id}, 
-        {user: 0, updatedAt: 0, createdAt: 0, __v: 0,  
-            "products.productId":0,
-            "products.paramId":0,
-            "products.sizeId":0,
-            "products.category":0,
-            "products.brand":0,
-            "products.shop":0,
-            "products.account":0,
-        }, (err, data)=>{
+    Order.findById({_id: req.params.id}, (err, data)=>{
         if(err){
             return res.status(400).json({ success: false, err });
         } 
@@ -119,8 +110,18 @@ exports.getAll = async (req, res) => {
     const limit = parseInt(req.query.limit);
     const status = parseInt(req.query.status);
     const shop = await Shop.findOne({user: req.user})
-     
-    OrderProducts.aggregate([
+    let count = 0;
+    await OrderProducts.aggregate([ 
+        { $match: { status: status, shopId: mongoose.Types.ObjectId(shop._id), payed: 1} },
+        {$group: {
+            _id: "$orderId",
+            count: {$sum: 1}
+        }},
+    ]).exec((err, data)=>{
+        if(err) return res.status(400).json({ success: false, err })
+        count = data[0].count
+    })
+    await OrderProducts.aggregate([
         { $match: { status: status, shopId: mongoose.Types.ObjectId(shop._id), payed: 1} },
         {$sort: {createdAt: -1}},
         {$project: {
@@ -134,12 +135,12 @@ exports.getAll = async (req, res) => {
             status: 1,
             orderId: 1
         }},
-        { $skip: (page - 1) * limit }, 
-        { $limit: limit },
         {$group: {
             _id: "$orderId",
             products: {$push: "$$ROOT"}
         }},
+        { $skip: (page - 1) * limit }, 
+        { $limit: limit },
         {$lookup: {
             from: "orders",
             localField: "_id",
@@ -155,59 +156,21 @@ exports.getAll = async (req, res) => {
             createdAt: "$order.createdAt",
             _id: 0
         }},
-        
-    //     {$lookup:{
-    //         from : "orderproducts",
-    //         let: {orderId: "$orderId"},
-    //         pipeline: [
-    //             { $match: { $expr: { $and:[{$eq: ["$orderId", "$$orderId"]},{$eq: ["$status", status]}, {$eq: ["$shopId", mongoose.Types.ObjectId(shop._id)]}] } } },   
-    //             {$project: {
-    //                 name: 1,
-    //                 image: 1,
-    //                 paramImage: 1,
-    //                 size: 1,
-    //                 amount: 1,
-    //                 count: 1,
-    //                 description: 1,
-    //                 status: 1,
-
-    //             }}
-    //         ],
-    //         as: "products"
-    //     }},
-    //     {
-    //         $facet: {
-    //             count: [{ $group: { _id: null, count: { $sum: 1 } } }],
-    //             data: [{ $skip: (page - 1) * limit }, { $limit: limit }],
-    //         },
-    //     },
-    //     {
-    //         $project: {
-    //             count: {
-    //                 $let: {
-    //                     vars: {
-    //                         count: { $arrayElemAt: ["$count", 0] },
-    //                     },
-    //                     in: "$$count.count",
-    //                 },
-    //             },
-    //             data: 1,
-    //         },
-    //     },
     ]).exec((err, data) => {
         if (err) return res.status(400).json({ success: false, err });
         res.status(200).json({
             success: true,
-            data
+            data,
+            count
         });
     });
 };
 exports.update = async (req, res) => {
     let order = await Order.findById({ _id: req.params.id});
     order.status = order.status + 1;
-    order.save().then(data=>{
+    order.save().then(()=>{
         res.status(200).json({success: true})
-    }).catch(err=>{
+    }).catch(()=>{
         res.status(400).json({success: false})
     })
 }
