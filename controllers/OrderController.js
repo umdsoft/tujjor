@@ -179,18 +179,29 @@ exports.update = async (req, res) => {
 exports.getMeOrder = (req, res) => {
     let status = {};
     if (req.query.status === "payed") {
-        status = { $match: { status: 1} };
+        status = { $match: { status: 0} };
     } else if (req.query.status === "onTheWay") {
-        status = { $match: { status: {$gt: 2, $lt: 3 } } };
+        status = { $match: { status: {$gt: 1, $lt: 3 } } };
     } else if (req.query.status === "delivered") {
         status = { $match: { status: 4 } };
     } else if (req.query.status === "canceled") {
         status = { $match: { status: 5 } };
     }
-    Order.aggregate([
+    OrderProducts.aggregate([
         { $match: { user: mongoose.Types.ObjectId(req.user), payed: 1  } },
         status,
         {$sort: {createdAt: -1}},
+        {$project: {
+            name: 1,
+            image: 1,
+            paramImage: 1,
+            size: 1,
+            amount: 1,
+            count: 1,
+            description: 1,
+            status: 1,
+            orderId: 1
+        }},
     ]).exec((err, data) => {
         if (err) return res.status(400).json({ success: false, err });
         res.status(200).json({
