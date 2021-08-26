@@ -121,7 +121,7 @@ exports.getAll = async (req, res) => {
         },
     ]).exec((err, data)=>{
         if(err) return res.status(400).json({ success: false, err })
-        count = data[0].count
+        count = data[0]?data[0].count:0
     })
     await OrderProducts.aggregate([
         { $match: { status: status, shopId: mongoose.Types.ObjectId(shop._id), payed: 1} },
