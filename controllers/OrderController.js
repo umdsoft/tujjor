@@ -113,10 +113,12 @@ exports.getAll = async (req, res) => {
     let count = 0;
     await OrderProducts.aggregate([ 
         { $match: { status: status, shopId: mongoose.Types.ObjectId(shop._id), payed: 1} },
-        {$group: {
-            _id: "$orderId",
-            count: {$sum: 1}
-        }},
+        {
+            $group: {_id: "$orderId"}
+        },
+        {
+            $group: {_id: "$_id", count: {$sum: 1}}
+        },
     ]).exec((err, data)=>{
         if(err) return res.status(400).json({ success: false, err })
         count = data[0].count
