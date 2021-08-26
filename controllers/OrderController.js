@@ -98,12 +98,29 @@ exports.create = (req, res) => {
 };
 
 exports.getById = async (req, res) => {
-    Order.findById({_id: req.params.id}, (err, data)=>{
-        if(err){
-            return res.status(400).json({ success: false, err });
-        } 
-        res.status(200).json({ success: true , data})
-    })
+    const shop = await Shop.findOne({user: req.user})
+    const order = await Order.findOne({_id: req.params.id, payed: 1},{amount: 1, orderId: 1, address: 1})
+    await OrderProducts.aggregate([
+        {$match: { status: status, shopId: mongoose.Types.ObjectId(shop._id), payed: 1, orderId: order.orderId} },
+        {$project: {
+            name: 1,
+            image: 1,
+            paramImage: 1,
+            size: 1,
+            amount: 1,
+            count: 1,
+            description: 1,
+            status: 1,
+            orderId: 1
+        }}
+    ]).exec((err, data) => {
+        if (err) return res.status(400).json({ success: false, err });
+        res.status(200).json({
+            success: true,
+            products: data,
+            order
+        });
+    });
 }
 exports.getAll = async (req, res) => {
     const page = parseInt(req.query.page);
@@ -125,7 +142,6 @@ exports.getAll = async (req, res) => {
     })
     await OrderProducts.aggregate([
         { $match: { status: status, shopId: mongoose.Types.ObjectId(shop._id), payed: 1} },
-        {$sort: {createdAt: -1}},
         {$project: {
             name: 1,
             image: 1,
@@ -158,6 +174,7 @@ exports.getAll = async (req, res) => {
             createdAt: "$order.createdAt",
             _id: 0
         }},
+        {$sort: {createdAt: -1}},
     ]).exec((err, data) => {
         if (err) return res.status(400).json({ success: false, err });
         res.status(200).json({
