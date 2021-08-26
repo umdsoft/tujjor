@@ -189,6 +189,7 @@ exports.getMeOrder = (req, res) => {
     }
     OrderProducts.aggregate([
         { $match: { user: mongoose.Types.ObjectId(req.user), payed: 1  } },
+        status,
         {$sort: {createdAt: -1}},
         {$project: {
             name: 1,
