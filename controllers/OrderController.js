@@ -120,8 +120,10 @@ exports.getById = async (req, res) => {
         if (err) return res.status(400).json({ success: false, err });
         res.status(200).json({
             success: true,
-            products: data,
-            order
+            order: {
+                ...order,
+                products: data
+            }
         });
     });
 }
