@@ -121,7 +121,9 @@ exports.getById = async (req, res) => {
         res.status(200).json({
             success: true,
             order: {
-                ...order,
+                amount: order.amount,
+                orderId: order.orderId,
+                address: order.address,
                 products: data
             }
         });
