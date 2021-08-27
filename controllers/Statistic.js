@@ -37,7 +37,8 @@ exports.statShop = async (req, res) => {
         {
             $project: {
                 shop: {
-                    name: 1
+                    _id: 1,
+                    shopName: 1
                 },
                 amount: 1,
                 count: 1,
@@ -80,6 +81,7 @@ exports.statBrand = async (req, res) => {
         {
             $project: {
                 brand: {
+                    _id: 1,
                     name: 1
                 },
                 amount: 1,
@@ -123,6 +125,7 @@ exports.statUser = async (req, res) => {
         {
             $project: {
                 user: {
+                    _id: 1,
                     name: 1
                 },
                 amount: 1,
@@ -166,6 +169,7 @@ exports.statCategory = async (req, res) => {
         {
             $project: {
                 category: {
+                    _id: 1,
                     name: 1
                 },
                 amount: 1,
