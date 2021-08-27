@@ -117,7 +117,7 @@ exports.loginClient = async (req, res) => {
     });
 };
 exports.getUsers = async (req, res) => {
-    User.find({}, function (err, data) {
+    User.find({}, {__v: 0, password: 0}, function (err, data) {
         res.status(200).json({ success: true, data });
     });
 };
