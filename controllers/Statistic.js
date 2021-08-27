@@ -110,7 +110,7 @@ exports.statUser = async (req, res) => {
             $lookup:
                 {
                     from: "users",
-                    localField: "user",
+                    localField: "_id",
                     foreignField: "_id",
                     as: "user"
                 }
