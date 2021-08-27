@@ -36,7 +36,9 @@ exports.statShop = async (req, res) => {
         { $unwind: "$shop" },
         {
             $project: {
-                shop: "$shop.shopName",
+                shop: {
+                    name: 1
+                },
                 amount: 1,
                 count: 1,
                 _id: 0,
@@ -77,7 +79,9 @@ exports.statBrand = async (req, res) => {
         { $unwind: "$brand" },
         {
             $project: {
-                brand: "$brand.name",
+                brand: {
+                    name: 1
+                },
                 amount: 1,
                 count: 1,
                 _id: 0,
@@ -118,7 +122,9 @@ exports.statUser = async (req, res) => {
         { $unwind: "$user"},
         {
             $project: {
-                user: "$user.name",
+                user: {
+                    name: 1
+                },
                 amount: 1,
                 count: 1,
                 _id: 0,
@@ -159,7 +165,9 @@ exports.statCategory = async (req, res) => {
         { $unwind: "$category" },
         {
             $project: {
-                category: "$category.name",
+                category: {
+                    name: 1
+                },
                 amount: 1,
                 count: 1,
                 _id: 0,
