@@ -117,9 +117,22 @@ exports.loginClient = async (req, res) => {
     });
 };
 exports.getUsers = async (req, res) => {
-    User.find({}, {__v: 0, password: 0}, function (err, data) {
-        res.status(200).json({ success: true, data });
-    });
+    const page = parseInt(req.query.page);
+    const limit = parseInt(req.query.limit);
+    const count = await User.countDocuments({});
+    User.aggregate([
+        {$project:{
+            password: 0, 
+            __v: 0
+        }},
+        {$sort: {createdAt: -1 }},
+        {$skip: (page - 1) * limit},
+        {$limit: limit},
+    ]).exec((err, data)=>{
+        if(err) return res.status(400).json({ success: false, err })
+        return res.status(200).json({success: true, data})
+    })
+
 };
 exports.me = async (req, res) => {
     await User.findOne({ _id: req.user })
