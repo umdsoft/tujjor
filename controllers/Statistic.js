@@ -151,7 +151,7 @@ exports.statCategory = async (req, res) => {
             $lookup:
                 {
                     from: "categories",
-                    localField: "category",
+                    localField: "_id",
                     foreignField: "_id",
                     as: "category"
                 }
