@@ -158,23 +158,26 @@ exports.edit = async (req, res) => {
 
     if(req.file){
         filename = req.file.filename
-        await sharp(path.join(path.dirname(__dirname) + `/public/temp/${filename}`))
-            .resize(100, 100)
-            .toFile(
-                path.join(path.dirname(__dirname) + `/public/uploads/users/${filename}`),
-                (err) => {
-                    if (err) {
-                        console.log(err);
-                    }
-                    deleteFile(`/public/temp/${filename}`);
+        sharp(path.join(path.dirname(__dirname) + `/public/temp/${filename}`))
+        .resize(100, 100)
+        .toFile(
+            path.join(path.dirname(__dirname) + `/public/uploads/users/${filename}`),
+            (err) => {
+                if (err) {
+                    console.log(err);
                 }
-            );
-            obj = {
-                ...req.body,
-                image: `/uploads/users/${filename}`,
-            };
+                deleteFile(`/public/temp/${filename}`);
+            }
+        );
+        obj = {
+            ...req.body,
+            image: `/uploads/users/${filename}`,
+        };
     } else {
         obj = req.body
+    }
+    if(obj.password || obj.role || obj.phone){
+        return res.status(400).json({ success: false, message: "Something went wrong"})
     }
     User.findByIdAndUpdate({ _id: req.user }, { $set: obj }, { new: true }).exec((err, data) => {
         if (err) {
