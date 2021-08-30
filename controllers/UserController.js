@@ -179,7 +179,7 @@ exports.edit = async (req, res) => {
     if(obj.password || obj.role || obj.phone || obj.email){
         return res.status(400).json({ success: false, message: "Something went wrong"})
     }
-    User.findByIdAndUpdate({ _id: req.user }, { $set: obj }, { new: true , fields: { password:0, role: 0, createdAt: 0, updatedAt: 0},}).exec((err, data) => {
+    User.findByIdAndUpdate({ _id: req.user }, { $set: obj }, { new: true , fields: { __v: 0, password:0, role: 0, createdAt: 0, updatedAt: 0},}).exec((err, data) => {
         if (err) {
             return res.status(400).json({ success: false, err });
         }
