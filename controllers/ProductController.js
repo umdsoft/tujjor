@@ -656,6 +656,7 @@ exports.count = async (req, res) => {
         },
     ];
     let aggregateEnd = [];
+    let lookupSizeStart = [];
     if (req.body.search && req.body.search.length) {
         aggregateStart.push({
             $match: {
@@ -744,8 +745,7 @@ exports.count = async (req, res) => {
             },
         });
     }
-    Product.aggregate([
-        ...aggregateStart,
+    const sizeLookup = [
         {
             $lookup: {
                 from: "sizes",
@@ -757,7 +757,7 @@ exports.count = async (req, res) => {
                         },
                     },
                     { $sort: { price: 1 } },
-                    { $limit : 1},
+                    { $limit: 1 },
                     {
                         $project: {
                             discount: {
@@ -797,15 +797,28 @@ exports.count = async (req, res) => {
                         }, 
                         in: "$$size"
                     }
-                }
+                },
             },
         },
-        {$project: { 
-            brand: 1,
-            price: "$size.price",
-            discount: "$size.discount",
-            sortPrice: "$size.sortPrice"
-        }},
+        {
+            $project: {
+                brand: 1,
+                price: "$size.price",
+                discount: "$size.discount",
+                sortPrice: "$size.sortPrice"
+            },
+        },
+    ];
+    if (
+        req.body.start ||
+        req.body.end ||
+        req.body.discount
+    ) {
+        lookupSizeStart = [...sizeLookup];
+    }
+    Product.aggregate([
+        ...aggregateStart,
+        ...lookupSizeStart,
         ...aggregateEnd,
         {
             $group: {
