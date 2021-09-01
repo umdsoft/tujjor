@@ -23,6 +23,11 @@ const ProductSchema = new mongoose.Schema(
             required: true,
             index: true,
         },
+        size: {
+            type: mongoose.Schema.ObjectId,
+            ref: "Size",
+            index: true,
+        },
         description: {
             uz: { type: String, index: true },
             ru: { type: String, index: true },
