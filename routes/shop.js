@@ -3,7 +3,7 @@ const ShopController = require("../controllers/ShopController");
 const multer = require("multer");
 const md5 = require("md5");
 const path = require("path");
-const { protectAdmin, protectSeller, protectClient } = require("../middleware/auth");
+const { protectAdmin, protectSeller, protectUser } = require("../middleware/auth");
 const { validateFile } = require("../middleware/errorFileUpload");
 
 const storage = multer.diskStorage({
@@ -34,12 +34,12 @@ router.post(
 );
 router.put("/update", protectSeller, ShopController.edit);
 router.get("/me", protectSeller, ShopController.getOne);
-router.get("/user/me", protectClient, ShopController.getOne);
+router.get("/user/me", protectUser, ShopController.getOne);
 
 //client
 router.post(
     "/create",
-    protectClient,
+    protectUser,
     upload.fields([
         { name: "image", maxCount: 1 },
         { name: "fileContract", maxCount: 1 },
@@ -50,6 +50,6 @@ router.post(
 );
 router.get("/client/:slug", ShopController.getOneClient);
 router.get("/all/filter", ShopController.getShopsClient);
-router.delete("/:id", protectClient, ShopController.delete);
+router.delete("/:id", protectUser, ShopController.delete);
 
 module.exports = router;

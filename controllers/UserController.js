@@ -35,7 +35,6 @@ exports.register = async (req, res) => {
         .save()
         .then(() => {
             sendTokenResponse(user, 200, res);
-            
         })
         .catch((err) => {
             res.status(400).json({
@@ -186,5 +185,6 @@ exports.edit = async (req, res) => {
         res.status(201).json({ success: true, data: data });
     });
 };
+exports.resetPassword = async (req, res) => {
 
-exports.resetPassword = async (req, res) => {};
+};

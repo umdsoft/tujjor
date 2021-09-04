@@ -441,10 +441,12 @@ exports.filter = async (req, res) => {
             },
         });
     }
-    if (req.body.discount) {
-        aggregateEnd.push({
+    if (req.body.brand && req.body.brand.length) {
+        aggregateStart.push({
             $match: {
-                discount: {$ne:null}
+                brand: {
+                    $in: req.body.brand.map((key) => mongoose.Types.ObjectId(key)),
+                },
             },
         });
     }
@@ -457,12 +459,10 @@ exports.filter = async (req, res) => {
             },
         });
     }
-    if (req.body.brand && req.body.brand.length) {
-        aggregateStart.push({
+    if (req.body.discount) {
+        aggregateEnd.push({
             $match: {
-                brand: {
-                    $in: req.body.brand.map((key) => mongoose.Types.ObjectId(key)),
-                },
+                discount: {$ne:null}
             },
         });
     }
@@ -521,7 +521,7 @@ exports.filter = async (req, res) => {
                 break;
             }
         }
-    }else {
+    } else {
         aggregateStart.push({
             $sort: {
                 createdAt: -1,

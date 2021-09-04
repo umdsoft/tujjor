@@ -1,10 +1,10 @@
 const router = require("express").Router();
 const OrderController = require("../controllers/OrderController");
-const { protectClient, protectSeller } = require("../middleware/auth");
+const { protectUser, protectSeller } = require("../middleware/auth");
 
-router.post("/create", protectClient, OrderController.create);
+router.post("/create", protectUser, OrderController.create);
 router.get("/all",protectSeller, OrderController.getAll);
-router.get("/me", protectClient, OrderController.getMeOrder);
+router.get("/me", protectUser, OrderController.getMeOrder);
 router.put("/:id", OrderController.update);
 router.get("/one/:orderId",protectSeller, OrderController.getById);
 
