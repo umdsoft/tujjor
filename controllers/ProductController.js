@@ -954,16 +954,6 @@ exports.getAll = async (req, res) => {
             },
         },
         {
-            $project: {
-                name: 1,
-                image: 1,
-                status: 1,
-                category: "$category.name",
-                slug: 1,
-                price: 1
-            },
-        },
-        {
             $facet: {
                 count: [{ $group: { _id: null, count: { $sum: 1 } } }],
                 data: [{ $skip: (page - 1) * limit }, { $limit: limit }],
