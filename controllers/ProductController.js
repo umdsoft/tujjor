@@ -219,7 +219,7 @@ exports.createDiscount = async (req, res) => {
         }, 
         [
             {$set: {
-                // discount: {$divide: [{$multiply: [100-req.body.discount, "$price"]},100]},
+                discount: {$divide: [{$multiply: [{$subtract: [100, req.body.discount]}, "$price"]},100]},
                 discount_percent: req.body.discount,
                 discount_start: new Date(req.body.start),
                 discount_end: new Date(req.body.end)
