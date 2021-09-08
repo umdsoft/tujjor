@@ -214,19 +214,19 @@ exports.createDiscount = async (req, res) => {
         //         $in: products.map((key) => mongoose.Types.ObjectId(key)),
         //     },
         // });
-        // Size.updateMany({
-        //     productId: {$in: products},
-        // }, 
-        // [
-        //     {$set: {
-        //         discount: {$divide: [{$multiply: [100-req.body.discount, "$price"]},100]},
-        //         discount_percent: req.body.discount,
-        //         discount_start: new Date(req.body.start),
-        //         discount_end: new Date(req.body.end)
-        //     }}
-        // ]).then(()=>{
+        Size.updateMany({
+            productId: {$in: products.map((key) => mongoose.Types.ObjectId(key))},
+        }, 
+        [
+            {$set: {
+                discount: {$divide: [{$multiply: [100-req.body.discount, "$price"]},100]},
+                discount_percent: req.body.discount,
+                discount_start: new Date(req.body.start),
+                discount_end: new Date(req.body.end)
+            }}
+        ]).then(()=>{
             res.status(201).json({ success: true });
-        // })
+        })
         // sizes.forEach((key, index) => {
         //     let obj = key;
         //     obj["discount_percent"] = req.body.discount;
