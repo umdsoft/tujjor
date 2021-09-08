@@ -28,10 +28,22 @@ const ProductSchema = new mongoose.Schema(
             ref: "Size",
             index: true,
         },
+        minSize: {
+            price: Number,
+            discount: Number ,
+            discount_percent: Number,
+            discount_start: Date,
+            discount_end: Date,
+        },
         description: {
             uz: { type: String, index: true },
             ru: { type: String, index: true },
         },
+        deliver: {
+            from: { type: Number, required: true},
+            to:  { type: Number, required: true},
+        },
+        link: { type: String},
         article: {type: String},
         views: { type: Number, index: true, default: 0 },
         image: { type: String, required: true },

@@ -16,8 +16,8 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage: storage });
 //TEST
-router.post("/test", ProductController.TEST);
-router.post("/remove", ProductController.REMOVE);
+// router.post("/test", ProductController.TEST);
+// router.post("/remove", ProductController.REMOVE);
 
 
 

@@ -22,24 +22,24 @@ const {
 } = require("../utils/preModel");
 
 //TEST
-exports.TEST = async (req, res) => {
-    const shop = await Shop.findById({ _id: req.body.shop});
-    if(!shop) return res.status(400).json({ success: false})
-    Product.find({shop: shop._id}).sort({createdAt: 1}).then(data=>{
-        data.forEach((key, index)=>{
-            console.log("WORKING")
-            key['article'] = `${shop.code}${getText(index + 1, 5)}`
-            key.save();
-        })
-    })
-}
-exports.REMOVE = async (req, res) => {
-    Product.findByIdAndDelete({_id: req.body.product}).then(data=>{
-        deleteFooterImage(data._id)
-        deleteImage(data._id)
-        deleteParam(data._id)
-    })
-}
+// exports.TEST = async (req, res) => {
+//     const shop = await Shop.findById({ _id: req.body.shop});
+//     if(!shop) return res.status(400).json({ success: false})
+//     Product.find({shop: shop._id}).sort({createdAt: 1}).then(data=>{
+//         data.forEach((key, index)=>{
+//             console.log("WORKING")
+//             key['article'] = `${shop.code}${getText(index + 1, 5)}`
+//             key.save();
+//         })
+//     })
+// }
+// exports.REMOVE = async (req, res) => {
+//     Product.findByIdAndDelete({_id: req.body.product}).then(data=>{
+//         deleteFooterImage(data._id)
+//         deleteImage(data._id)
+//         deleteParam(data._id)
+//     })
+// }
 
 //create
 exports.create = async (req, res) => {
@@ -61,6 +61,8 @@ exports.create = async (req, res) => {
         category: req.body.category,
         brand: req.body.brand,
         description: req.body.description,
+        link: req.body.link,
+        deliver: req.body.deliver,
         image: `/uploads/products/cards/${filename}`,
         tags: req.body.tags,
         slug: getSlug(req.body.name ? req.body.name.ru : ""),
@@ -257,10 +259,13 @@ exports.createDiscountAll = async (req, res) => {
 };
 
 //Edit
-exports.edit = (req, res) => {
+exports.edit = async (req, res) => {
+    const size = await Size.find({productId: data._id}, 
+        {price: 1, discount: 1, discount_percent: 1, discount_start: 1, discount_end: 1, _id: 0}
+    ).sort({price: 1}).limit(1)
     Product.findByIdAndUpdate(
         { _id: req.params.id },
-        { $set: req.body }
+        { $set: {...req.body, minSize: size[0]} }
     )
         .then((data) => {
             if (!data) {
@@ -268,6 +273,7 @@ exports.edit = (req, res) => {
                     message: "Product not found with id " + req.params.id,
                 });
             }
+
             res.status(200).json({ success: true });
         })
         .catch((err) => {
