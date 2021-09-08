@@ -20,16 +20,16 @@ const {
     deleteImage,
     deleteParam
 } = require("../utils/preModel");
-async function createSizeDiscount(index, data, body){
+async function createSizeDiscount(index, data, body, products){
     let obj = data[index];
     obj["discount_percent"] = body.discount;
     obj["discount"] = (obj.price * (100 - body.discount)) / 100;
     obj["discount_start"] = new Date(body.start);
     obj["discount_end"] = new Date(body.end);
     console.log("SIZE ", index, data[index])
-    await obj.save().then(()=>{
+    obj.save().then(()=>{
         if (index === data.length - 1) {
-            return;
+            return updateProductMinSize(0, products)
         } else {
             createSizeDiscount(index+1, data, body)
         }
@@ -241,11 +241,8 @@ exports.createDiscount = async (req, res) => {
                 $in: products.map((key) => mongoose.Types.ObjectId(key)),
             },
         });
-        createSizeDiscount(0, sizes, req.body).then(()=>{
-            updateProductMinSize(0, products).then(()=>{
-                res.status(200).json({success: true});
-                console.log("SUCCESS");
-            })
+        createSizeDiscount(0, sizes, req.body, products).then(()=>{
+            res.status(200).json({success: true});
         })
         // sizes.forEach((key, index) => {
         //     let obj = key;
