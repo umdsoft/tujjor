@@ -269,7 +269,7 @@ exports.createDiscountAll = async (req, res) => {
                 $in: products.map((key) => mongoose.Types.ObjectId(key._id)),
             },
         });
-        createSizeDiscount(0, sizes, req.body, products, res)
+        createSizeDiscount(0, sizes, req.body, products.map((key) => key._id), res)
     } catch (err) {
         res.status(500).json({ success: false, err });
     }
