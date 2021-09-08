@@ -260,7 +260,7 @@ exports.createDiscountAll = async (req, res) => {
 
 //Edit
 exports.edit = async (req, res) => {
-    const size = await Size.find({productId: data._id}, 
+    const size = await Size.find({productId: req.params.id}, 
         {price: 1, discount: 1, discount_percent: 1, discount_start: 1, discount_end: 1, _id: 0}
     ).sort({price: 1}).limit(1)
     Product.findByIdAndUpdate(
