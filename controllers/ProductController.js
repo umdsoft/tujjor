@@ -192,39 +192,55 @@ exports.createDiscount = async (req, res) => {
     ) {
         return res.status(400).json({ success: false, message: "Something went wrong" });
     }
-    const shop = await Shop.findOne(
-        { user: mongoose.Types.ObjectId(req.user) },
-        { _id: 1 }
-    );
-    if (!shop) {
-        return res.status(400).json({ success: false, message: "Something went wrong" });
-    }
-    const products = await Promise.all(
-        req.body.products.map(async (product) => {
-            const temp = await Product.findOne({ _id: mongoose.Types.ObjectId(product) });
-            if (!temp) return;
-            if (temp.shop.toString() === shop._id.toString()) {
-                return product;
-            }
-        })
-    );
     try {
-        const sizes = await Size.find({
-            productId: {
-                $in: products.map((key) => mongoose.Types.ObjectId(key)),
-            },
-        });
-        sizes.forEach((key, index) => {
-            let obj = key;
-            obj["discount"] = (key.price * (100 - req.body.discount)) / 100;
-            obj["discount_start"] = new Date(req.body.start);
-            obj["discount_end"] = new Date(req.body.end);
+        const shop = await Shop.findOne(
+            { user: mongoose.Types.ObjectId(req.user) },
+            { _id: 1 }
+        );
+        if (!shop) {
+            return res.status(400).json({ success: false, message: "Something went wrong" });
+        }
+        const products = await Promise.all(
+            req.body.products.map(async (product) => {
+                const temp = await Product.findOne({ _id: mongoose.Types.ObjectId(product) });
+                if (!temp) return;
+                if (temp.shop.toString() === shop._id.toString()) {
+                    return product;
+                }
+            })
+        );
+        // const sizes = await Size.find({
+        //     productId: {
+        //         $in: products.map((key) => mongoose.Types.ObjectId(key)),
+        //     },
+        // });
+        Size.updateMany({
+            productId: {$in: products},
+        }, 
+        [
+            {$set: {
+                discount: {$divide: [{$multiply: [100-req.body.discount, "$price"]},100]},
+                discount_percent: req.body.discount,
+                discount_start: new Date(req.body.start),
+                discount_end: new Date(req.body.end)
+            }}
+        ]).then(()=>{
+            res.status(201).json({ success: true });
+        })
+        // sizes.forEach((key, index) => {
+        //     let obj = key;
+        //     obj["discount_percent"] = req.body.discount;
+        //     obj["discount"] = (key.price * (100 - req.body.discount)) / 100;
+        //     obj["discount_start"] = new Date(req.body.start);
+        //     obj["discount_end"] = new Date(req.body.end);
 
-            obj.save();
-            if (index === sizes.length - 1) {
-                res.status(201).json({ success: true });
-            }
-        });
+        //     obj.save();
+        //     if (index === sizes.length - 1) {
+        //         res.status(201).json({ success: true });
+        //         Product.findByIdAndUpdate()
+        //     }
+        // });
+
     } catch (err) {
         res.status(500).json({ success: false, err });
     }
@@ -493,7 +509,7 @@ exports.filter = async (req, res) => {
     if (req.body.sort) {
         switch (req.body.sort) {
             case "new": {
-                aggregateStart.push({
+                aggregateEnd.push({
                     $sort: {
                         createdAt: -1,
                     },
@@ -528,7 +544,7 @@ exports.filter = async (req, res) => {
             }
         }
     } else {
-        aggregateStart.push({
+        aggregateEnd.push({
             $sort: {
                 createdAt: -1,
             },
@@ -845,8 +861,92 @@ exports.count = async (req, res) => {
 exports.getAll = async (req, res) => {
     const page = parseInt(req.query.page);
     const limit = parseInt(req.query.limit);
+    const shop = await Shop.findOne({user: req.user})
+    const aggregateStart = [];
+    if(req.body.status == 0){
+        aggregateStart.push({$match: {status: 0}})
+    }
+    if(req.body.status == 1){
+        aggregateStart.push({$match: {status: 0}})
+    }
+    if (req.body.brand && req.body.brand.length) {
+        aggregateStart.push({
+            $match: {
+                brand: {
+                    $in: req.body.brand.map((key) => mongoose.Types.ObjectId(key)),
+                },
+            },
+        });
+    }
+    if (req.body.category && req.body.category.length) {
+        aggregateStart.push({
+            $match: {
+                category: {
+                    $in: req.body.category.map((key) => mongoose.Types.ObjectId(key)),
+                },
+            },
+        });
+    }
+     if (req.body.sort) {
+        switch (req.body.sort) {
+            case "new": {
+                aggregateEnd.push({
+                    $sort: {
+                        createdAt: -1,
+                    },
+                });
+                break;
+            }
+            case "popular": {
+                aggregateEnd.push({
+                    $sort: {
+                        views: -1,
+                    },
+                });
+                break;
+            }
+            case "priceUp": {
+                aggregateEnd.push({
+                    $sort: {
+                        sortPrice: 1,
+                    },
+                });
+                break;
+            }
+            case "priceDown": {
+                aggregateEnd.push({
+                    $sort: {
+                        sortPrice: -1,
+                    },
+                });
+                break;
+            }
+            case "nameUz": {
+                aggregateEnd.push({
+                    $sort: {
+                        "name.uz": -1,
+                    },
+                });
+                break;
+            }
+            case "nameUz": {
+                aggregateEnd.push({
+                    $sort: {
+                        "name.uz": -1,
+                    },
+                });
+                break;
+                }
+        }
+    } else {
+        aggregateEnd.push({
+            $sort: {
+                createdAt: -1,
+            },
+        })
+    }
     await Product.aggregate([
-        { $match: { shop: mongoose.Types.ObjectId(req.query.shop), isDelete: false } },
+        { $match: { shop: mongoose.Types.ObjectId(shop._id), isDelete: false } },
         { $sort: { createdAt: -1 } },
         {
             $lookup: {
