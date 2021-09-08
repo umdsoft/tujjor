@@ -227,7 +227,7 @@ exports.createDiscount = async (req, res) => {
         ]).then(()=>{
             res.status(201).json({ success: true });
         }).catch(err=>{
-            throw new Error(err)
+            res.status(500).json({ success: false, err });
         })
         // sizes.forEach((key, index) => {
         //     let obj = key;
