@@ -26,12 +26,12 @@ async function createSizeDiscount(index, data, body, products){
     obj["discount"] = (obj.price * (100 - body.discount)) / 100;
     obj["discount_start"] = new Date(body.start);
     obj["discount_end"] = new Date(body.end);
-    console.log("SIZE ", index, data[index])
+    console.log("SIZE ", index, data[index]._id)
     obj.save().then(()=>{
         if (index === data.length - 1) {
             return updateProductMinSize(0, products)
         } else {
-            createSizeDiscount(index+1, data, body)
+            createSizeDiscount(index+1, data, body, products)
         }
     })
 }
