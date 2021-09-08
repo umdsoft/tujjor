@@ -6,7 +6,8 @@ const cors = require("cors");
 const dotenv = require("dotenv");
 const connect = require("./config/db");
 const path = require("path");
-const fs = require("fs")
+const fs = require("fs");
+const errorHandler = require("./middleware/error");
 //Connect MongoDB
 connect();
 
@@ -44,6 +45,7 @@ app.use("/api/help", require("./routes/help"));
 app.use("/api/info", require("./routes/info"));
 app.use("/api/news", require("./routes/news"));
 app.use("/api/product", require("./routes/product"));
+app.use(errorHandler)
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
     console.log("Server running");
