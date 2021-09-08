@@ -20,7 +20,30 @@ const {
     deleteImage,
     deleteParam
 } = require("../utils/preModel");
-
+async function createSizeDiscount(index, data, body){
+    let obj = data[index];
+    obj["discount_percent"] = body.discount;
+    obj["discount"] = (key.price * (100 - body.discount)) / 100;
+    obj["discount_start"] = new Date(body.start);
+    obj["discount_end"] = new Date(body.end);
+    await obj.save()
+    if (index === data.length - 1) {
+        return ;
+    } else {
+        createSizeDiscount(index+1, data, body)
+    }
+}
+async function updateProductMinSize(index, data){
+    const size = await Size.find({productId: data[index]}, 
+        {price: 1, discount: 1, discount_percent: 1, discount_start: 1, discount_end: 1, _id: 0}
+    ).sort({price: 1}).limit(1)
+    await Product.findByIdAndUpdate({ _id: data[index] },{ $set: {minSize: size[0]}})
+    if(index === data.length - 1){
+        return
+    } else {
+        updateProductMinSize(index+1, data);
+    }
+}
 //TEST
 // exports.TEST = async (req, res) => {
 //     const shop = await Shop.findById({ _id: req.body.shop});
@@ -214,17 +237,20 @@ exports.createDiscount = async (req, res) => {
                 $in: products.map((key) => mongoose.Types.ObjectId(key)),
             },
         });
-        sizes.forEach((key, index) => {
-            let obj = key;
-            obj["discount"] = (key.price * (100 - req.body.discount)) / 100;
-            obj["discount_start"] = new Date(req.body.start);
-            obj["discount_end"] = new Date(req.body.end);
+        createSizeDiscount(0, sizes, req.body);
+        updateProductMinSize(0, products);
+        // sizes.forEach((key, index) => {
+        //     let obj = key;
+        //     obj["discount_percent"] = req.body.discount;
+        //     obj["discount"] = (key.price * (100 - req.body.discount)) / 100;
+        //     obj["discount_start"] = new Date(req.body.start);
+        //     obj["discount_end"] = new Date(req.body.end);
 
-            obj.save();
-            if (index === sizes.length - 1) {
-                res.status(201).json({ success: true });
-            }
-        });
+        //     obj.save();
+        //     if (index === sizes.length - 1) {
+        //         res.status(201).json({ success: true });
+        //     }
+        // });
     } catch (err) {
         res.status(500).json({ success: false, err });
     }
@@ -253,7 +279,6 @@ exports.createDiscountAll = async (req, res) => {
             }
         });
     } catch (err) {
-        console.log(err);
         res.status(500).json({ success: false, err });
     }
 };
