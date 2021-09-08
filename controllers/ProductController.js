@@ -20,7 +20,7 @@ const {
     deleteImage,
     deleteParam
 } = require("../utils/preModel");
-async function createSizeDiscount(index, data, body, products){
+async function createSizeDiscount(index, data, body, products, res){
     let obj = data[index];
     obj["discount_percent"] = body.discount;
     obj["discount"] = (obj.price * (100 - body.discount)) / 100;
@@ -29,22 +29,23 @@ async function createSizeDiscount(index, data, body, products){
     console.log("SIZE ", index, data[index]._id)
     obj.save().then(()=>{
         if (index === data.length - 1) {
-            return updateProductMinSize(0, products)
+            updateProductMinSize(0, products, res)
         } else {
-            createSizeDiscount(index+1, data, body, products)
+            createSizeDiscount(index+1, data, body, products, res)
         }
     })
 }
-async function updateProductMinSize(index, data){
+async function updateProductMinSize(index, data, res){
     const size = await Size.find({productId: data[index]}, 
         {price: 1, discount: 1, discount_percent: 1, discount_start: 1, discount_end: 1, _id: 0}
     ).sort({price: 1}).limit(1)
     console.log("PRODUCT ", index, data[index])
     await Product.findByIdAndUpdate({ _id: data[index] },{ $set: {minSize: size[0]}}).then(()=>{
         if(index === data.length - 1){
+            res.status(200).json({success: true})
             return;
         } else {
-            updateProductMinSize(index+1, data);
+            updateProductMinSize(index+1, data, res);
         }
     })
 }
@@ -241,10 +242,7 @@ exports.createDiscount = async (req, res) => {
                 $in: products.map((key) => mongoose.Types.ObjectId(key)),
             },
         });
-        createSizeDiscount(0, sizes, req.body, products).then(()=>{
-            res.status(200).json({success: true});
-            console.log("SUCCESS")
-        })
+        createSizeDiscount(0, sizes, req.body, products, res)
         // sizes.forEach((key, index) => {
         //     let obj = key;
         //     obj["discount_percent"] = req.body.discount;
