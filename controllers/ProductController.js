@@ -847,6 +847,7 @@ exports.getAll = async (req, res) => {
     const limit = parseInt(req.query.limit);
     const shop = await Shop.findOne({user: req.user})
     const aggregateStart = [];
+    const aggregateEnd = [];
     if(req.body.status == 0){
         aggregateStart.push({$match: {status: 0}})
     }
