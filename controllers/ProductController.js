@@ -243,6 +243,7 @@ exports.createDiscount = async (req, res) => {
         });
         createSizeDiscount(0, sizes, req.body, products).then(()=>{
             res.status(200).json({success: true});
+            console.log("SUCCESS")
         })
         // sizes.forEach((key, index) => {
         //     let obj = key;
