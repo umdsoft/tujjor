@@ -22,7 +22,7 @@ const upload = multer({ storage: storage });
 
 
 //get all && filter
-router.post("/all", protectSeller, ProductController.getAll);
+router.get("/all", protectSeller, ProductController.getAll);
 router.get("/:slug", ProductController.getOneClient);
 router.get("/seller/:slug", ProductController.getOneSeller);
 router.post("/filter", ProductController.filter);
