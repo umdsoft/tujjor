@@ -23,7 +23,7 @@ const {
 async function createSizeDiscount(index, data, body){
     let obj = data[index];
     obj["discount_percent"] = body.discount;
-    obj["discount"] = (key.price * (100 - body.discount)) / 100;
+    obj["discount"] = (obj.price * (100 - body.discount)) / 100;
     obj["discount_start"] = new Date(body.start);
     obj["discount_end"] = new Date(body.end);
     await obj.save()
