@@ -960,7 +960,7 @@ exports.getAll = async (req, res) => {
                 status: 1,
                 category: "$category.name",
                 slug: 1,
-                sortPrice: { $ifNull: [ "$discount", "$price" ] }
+                price: 1
             },
         },
         {
