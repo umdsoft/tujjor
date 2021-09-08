@@ -239,10 +239,12 @@ exports.createDiscount = async (req, res) => {
                 $in: products.map((key) => mongoose.Types.ObjectId(key)),
             },
         });
-        await createSizeDiscount(0, sizes, req.body);
-        await updateProductMinSize(0, products);
-        res.status(200).json({success: true});
-        console.log("SUCCESS");
+        createSizeDiscount(0, sizes, req.body).then(()=>{
+            updateProductMinSize(0, products).then(()=>{
+                res.status(200).json({success: true});
+                console.log("SUCCESS");
+            })
+        })
         // sizes.forEach((key, index) => {
         //     let obj = key;
         //     obj["discount_percent"] = req.body.discount;
