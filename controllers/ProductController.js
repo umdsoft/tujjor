@@ -26,7 +26,7 @@ async function createSizeDiscount(index, data, body){
     obj["discount"] = (obj.price * (100 - body.discount)) / 100;
     obj["discount_start"] = new Date(body.start);
     obj["discount_end"] = new Date(body.end);
-    console.log("SIZE ", index)
+    console.log("SIZE ", index, data[index])
     await obj.save().then(()=>{
         if (index === data.length - 1) {
             return;
@@ -39,7 +39,7 @@ async function updateProductMinSize(index, data){
     const size = await Size.find({productId: data[index]}, 
         {price: 1, discount: 1, discount_percent: 1, discount_start: 1, discount_end: 1, _id: 0}
     ).sort({price: 1}).limit(1)
-    console.log("PRODUCT ", index)
+    console.log("PRODUCT ", index, data[index])
     await Product.findByIdAndUpdate({ _id: data[index] },{ $set: {minSize: size[0]}}).then(()=>{
         if(index === data.length - 1){
             return;
