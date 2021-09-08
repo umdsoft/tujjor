@@ -44,33 +44,33 @@ const {
 //create
 exports.create = async (req, res) => {
     try {
-    const { filename } = req.file;
-    sharpFrontImage(filename);
-    const shop = await Shop.findById({ _id: req.body.shop});
-    if(!shop){
-        res.status(400).json({success: false, message:"Something went wrong",});
-    }
-    let count = 0;
-    await Product.countDocuments({shop: shop._id}).then(c=>{
-        count = c;
-    })
-    const product = new Product({
-        name: req.body.name,
-        shop: shop._id,
-        article: `${shop.code}${getText(count + 1, 5)}`,
-        category: req.body.category,
-        brand: req.body.brand,
-        description: req.body.description,
-        link: req.body.link,
-        deliver: req.body.deliver,
-        image: `/uploads/products/cards/${filename}`,
-        tags: req.body.tags,
-        slug: getSlug(req.body.name ? req.body.name.ru : ""),
-        items: req.body.items,
-        status: req.body.status,
-        shopIsActive: (shop.status === 2) ? 1 : 0,
-    });
-    product
+        const { filename } = req.file;
+        sharpFrontImage(filename);
+        const shop = await Shop.findById({ _id: req.body.shop});
+        if(!shop){
+            res.status(400).json({success: false, message:"Something went wrong",});
+        }
+        let count = 0;
+        await Product.countDocuments({shop: shop._id}).then(c=>{
+            count = c;
+        })
+        const product = new Product({
+            name: req.body.name,
+            shop: shop._id,
+            article: `${shop.code}${getText(count + 1, 5)}`,
+            category: req.body.category,
+            brand: req.body.brand,
+            description: req.body.description,
+            link: req.body.link,
+            deliver: req.body.deliver,
+            image: `/uploads/products/cards/${filename}`,
+            tags: req.body.tags,
+            slug: getSlug(req.body.name ? req.body.name.ru : ""),
+            items: req.body.items,
+            status: req.body.status,
+            shopIsActive: (shop.status === 2) ? 1 : 0,
+        });
+        product
         .save()
         .then((data) => {
             fs.appendFile('success.txt', `${Date()} ${data}`, (err)=>{});
@@ -226,6 +226,8 @@ exports.createDiscount = async (req, res) => {
             }}
         ]).then(()=>{
             res.status(201).json({ success: true });
+        }).catch(err=>{
+            throw new Error(err)
         })
         // sizes.forEach((key, index) => {
         //     let obj = key;
