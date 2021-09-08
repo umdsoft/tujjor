@@ -26,7 +26,6 @@ async function createSizeDiscount(index, data, body, products, res){
     obj["discount"] = (obj.price * (100 - body.discount)) / 100;
     obj["discount_start"] = new Date(body.start);
     obj["discount_end"] = new Date(body.end);
-    console.log("SIZE ", index, data[index]._id)
     obj.save().then(()=>{
         if (index === data.length - 1) {
             updateProductMinSize(0, products, res)
@@ -39,7 +38,6 @@ async function updateProductMinSize(index, data, res){
     const size = await Size.find({productId: data[index]}, 
         {price: 1, discount: 1, discount_percent: 1, discount_start: 1, discount_end: 1, _id: 0}
     ).sort({price: 1}).limit(1)
-    console.log("PRODUCT ", index, data[index])
     await Product.findByIdAndUpdate({ _id: data[index] },{ $set: {minSize: size[0]}}).then(()=>{
         if(index === data.length - 1){
             res.status(200).json({success: true})
@@ -271,17 +269,7 @@ exports.createDiscountAll = async (req, res) => {
                 $in: products.map((key) => mongoose.Types.ObjectId(key._id)),
             },
         });
-        sizes.forEach((key, index) => {
-            let obj = key;
-            obj["discount_percent"] = req.body.discount;
-            obj["discount"] = (key.price * (100 - req.body.discount)) / 100;
-            obj["discount_start"] = new Date(req.body.start);
-            obj["discount_end"] = new Date(req.body.end);
-            obj.save();
-            if (index === sizes.length - 1) {
-                res.status(201).json({ success: true });
-            }
-        });
+        createSizeDiscount(0, sizes, req.body, products, res)
     } catch (err) {
         res.status(500).json({ success: false, err });
     }
