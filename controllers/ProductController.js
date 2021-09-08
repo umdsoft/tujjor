@@ -80,7 +80,6 @@ exports.create = async (req, res) => {
             });
         })
         .catch((err) => {
-            console.log(err);
             fs.appendFile('errors.txt', `${Date()} ${err}`, (err)=>{});
             res.status(400).json({
                 message:
