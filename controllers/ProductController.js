@@ -29,7 +29,7 @@ async function createSizeDiscount(index, data, body){
     console.log("SIZE ", index)
     await obj.save()
     if (index === data.length - 1) {
-        return ;
+        return;
     } else {
         createSizeDiscount(index+1, data, body)
     }
@@ -41,7 +41,7 @@ async function updateProductMinSize(index, data){
     console.log("PRODUCT ", index)
     await Product.findByIdAndUpdate({ _id: data[index] },{ $set: {minSize: size[0]}})
     if(index === data.length - 1){
-        return
+        return;
     } else {
         updateProductMinSize(index+1, data);
     }
@@ -239,8 +239,10 @@ exports.createDiscount = async (req, res) => {
                 $in: products.map((key) => mongoose.Types.ObjectId(key)),
             },
         });
-        createSizeDiscount(0, sizes, req.body);
-        updateProductMinSize(0, products);
+        await createSizeDiscount(0, sizes, req.body);
+        await updateProductMinSize(0, products);
+        res.status(200).json({success: true});
+        console.log("SUCCESS");
         // sizes.forEach((key, index) => {
         //     let obj = key;
         //     obj["discount_percent"] = req.body.discount;
