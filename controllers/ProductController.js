@@ -695,7 +695,6 @@ exports.count = async (req, res) => {
         },
     ];
     let aggregateEnd = [];
-    let lookupSizeStart = [];
     if (req.body.search && req.body.search.length) {
         aggregateStart.push({
             $match: {
@@ -784,77 +783,6 @@ exports.count = async (req, res) => {
             },
         });
     }
-    // const sizeLookup = [
-    //     {
-    //         $lookup: {
-    //             from: "sizes",
-    //             let: { productId: "$_id" },
-    //             pipeline: [
-    //                 {
-    //                     $match: {
-    //                         $expr: { $eq: ["$productId", "$$productId"] },
-    //                     },
-    //                 },
-    //                 { $sort: { price: 1 } },
-    //                 { $limit: 1 },
-    //                 {
-    //                     $project: {
-    //                         discount: {
-    //                             $cond: {
-    //                                 if: {
-    //                                     $and: [
-    //                                         { $gte: ["$discount_end", new Date()] },
-    //                                         { $lte: ["$discount_start", new Date()] },
-    //                                     ],
-    //                                 },
-    //                                 then: "$discount",
-    //                                 else: null,
-    //                             },
-    //                         },
-    //                         price: 1,
-    //                         _id: 0,
-    //                     },
-    //                 },
-    //                 {
-    //                     $project: {
-    //                         discount: 1,
-    //                         price: 1,
-    //                         sortPrice: { $ifNull: [ "$discount", "$price" ] }
-    //                     }
-    //                 }
-    //             ],
-    //             as: "sizes",
-    //         },
-    //     },
-    //     {
-    //         $project: {
-    //             brand: 1,
-    //             size: {
-    //                 $let: {
-    //                     vars: {
-    //                         size: { $arrayElemAt: ["$sizes", 0] },
-    //                     }, 
-    //                     in: "$$size"
-    //                 }
-    //             },
-    //         },
-    //     },
-    //     {
-    //         $project: {
-    //             brand: 1,
-    //             price: "$size.price",
-    //             discount: "$size.discount",
-    //             sortPrice: "$size.sortPrice"
-    //         },
-    //     },
-    // ];
-    // if (
-    //     req.body.start ||
-    //     req.body.end ||
-    //     req.body.discount
-    // ) {
-    //     lookupSizeStart = [...sizeLookup];
-    // }
     Product.aggregate([
         ...aggregateStart,
         {
@@ -1004,38 +932,25 @@ exports.getAll = async (req, res) => {
         },
         { $unwind: "$category" },
         {
-            $lookup: {
-                from: "sizes",
-                let: { productId: "$_id" },
-                pipeline: [
-                    {
-                        $match: {
-                            $expr: { $eq: ["$productId", "$$productId"] },
+            $project: {
+                name: 1,
+                image: 1,
+                status: 1,
+                category: "$category.name",
+                slug: 1,
+                discount: {
+                    $cond: {
+                        if: {
+                            $and: [
+                                { $gte: ["$minSize.discount_end", new Date()] },
+                                { $lte: ["$minSize.discount_start", new Date()] },
+                            ],
                         },
+                        then: "$minSize.discount",
+                        else: null,
                     },
-                    {
-                        $project: {
-                            price: 1,
-                            _id: 0,
-                            discount: {
-                                $cond: {
-                                    if: {
-                                        $and: [
-                                            { $gte: ["$discount_end", new Date()] },
-                                            { $lte: ["$discount_start", new Date()] },
-                                        ],
-                                    },
-                                    then: "$discount",
-                                    else: null,
-                                },
-                            },
-                        },
-                    },
-                    {
-                        $sort: { price: 1 },
-                    },
-                ],
-                as: "sizes",
+                },
+                price: "$minSize.price",
             },
         },
         {
@@ -1045,22 +960,7 @@ exports.getAll = async (req, res) => {
                 status: 1,
                 category: "$category.name",
                 slug: 1,
-                price: {
-                    $let: {
-                        vars: {
-                            size: { $arrayElemAt: ["$sizes", 0] },
-                        },
-                        in: "$$size.price",
-                    },
-                },
-                discount: {
-                    $let: {
-                        vars: {
-                            size: { $arrayElemAt: ["$sizes", 0] },
-                        },
-                        in: "$$size.discount",
-                    },
-                },
+                sortPrice: { $ifNull: [ "$discount", "$price" ] }
             },
         },
         {
@@ -1103,6 +1003,7 @@ exports.getOneClient = async (req, res) => {
         {
             $project: {
                 slug: 0,
+                minSize: 0,
                 isDelete: 0,
                 shopIsActive: 0,
                 status: 0,
@@ -1291,6 +1192,7 @@ exports.getOneSeller = async (req, res) => {
         {
             $project: {
                 views: 0,
+                minSize: 0,
                 slug: 0,
                 isDelete: 0,
                 shopIsActive: 0,
