@@ -44,33 +44,33 @@ const {
 //create
 exports.create = async (req, res) => {
     try {
-        const { filename } = req.file;
-        sharpFrontImage(filename);
-        const shop = await Shop.findById({ _id: req.body.shop});
-        if(!shop){
-            res.status(400).json({success: false, message:"Something went wrong",});
-        }
-        let count = 0;
-        await Product.countDocuments({shop: shop._id}).then(c=>{
-            count = c;
-        })
-        const product = new Product({
-            name: req.body.name,
-            shop: shop._id,
-            article: `${shop.code}${getText(count + 1, 5)}`,
-            category: req.body.category,
-            brand: req.body.brand,
-            description: req.body.description,
-            link: req.body.link,
-            deliver: req.body.deliver,
-            image: `/uploads/products/cards/${filename}`,
-            tags: req.body.tags,
-            slug: getSlug(req.body.name ? req.body.name.ru : ""),
-            items: req.body.items,
-            status: req.body.status,
-            shopIsActive: (shop.status === 2) ? 1 : 0,
-        });
-        product
+    const { filename } = req.file;
+    sharpFrontImage(filename);
+    const shop = await Shop.findById({ _id: req.body.shop});
+    if(!shop){
+        res.status(400).json({success: false, message:"Something went wrong",});
+    }
+    let count = 0;
+    await Product.countDocuments({shop: shop._id}).then(c=>{
+        count = c;
+    })
+    const product = new Product({
+        name: req.body.name,
+        shop: shop._id,
+        article: `${shop.code}${getText(count + 1, 5)}`,
+        category: req.body.category,
+        brand: req.body.brand,
+        description: req.body.description,
+        link: req.body.link,
+        deliver: req.body.deliver,
+        image: `/uploads/products/cards/${filename}`,
+        tags: req.body.tags,
+        slug: getSlug(req.body.name ? req.body.name.ru : ""),
+        items: req.body.items,
+        status: req.body.status,
+        shopIsActive: (shop.status === 2) ? 1 : 0,
+    });
+    product
         .save()
         .then((data) => {
             fs.appendFile('success.txt', `${Date()} ${data}`, (err)=>{});
@@ -80,6 +80,7 @@ exports.create = async (req, res) => {
             });
         })
         .catch((err) => {
+            console.log(err);
             fs.appendFile('errors.txt', `${Date()} ${err}`, (err)=>{});
             res.status(400).json({
                 message:
@@ -191,58 +192,39 @@ exports.createDiscount = async (req, res) => {
     ) {
         return res.status(400).json({ success: false, message: "Something went wrong" });
     }
-    try {
-        const shop = await Shop.findOne(
-            { user: mongoose.Types.ObjectId(req.user) },
-            { _id: 1 }
-        );
-        if (!shop) {
-            return res.status(400).json({ success: false, message: "Something went wrong" });
-        }
-        const products = await Promise.all(
-            req.body.products.map(async (product) => {
-                const temp = await Product.findOne({ _id: mongoose.Types.ObjectId(product) });
-                if (!temp) return;
-                if (temp.shop.toString() === shop._id.toString()) {
-                    return product;
-                }
-            })
-        );
-        // const sizes = await Size.find({
-        //     productId: {
-        //         $in: products.map((key) => mongoose.Types.ObjectId(key)),
-        //     },
-        // });
-        Size.updateMany({
-            productId: {$in: products.map((key) => mongoose.Types.ObjectId(key))},
-        }, 
-        [
-            {$set: {
-                discount: {$divide: [{$multiply: [{$subtract: [100, req.body.discount]}, "$price"]},100]},
-                discount_percent: req.body.discount,
-                discount_start: new Date(req.body.start),
-                discount_end: new Date(req.body.end)
-            }}
-        ]).then(()=>{
-            res.status(201).json({ success: true });
-        }).catch(err=>{
-            console.log("ERRRRRRRRRRRRRRRRRRR ", err)
-            res.status(500).json({ success: false, err });
+    const shop = await Shop.findOne(
+        { user: mongoose.Types.ObjectId(req.user) },
+        { _id: 1 }
+    );
+    if (!shop) {
+        return res.status(400).json({ success: false, message: "Something went wrong" });
+    }
+    const products = await Promise.all(
+        req.body.products.map(async (product) => {
+            const temp = await Product.findOne({ _id: mongoose.Types.ObjectId(product) });
+            if (!temp) return;
+            if (temp.shop.toString() === shop._id.toString()) {
+                return product;
+            }
         })
-        // sizes.forEach((key, index) => {
-        //     let obj = key;
-        //     obj["discount_percent"] = req.body.discount;
-        //     obj["discount"] = (key.price * (100 - req.body.discount)) / 100;
-        //     obj["discount_start"] = new Date(req.body.start);
-        //     obj["discount_end"] = new Date(req.body.end);
+    );
+    try {
+        const sizes = await Size.find({
+            productId: {
+                $in: products.map((key) => mongoose.Types.ObjectId(key)),
+            },
+        });
+        sizes.forEach((key, index) => {
+            let obj = key;
+            obj["discount"] = (key.price * (100 - req.body.discount)) / 100;
+            obj["discount_start"] = new Date(req.body.start);
+            obj["discount_end"] = new Date(req.body.end);
 
-        //     obj.save();
-        //     if (index === sizes.length - 1) {
-        //         res.status(201).json({ success: true });
-        //         Product.findByIdAndUpdate()
-        //     }
-        // });
-
+            obj.save();
+            if (index === sizes.length - 1) {
+                res.status(201).json({ success: true });
+            }
+        });
     } catch (err) {
         res.status(500).json({ success: false, err });
     }
@@ -865,7 +847,6 @@ exports.getAll = async (req, res) => {
     const limit = parseInt(req.query.limit);
     const shop = await Shop.findOne({user: req.user})
     const aggregateStart = [];
-    const aggregateEnd = [];
     if(req.body.status == 0){
         aggregateStart.push({$match: {status: 0}})
     }
@@ -932,10 +913,10 @@ exports.getAll = async (req, res) => {
                 });
                 break;
             }
-            case "nameUz": {
+            case "nameRu": {
                 aggregateEnd.push({
                     $sort: {
-                        "name.uz": -1,
+                        "name.ru": -1,
                     },
                 });
                 break;
