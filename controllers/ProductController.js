@@ -975,7 +975,7 @@ exports.getAllTest = async (req, res) => {
         aggregateStart.push({$match: {status: 0}})
     }
     if(req.body.status == 1){
-        aggregateStart.push({$match: {status: 0}})
+        aggregateStart.push({$match: {status: 1}})
     }
     if (req.body.brand && req.body.brand.length) {
         aggregateStart.push({
