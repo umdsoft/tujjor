@@ -19,10 +19,9 @@ const upload = multer({ storage: storage });
 // router.post("/test", ProductController.TEST);
 // router.post("/remove", ProductController.REMOVE);
 
-
-
 //get all && filter
 router.get("/all", protectSeller, ProductController.getAll);
+router.post("/test/all", protectSeller, ProductController.getAllTest);
 router.get("/:slug", ProductController.getOneClient);
 router.get("/seller/:slug", ProductController.getOneSeller);
 router.post("/filter", ProductController.filter);

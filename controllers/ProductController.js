@@ -892,22 +892,6 @@ exports.getAll = async (req, res) => {
                 });
                 break;
             }
-            case "nameUz": {
-                aggregateEnd.push({
-                    $sort: {
-                        "name.uz": -1,
-                    },
-                });
-                break;
-            }
-            case "nameRu": {
-                aggregateEnd.push({
-                    $sort: {
-                        "name.ru": -1,
-                    },
-                });
-                break;
-                }
         }
     } else {
         aggregateEnd.push({
@@ -918,7 +902,145 @@ exports.getAll = async (req, res) => {
     }
     await Product.aggregate([
         { $match: { shop: mongoose.Types.ObjectId(shop._id), isDelete: false } },
-        { $sort: { createdAt: -1 } },
+        {$sort: {createdAt: -1 }},
+        {
+            $lookup: {
+                from: "categories",
+                let: { category: "$category" },
+                pipeline: [
+                    { $match: { $expr: { $eq: ["$_id", "$$category"] } } },
+                    { $project: { name: 1, _id: 0 } },
+                ],
+                as: "category",
+            },
+        },
+        { $unwind: "$category" },
+        {
+            $project: {
+                name: 1,
+                image: 1,
+                status: 1,
+                category: "$category.name",
+                slug: 1,
+                discount: {
+                    $cond: {
+                        if: {
+                            $and: [
+                                { $gte: ["$minSize.discount_end", new Date()] },
+                                { $lte: ["$minSize.discount_start", new Date()] },
+                            ],
+                        },
+                        then: "$minSize.discount",
+                        else: null,
+                    },
+                },
+                price: "$minSize.price",
+            },
+        },
+        {
+            $facet: {
+                count: [{ $group: { _id: null, count: { $sum: 1 } } }],
+                data: [{ $skip: (page - 1) * limit }, { $limit: limit }],
+            },
+        },
+        {
+            $project: {
+                count: {
+                    $let: {
+                        vars: {
+                            count: { $arrayElemAt: ["$count", 0] },
+                        },
+                        in: "$$count.count",
+                    },
+                },
+                data: 1,
+            },
+        },
+    ]).exec((err, data) => {
+        if (err) return res.status(400).json({ success: false, err });
+        res.status(200).json({
+            success: true,
+            data: data[0].data,
+            count: data[0].count,
+        });
+    });
+};
+exports.getAllTest = async (req, res) => {
+    const page = parseInt(req.query.page);
+    const limit = parseInt(req.query.limit);
+    const shop = await Shop.findOne({user: req.user})
+    const aggregateStart = [];
+    const aggregateEnd = [];
+    if(req.body.status == 0){
+        aggregateStart.push({$match: {status: 0}})
+    }
+    if(req.body.status == 1){
+        aggregateStart.push({$match: {status: 0}})
+    }
+    if (req.body.brand && req.body.brand.length) {
+        aggregateStart.push({
+            $match: {
+                brand: {
+                    $in: req.body.brand.map((key) => mongoose.Types.ObjectId(key)),
+                },
+            },
+        });
+    }
+    if (req.body.category && req.body.category.length) {
+        aggregateStart.push({
+            $match: {
+                category: {
+                    $in: req.body.category.map((key) => mongoose.Types.ObjectId(key)),
+                },
+            },
+        });
+    }
+     if (req.body.sort) {
+        switch (req.body.sort) {
+            case "new": {
+                aggregateEnd.push({
+                    $sort: {
+                        createdAt: -1,
+                    },
+                });
+                break;
+            }
+            case "popular": {
+                aggregateEnd.push({
+                    $sort: {
+                        views: -1,
+                    },
+                });
+                break;
+            }
+            case "priceUp": {
+                aggregateEnd.push({
+                    $sort: {
+                        sortPrice: 1,
+                    },
+                });
+                break;
+            }
+            case "priceDown": {
+                aggregateEnd.push({
+                    $sort: {
+                        sortPrice: -1,
+                    },
+                });
+                break;
+            }
+        }
+    } else {
+        aggregateEnd.push({
+            $sort: {
+                createdAt: -1,
+            },
+        })
+    }
+    await Product.aggregate([
+        { $match: { shop: mongoose.Types.ObjectId(shop._id), isDelete: false } },
+        {...aggregateStart},
+        {...aggregateEnd},
         {
             $lookup: {
                 from: "categories",
