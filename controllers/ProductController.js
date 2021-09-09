@@ -971,6 +971,9 @@ exports.getAllTest = async (req, res) => {
     const shop = await Shop.findOne({user: req.user})
     const aggregateStart = [];
     const aggregateEnd = [];
+    if(req.body.article){
+        aggregateStart.push({$match: {article: req.body.article}})
+    }
     if(req.body.status == 0){
         aggregateStart.push({$match: {status: 0}})
     }
