@@ -1039,8 +1039,8 @@ exports.getAllTest = async (req, res) => {
     }
     await Product.aggregate([
         { $match: { shop: mongoose.Types.ObjectId(shop._id), isDelete: false } },
-        {...aggregateStart},
-        {...aggregateEnd},
+        ...aggregateStart,
+        ...aggregateEnd,
         {
             $lookup: {
                 from: "categories",
