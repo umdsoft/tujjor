@@ -977,6 +977,44 @@ exports.getAllTest = async (req, res) => {
     if(req.body.status == 1){
         aggregateStart.push({$match: {status: 1}})
     }
+    if (req.body.search && req.body.search.length) {
+        aggregateStart.push({
+            $match: {
+                $or: [
+                    {
+                        "name.uz": {
+                            $regex: `.*${req.body.search}.*`,
+                            $options: "i",
+                        },
+                    },
+                    {
+                        "name.ru": {
+                            $regex: `.*${req.body.search}.*`,
+                            $options: "i",
+                        },
+                    },
+                    {
+                        items: {
+                            $regex: `.*${req.body.search}.*`,
+                            $options: "i",
+                        },
+                    },
+                    {
+                        "description.uz": {
+                            $regex: `.*${req.body.search}.*`,
+                            $options: "i",
+                        },
+                    },
+                    {
+                        "description.ru": {
+                            $regex: `.*${req.body.search}.*`,
+                            $options: "i",
+                        },
+                    },
+                ],
+            },
+        });
+    }
     if (req.body.brand && req.body.brand.length) {
         aggregateStart.push({
             $match: {
