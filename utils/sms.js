@@ -1,12 +1,17 @@
 const axios = require('axios')
 
-const SMS = (phone,message)=> {
+export default function SMS(phone,message){
 
     const data = {
-        email:"axror.uzza@mail.ru",
-        password: "J17vF2MlnfoJNHaehj46Gmic3cCS4brsyLhkInuv"
+        email:"clozzone2021@gmail.com",
+        password: "rxginrFuU2vYka7W1RG2JMbH1kpcwPOFAWOhlneX"
     }
     axios.post('http://notify.eskiz.uz/api/auth/login', data).then((response)=>{
+            const data = {
+                mobile_phone: phone,
+                message: message
+            }
+            console.log(response.data.data.token)
             axios.post('http://notify.eskiz.uz/api/message/sms/send', {
                 headers:{Authorization: `Bearer ${response.data.data.token}`} },
                 {
@@ -16,8 +21,10 @@ const SMS = (phone,message)=> {
                   console.log(true)
                 })
                 .catch((e)=>{
-                    console.log("ERROR", e)
+                    console.log(e)
                 })
         })
 }
-module.exports = SMS;
+
+// email:"axror.uzza@mail.ru",
+// password: "J17vF2MlnfoJNHaehj46Gmic3cCS4brsyLhkInuv"
