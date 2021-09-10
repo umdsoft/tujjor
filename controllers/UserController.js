@@ -74,7 +74,7 @@ exports.register = async (req, res) => {
 };
 exports.phoneVerification = async (req, res) => {
     const phone = req.body.phone;
-    let code = Math.ceil(Math.random() * 10000).toString();
+    let code = 0;
     for (let i = 0; i < 5; i++) {
         code = code*10 + Math.floor(Math.random()*10)
     }
@@ -82,8 +82,7 @@ exports.phoneVerification = async (req, res) => {
     console.log(user)
     console.log(code)
     if(!user) return res.status(400).json({ success: false, message: "User not found!"})
-    user.code = code;
-    user.save().then(()=>{
+    user.updateOne({ _id: user._id}, {$set: {code}}).then(()=>{
         SMS(phone, code);
         res.status(200).json({ success: true, message: "confirmation code sent!"})
     }).catch(err=>{
