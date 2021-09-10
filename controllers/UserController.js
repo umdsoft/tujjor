@@ -80,12 +80,9 @@ exports.phoneVerification = async (req, res) => {
     }
     let user = await User.findOne({phone: req.body.phone})
     if(!user) return res.status(400).json({ success: false, message: "User not found!"})
-    user.updateOne({ _id: user._id}, {$set: {code}}).then(()=>{
-        SMS(phone, code);
-        res.status(200).json({ success: true, message: "confirmation code sent!"})
-    }).catch(err=>{
-        return res.status(400).json({ success: false, message: "nmadr xato", err})
-    })
+    user.updateOne({ _id: user._id}, {$set: {code: code.toString}})
+    SMS(phone, code.toString());
+    res.status(200).json({ success: true, message: "confirmation code sent!"})
 }
 exports.checkCode = async (req, res) => {
     const phone = req.body.phone;
