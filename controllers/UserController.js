@@ -75,6 +75,9 @@ exports.register = async (req, res) => {
 exports.phoneVerification = async (req, res) => {
     const phone = req.body.phone;
     const code = Math.ceil(Math.random() * 10000).toString();
+    for (let i = 0; i < 5; i++) {
+        code = code*10 + Math.floor(Math.random()*10 + 1)
+    }
     let user = await User.findOne({phone: req.body.phone})
     console.log(user)
     console.log(code)
