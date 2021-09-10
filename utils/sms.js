@@ -1,6 +1,6 @@
 const axios = require('axios')
 
-export default function SMS(phone,message){
+module.exports = (phone,message) => {
 
     const data = {
         email:"clozzone2021@gmail.com",
