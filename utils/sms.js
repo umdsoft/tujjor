@@ -5,8 +5,8 @@ function SMS(phone, message) {
     console.log("mss", message);
 
     const data = {
-        email: "clozzone2021@gmail.com",
-        password: "rxginrFuU2vYka7W1RG2JMbH1kpcwPOFAWOhlneX",
+        email: "axror.uzza@mail.ru",
+        password: "J17vF2MlnfoJNHaehj46Gmic3cCS4brsyLhkInuv",
     };
     axios({
         method: "POST",
