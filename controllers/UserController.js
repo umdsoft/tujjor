@@ -4,6 +4,7 @@ const sharp = require("sharp");
 const path = require("path");
 const bcrypt = require("bcrypt");
 const { deleteFile } = require("../utils");
+const { default: SMS } = require("../utils/sms");
 
 const sendTokenResponse = (user, statusCode, res) => {
     // Create token
@@ -23,26 +24,82 @@ const sendTokenResponse = (user, statusCode, res) => {
     });
 };
 exports.register = async (req, res) => {
-    const salt = await bcrypt.genSalt(12);
-    const pass = await bcrypt.hash(req.body.password, salt);
-    const user = new User({
-        name: req.body.name,
-        password: pass,
-        phone: req.body.phone,
-        email: req.body.email,
-    });
-    await user
-        .save()
-        .then(() => {
-            sendTokenResponse(user, 200, res);
-        })
-        .catch((err) => {
-            res.status(400).json({
-                success: false,
-                err,
-            });
+    const user = await User.findOne({phone: req.body.phone});
+    if(user){
+        if(user.isPhoneVerification){
+            res.status(400).json({ success: false, message: "This user already registered" })   
+        } else {
+            User.findOneAndDelete({phone: req.body.phone}).then(()=>{
+                const salt = await bcrypt.genSalt(12);
+                const pass = await bcrypt.hash(req.body.password, salt);
+                const user = new User({
+                    name: req.body.name,
+                    password: pass,
+                    phone: req.body.phone,
+                    email: req.body.email,
+                });
+                await user.save()
+                    .then(() => {
+                        res.status(201).json({ success: true, phone: user.phone})
+                    })
+                    .catch((err) => {
+                        res.status(400).json({
+                            success: false,
+                            err,
+                        });
+                    });
+            })
+        }
+    } else {
+        const salt = await bcrypt.genSalt(12);
+        const pass = await bcrypt.hash(req.body.password, salt);
+        const user = new User({
+            name: req.body.name,
+            password: pass,
+            phone: req.body.phone,
+            email: req.body.email,
         });
+        await user
+            .save()
+            .then(() => {
+                res.status(201).json({ success: true, phone: user.phone})
+            })
+            .catch((err) => {
+                res.status(400).json({
+                    success: false,
+                    err,
+                });
+            });
+    }
 };
+exports.phoneVerification = async (req, res) => {
+    const phone = req.body.phone;
+    const code = Math.ceil(Math.random() * 10000).toString();
+    let user = await User.findOne({phone: req.body.phone})
+    if(!user) return res.status(400).json({ success: false, message: "User not found!"})
+    user.code = code;
+    user.save().then(()=>{
+        SMS(phone, code);
+        res.status(200).json({ success: true, message: "confirmation code sent!"})
+    }).catch(err=>{
+        return res.status(400).json({ success: false, err})
+    })
+}
+exports.checkCode = async (req, res) => {
+    const phone = req.body.phone;
+    const code = req.body.code;
+    const user = await User.findOne({phone});
+    if(!user){
+        return res.status(400).json({ success: false, message: "User not found!"})
+    }
+    if(code === user.code){
+        user.isPhoneVerification = true;
+        user.save().then(()=>{
+            sendTokenResponse(user, 200, res);
+        }).catch()
+    }
+}
+
 exports.loginAdmin = async (req, res) => {
     if (!req.body.phone || !req.body.password) {
         return res.status(400).json({
@@ -103,16 +160,20 @@ exports.loginClient = async (req, res) => {
         if (!user) {
             return res.status(401).json({
                 success: false,
-                data: "phone or password wrong1",
+                data: "phone or password wrong",
             });
         }
         if (!bcrypt.compareSync(req.body.password, user.password)) {
             return res.status(401).json({
                 success: false,
-                data: "phone or password wrong2",
+                data: "phone or password wrong",
             });
         }
-        sendTokenResponse(user, 200, res);
+        if(user.isPhoneVerification){
+            sendTokenResponse(user, 200, res);
+        } else {
+            res.status(403).json({success: false, message: "Not activated!"})
+        }
     });
 };
 exports.getUsers = async (req, res) => {
