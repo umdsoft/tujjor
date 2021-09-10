@@ -29,7 +29,7 @@ exports.register = async (req, res) => {
         if(user.isPhoneVerification){
             res.status(400).json({ success: false, message: "This user already registered" })   
         } else {
-            User.findOneAndDelete({phone: req.body.phone}).then(()=>{
+            User.findOneAndDelete({phone: req.body.phone}).then( async()=>{
                 const salt = await bcrypt.genSalt(12);
                 const pass = await bcrypt.hash(req.body.password, salt);
                 const user = new User({
