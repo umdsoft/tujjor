@@ -4,7 +4,7 @@ const sharp = require("sharp");
 const path = require("path");
 const bcrypt = require("bcrypt");
 const { deleteFile } = require("../utils");
-const { default: SMS } = require("../utils/sms");
+const SMS = require("../utils/sms");
 
 const sendTokenResponse = (user, statusCode, res) => {
     // Create token
