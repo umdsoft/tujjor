@@ -79,7 +79,6 @@ exports.phoneVerification = async (req, res) => {
         code = code*10 + Math.floor(Math.random()*10)
     }
     let user = await User.findOne({phone: req.body.phone})
-    console.log(user)
     console.log(code)
     if(!user) return res.status(400).json({ success: false, message: "User not found!"})
     user.updateOne({ _id: user._id}, {$set: {code}}).then(()=>{
