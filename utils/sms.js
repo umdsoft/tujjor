@@ -1,6 +1,6 @@
 const axios = require('axios')
 
-exports.SMS = (phone,message)=> {
+const SMS = (phone,message)=> {
 
     const data = {
         email:"axror.uzza@mail.ru",
@@ -20,3 +20,4 @@ exports.SMS = (phone,message)=> {
                 })
         })
 }
+export default SMS;
