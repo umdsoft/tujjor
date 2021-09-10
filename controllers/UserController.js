@@ -75,17 +75,16 @@ exports.register = async (req, res) => {
 exports.phoneVerification = async (req, res) => {
     const phone = req.body.phone;
     let code = 0;
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; code.toString().length !== 5; i++) {
         code = code*10 + Math.floor(Math.random()*10)
     }
     let user = await User.findOne({phone: req.body.phone})
-    console.log(code)
     if(!user) return res.status(400).json({ success: false, message: "User not found!"})
     user.updateOne({ _id: user._id}, {$set: {code}}).then(()=>{
         SMS(phone, code);
         res.status(200).json({ success: true, message: "confirmation code sent!"})
     }).catch(err=>{
-        return res.status(400).json({ success: false, err})
+        return res.status(400).json({ success: false, message: "nmadr xato", err})
     })
 }
 exports.checkCode = async (req, res) => {
