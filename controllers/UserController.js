@@ -95,6 +95,8 @@ exports.checkCode = async (req, res) => {
         user.isPhoneVerification = true;
         user.save();
         sendTokenResponse(user, 200, res);
+    } else {
+        res.status(400).json({ success: false, message: "Code not equal", code: user.code})
     }
 }
 
