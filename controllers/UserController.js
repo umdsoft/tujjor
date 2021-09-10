@@ -93,9 +93,8 @@ exports.checkCode = async (req, res) => {
     }
     if(code === user.code){
         user.isPhoneVerification = true;
-        user.save().then(()=>{
-            sendTokenResponse(user, 200, res);
-        }).catch()
+        user.save();
+        sendTokenResponse(user, 200, res);
     }
 }
 
