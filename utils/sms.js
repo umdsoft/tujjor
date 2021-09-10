@@ -20,4 +20,4 @@ const SMS = (phone,message)=> {
                 })
         })
 }
-export default SMS;
+module.exports = SMS;
