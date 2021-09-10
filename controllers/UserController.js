@@ -76,6 +76,7 @@ exports.phoneVerification = async (req, res) => {
     const phone = req.body.phone;
     const code = Math.ceil(Math.random() * 10000).toString();
     let user = await User.findOne({phone: req.body.phone})
+    console.log(user)
     if(!user) return res.status(400).json({ success: false, message: "User not found!"})
     user.code = code;
     user.save().then(()=>{
