@@ -16,7 +16,7 @@ const SMS = (phone,message)=> {
                   console.log(true)
                 })
                 .catch((e)=>{
-                    console.log(e)
+                    console.log("ERROR", e)
                 })
         })
 }
