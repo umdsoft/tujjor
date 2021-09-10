@@ -1,30 +1,36 @@
-const axios = require('axios')
+const axios = require("axios");
 
-module.exports = (phone,message) => {
+function SMS(phone, message) {
+    console.log("phone", phone);
+    console.log("mss", message);
 
     const data = {
-        email:"clozzone2021@gmail.com",
-        password: "rxginrFuU2vYka7W1RG2JMbH1kpcwPOFAWOhlneX"
-    }
-    axios.post('http://notify.eskiz.uz/api/auth/login', data).then((response)=>{
-            const data = {
-                mobile_phone: phone,
-                message: message
-            }
-            console.log(response.data.data.token)
-            axios.post('http://notify.eskiz.uz/api/message/sms/send', {
-                headers:{Authorization: `Bearer ${response.data.data.token}`} },
-                {
-                    mobile_phone: phone,
-                    message: message
-                }).then((resp)=>{
-                  console.log(true)
-                })
-                .catch((e)=>{
-                    console.log(e.response)
-                })
+        email: "clozzone2021@gmail.com",
+        password: "rxginrFuU2vYka7W1RG2JMbH1kpcwPOFAWOhlneX",
+    };
+    axios({
+        method: "POST",
+        url: "http://notify.eskiz.uz/api/auth/login",
+        data,
+    }).then((response) => {
+        const text = {
+            mobile_phone: phone,
+            message: message,
+        };
+        axios({
+            method: "POST",
+            url: "http://notify.eskiz.uz/api/message/sms/send",
+            headers: {
+                Authorization: `Bearer ${response.data.data.token}`,
+            },
+            data: text,
         })
+            .then((resp) => {
+                // console.log(true);
+            })
+            .catch((e) => {
+                // console.log(e);
+            });
+    });
 }
-
-// email:"axror.uzza@mail.ru",
-// password: "J17vF2MlnfoJNHaehj46Gmic3cCS4brsyLhkInuv"
+module.exports = SMS;
