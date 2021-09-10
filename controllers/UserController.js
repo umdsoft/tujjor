@@ -80,7 +80,11 @@ exports.phoneVerification = async (req, res) => {
     }
     let user = await User.findOne({phone: req.body.phone})
     if(!user) return res.status(400).json({ success: false, message: "User not found!"})
-    User.updateOne({ _id: user._id}, {$set: {code: code.toString}})
+    User.updateOne({ _id: user._id}, {$set: {code: code.toString}}, {new: true}).then(data=>{
+            console.log("DATA", data)
+        }).catch(err=>{
+            console.log(err)
+        })
     SMS(phone, code.toString());
     res.status(200).json({ success: true, message: "confirmation code sent!"})
 }
@@ -92,7 +96,11 @@ exports.checkCode = async (req, res) => {
         return res.status(400).json({ success: false, message: "User not found!"})
     }
     if(code === user.code){
-        User.updateOne({ _id: user._id}, {$set: {isPhoneVerification: true}})
+        User.updateOne({ _id: user._id}, {$set: {isPhoneVerification: true}}, {new: true}).then(data=>{
+            console.log("DATA", data)
+        }).catch(err=>{
+            console.log(err)
+        })
         sendTokenResponse(user, 200, res);
     } else {
         res.status(400).json({ success: false, message: "Code not equal", code: user.code})
