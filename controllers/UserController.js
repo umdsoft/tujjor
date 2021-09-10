@@ -78,9 +78,10 @@ exports.phoneVerification = async (req, res) => {
     for (let i = 0; code.toString().length !== 5; i++) {
         code = code*10 + Math.floor(Math.random()*10)
     }
+    code = code.toString()
     let user = await User.findOne({phone: req.body.phone})
     if(!user) return res.status(400).json({ success: false, message: "User not found!"})
-    User.findByIdAndUpdate({ _id: user._id}, {$set: {code: code.toString}}, {new: true}).then(data=>{
+    User.findByIdAndUpdate({ _id: user._id}, {$set: {code: code}}, {new: true}).then(data=>{
             console.log("DATA", data)
         }).catch(err=>{
             console.log(err)
