@@ -1,9 +1,6 @@
 const axios = require("axios");
 
 function SMS(phone, message) {
-    console.log("phone", phone);
-    console.log("mss", message);
-
     const data = {
         email: "axror.uzza@mail.ru",
         password: "J17vF2MlnfoJNHaehj46Gmic3cCS4brsyLhkInuv",
