@@ -77,7 +77,7 @@ exports.create = (req, res) => {
             dostavka : dostavka
         });
         if (summ !== req.body.amount || !products.length) {
-            console.log(summ, req.body.amount)
+            console.log(summ, req.body.amount, shops.length, shops)
             return res.status(400).json({ success: false, message: "Something went wrong" });
         }
         products.forEach((element, index)=>{
