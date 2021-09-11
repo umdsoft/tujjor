@@ -328,13 +328,14 @@ exports.editParam = async (req, res) => {
     ).exec((err, data) => {
         if (err) return res.status(400).json({ success: false, data: err });
         deleteFile(`public${data.image}`);
-        return res.status(200).json({ success: true, data: data });
+        return res.status(200).json({ success: true});
     });
 };
 exports.editSize = async (req, res) => {
-    await Size.updateOne({ _id: req.params.id }, { $set: req.body }).exec((err, data) => {
+    await Size.findByIdAndUpdate({ _id: req.params.id }, { $set: req.body }).exec((err, data) => {
         if (err) return res.status(400).json({ success: false, data: err });
-        return res.status(200).json({ success: true, data: data });
+        Product.findOneAndUpdate({ productId: data.productId },{ $set: { minSize: data} })
+        return res.status(200).json({ success: true});
     });
 };
 
