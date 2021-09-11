@@ -84,7 +84,7 @@ exports.create = (req, res) => {
             if(index === products.length-1){
                 new OrderProducts(element).save().then(()=>{
                 order.save().then(() => {
-                        return res.status(201).json({ success: true, data: order });
+                        return res.status(201).json({ success: true, data: {orderId: order.orderId, amount: order.amount}});
                     })
                     .catch((err) => {
                        return res.status(400).json({ success: false, err });
