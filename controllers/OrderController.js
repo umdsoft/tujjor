@@ -65,7 +65,7 @@ exports.create = (req, res) => {
         summ += dostavka;
         const order = new Order({
             user: req.user,
-            amount: req.body.amount + dostavka,
+            amount: req.body.amount,
             orderId: count,
             address: {
                 region: req.body.address ? req.body.address.region : null,
