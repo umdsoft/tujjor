@@ -29,11 +29,11 @@ const ProductSchema = new mongoose.Schema(
             index: true,
         },
         minSize: {
-            price: Number,
-            discount: Number ,
-            discount_percent: Number,
-            discount_start: Date,
-            discount_end: Date,
+            price: {type: Number, index: true},
+            discount: {type: Number, index: true},
+            discount_percent: {type: Number, index: true},
+            discount_start: {type: Date, index: true},
+            discount_end: {type: Date, index: true},
         },
         description: {
             uz: { type: String, index: true },
