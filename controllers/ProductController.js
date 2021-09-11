@@ -334,8 +334,12 @@ exports.editParam = async (req, res) => {
 exports.editSize = async (req, res) => {
     await Size.findByIdAndUpdate({ _id: req.params.id }, { $set: {...req.body, discount: null, discount_percent: null, discount_start: null, discount_end: null}}, {new: true}).exec((err, data) => {
         if (err) return res.status(400).json({ success: false, data: err });
-        Product.findOneAndUpdate({ productId: data.productId },{ $set: { minSize: {price: data.price, discount: null, discount_percent: null, discount_start: null, discount_end: null }} })
-        return res.status(200).json({ success: true});
+        console.log("DATA ", data);
+        Product.findOneAndUpdate({ productId: data.productId },{ $set: { minSize: {price: data.price, discount: null, discount_percent: null, discount_start: null, discount_end: null }} }).then(()=>{
+            return res.status(200).json({ success: true});
+        }).catch(err => {
+            res.status(400).json({ success: false, err})
+        })
     });
 };
 
