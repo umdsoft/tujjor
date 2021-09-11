@@ -334,7 +334,7 @@ exports.editParam = async (req, res) => {
 exports.editSize = (req, res) => {
     Size.findByIdAndUpdate({ _id: req.params.id }, { $set: {...req.body, discount: null, discount_percent: null, discount_start: null, discount_end: null}}, {new: true}).exec((err, data) => {
         if (err) return res.status(400).json({ success: false, err });
-            res.status(400).json({ success: false, err})
+            res.status(200).json({ success: true})
     });
 };
 
