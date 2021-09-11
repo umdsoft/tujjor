@@ -21,7 +21,7 @@ exports.create = (req, res) => {
                 let product = await Product.findById({_id: element.product});
                 let param = await Param.findById({_id: element.param});
                 let shop = await Shop.findById({ _id: product.shop });
-                if(shops.indexOf(shop._id) === -1) shops.push(shop._id);
+                if(shops.indexOf(shop._id.toString()) === -1) shops.push(shop._id.toString());
                 if(size.discount && new Date(size.discount_start) <= new Date() && new Date(size.discount_end) >= new Date()){
                 if (size.discount !== element.amount) {
                     return;
