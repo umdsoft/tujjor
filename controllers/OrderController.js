@@ -17,11 +17,11 @@ exports.create = (req, res) => {
         let shops =  [];
         const products = await Promise.all(
             req.body.products.map(async (element) => {
-                if(shops.indexOf(element.shop) === -1) shops.push(element.shop);
                 let size = await Size.findById({_id: element.size});
                 let product = await Product.findById({_id: element.product});
                 let param = await Param.findById({_id: element.param});
                 let shop = await Shop.findById({ _id: product.shop });
+                if(shops.indexOf(shop._id) === -1) shops.push(shop._id);
                 if(size.discount && new Date(size.discount_start) <= new Date() && new Date(size.discount_end) >= new Date()){
                 if (size.discount !== element.amount) {
                     return;
