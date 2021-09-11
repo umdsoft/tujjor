@@ -13,19 +13,11 @@ exports.create = (req, res) => {
     }
     Order.countDocuments({}, async (err, count) => {
         let summ = 0;
-        const order = await new Order({
-            user: req.user,
-            amount: req.body.amount,
-            orderId: count,
-            address: {
-                region: req.body.address ? req.body.address.region : null,
-                district: req.body.address ? req.body.address.district : null,
-                address: req.body.address ? req.body.address.address : null,
-                phone: req.body.address ? req.body.address.phone : null,
-            },
-        });
+        const DOSTAVKA_PRICE = 20000;
+        let shops =  [];
         const products = await Promise.all(
             req.body.products.map(async (element) => {
+                if(shops.indexOf(element.shop) === -1) shops.push(element.shop);
                 let size = await Size.findById({_id: element.size});
                 let product = await Product.findById({_id: element.product});
                 let param = await Param.findById({_id: element.param});
@@ -69,6 +61,21 @@ exports.create = (req, res) => {
                 };
             })
         )
+        const dostavka = req.body.toMyHouse ? shops.length * DOSTAVKA_PRICE: 0
+        summ += dostavka;
+        const order = new Order({
+            user: req.user,
+            amount: req.body.amount + dostavka,
+            orderId: count,
+            address: {
+                region: req.body.address ? req.body.address.region : null,
+                district: req.body.address ? req.body.address.district : null,
+                address: req.body.address ? req.body.address.address : null,
+                phone: req.body.address ? req.body.address.phone : null,
+            },
+            shopCount : shops.length,
+            dostavka : dostavka
+        });
         if (summ !== req.body.amount || !products.length) {
             return res.status(400).json({ success: false, message: "Something went wrong" });
         }

@@ -81,6 +81,9 @@ exports.phoneVerification = async (req, res) => {
     code = code.toString()
     let user = await User.findOne({phone: req.body.phone})
     if(!user) return res.status(400).json({ success: false, message: "User not found!"})
+    if(user.isPhoneVerification){
+        return res.status(400).json({success: false, message: "This user already activated"})
+    }
     User.findByIdAndUpdate({ _id: user._id}, {$set: {code: code}}, {new: true}).then(data=>{
         SMS(phone, code);
         res.status(200).json({ success: true, message: "confirmation code sent!"})
