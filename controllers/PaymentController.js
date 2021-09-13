@@ -213,7 +213,6 @@ exports.payme = async (req, res) => {
     }
 
     async function CancelTransaction(params) {
-        console.log(params)
         await Transaction.findOne({ tid: params.id }, async (err, transaction) => {
             if (err || !transaction){
                 return sendResponse(Errors.TransactionNotFound, null);
@@ -255,7 +254,6 @@ exports.payme = async (req, res) => {
                 
             } else {
                 if (transaction.state === 2) {
-                    console.log("state = 2 ",transaction)
                     await Order.findOne(
                         { orderId: transaction.order },
                         async (err, order) => {
@@ -274,7 +272,6 @@ exports.payme = async (req, res) => {
                                     },
                                     {new: true}
                                 ).exec((err, transac) => {
-                                console.log("update transac ",transaction)
                                     return sendResponse(null, {
                                         state: transac.state,
                                         cancel_time: transac.cancel_time || 0,
