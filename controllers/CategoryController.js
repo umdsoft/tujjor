@@ -75,8 +75,8 @@ exports.create = (req, res) => {
 exports.getAll = async (req, res) => {
     try {
         const redisText = "CATEGORY_GET_ALL"
-        const reply = await req.redis.get(redisText)
-        console.log(reply.length)
+        const reply = await req.GET_ASYNC(redisText)
+        console.log(req.GET_ASYNC)
         if(reply){
             console.log('using cached data')
             return res.status(200).json({success: true, data: JSON.parse(reply)})
@@ -85,7 +85,7 @@ exports.getAll = async (req, res) => {
             if (err) {return res.status(400).json({ success: false, err })}
             if (categories) {
                 const categoryList = createCategories(categories);
-                await req.redis.set(redisText, JSON.stringify(categoryList), 'EX', 60)
+                await req.GET_ASYNC(redisText, JSON.stringify(categoryList), 'EX', 60)
                 console.log('new data cached')
                 res.status(200).json({ success: true, data: categoryList });
             }

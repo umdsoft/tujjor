@@ -8,6 +8,7 @@ const connect = require("./config/db");
 const path = require("path");
 const fs = require("fs");
 const redis = require("redis");
+const { promisify } = require('util')
 const errorHandler = require("./middleware/error");
 //Connect MongoDB
 connect();
@@ -26,10 +27,13 @@ app.get("/", (req, res) => {
     res.send("Success working Server");
 });
 app.use((req, res, next) => {
-    req.redis = redis.createClient({
-  host: '127.0.0.1',
-  port: 6379,
-});
+    const client = redis.createClient({
+        host: '127.0.0.1',
+        port: 6379,
+    })
+    req.GET_ASYNC = promisify(client.get).bind(client)
+    req.GET_ASYNC = promisify(client.set).bind(client)
+
     next();
 })
 app.use("/api/stat", require("./routes/statistic"));
