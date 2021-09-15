@@ -20,7 +20,7 @@ exports.create = (req, res) => {
         });
 };
 
-exports.getAll = (req, res) => {
+exports.getAll = async (req, res) => {
     const redisText = "BANNER_ALL"
     const reply = await req.GET_ASYNC(redisText)
     if(reply){
