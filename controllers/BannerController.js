@@ -21,8 +21,15 @@ exports.create = (req, res) => {
 };
 
 exports.getAll = (req, res) => {
+    const redisText = "BANNER_ALL"
+    const reply = await req.GET_ASYNC(redisText)
+    if(reply){
+        console.log("USING")
+        return res.status(200).json({success: true, data: JSON.parse(reply)})
+    }
     Banner.find({},{__v: 0})
         .then((data) => {
+            req.SET_ASYNC(redisText, JSON.stringify(data), 'EX', 60)
             res.status(200).json({ success: true, data });
         })
         .catch((err) => {
