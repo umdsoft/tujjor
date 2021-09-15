@@ -40,6 +40,7 @@ exports.sharpParamImage = async (filename) => {
 exports.sharpFrontImage = async (filename) => {
     try {
         sharp(path.join(path.dirname(__dirname) + `/public/temp/${filename}`))
+        .jpeg({quality: 70})
         .resize(222, 222)
         .toFile(
             path.join(
