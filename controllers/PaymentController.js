@@ -80,6 +80,7 @@ exports.payme = async (req, res) => {
                                 amount: parseInt(shopPrice),
                             });
                         })
+                        console.log("RECIVERS ",receivers)
                          const transaction = new Transaction({
                             tid: params.id,
                             amount: params.amount / 100,
