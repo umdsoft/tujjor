@@ -393,15 +393,16 @@ exports.deleteFooterImage = async (req, res) => {
 exports.filter = async (req, res) => {
     const page = parseInt(req.query.page);
     const limit = parseInt(req.query.limit);
-
+    
     if (page === 0 || limit === 0) {
         return res.status(400).json({ success: false, message: "Error page or limit" });
     }
+    let isRedis = true;
+    let redisText = `PF_${page}_${limit}_`
     let aggregateStart = [{$match: {status: 1, isDelete: false, shopIsActive: 1}}];
-    // let lookupSizeStart = [];
-    // let lookupSizeEnd = [];
     let aggregateEnd = [];
     if (req.body.search && req.body.search.length) {
+        redisText+=`${req.body.search}_`;
         aggregateStart.push({
             $match: {
                 $or: [
@@ -440,6 +441,7 @@ exports.filter = async (req, res) => {
         });
     }
     if (req.body.shop) {
+        redisText+=`${req.body.shop}_`;
         aggregateStart.push({
             $match: {
                 shop: mongoose.Types.ObjectId(req.body.shop),
@@ -447,6 +449,7 @@ exports.filter = async (req, res) => {
         });
     }
     if (req.body.brand && req.body.brand.length) {
+        isRedis = false;
         aggregateStart.push({
             $match: {
                 brand: {
@@ -456,6 +459,7 @@ exports.filter = async (req, res) => {
         });
     }
     if (req.body.category && req.body.category.length) {
+        isRedis = false;
         aggregateStart.push({
             $match: {
                 category: {
@@ -465,6 +469,7 @@ exports.filter = async (req, res) => {
         });
     }
     if (req.body.discount) {
+        redisText+=`discount_`;
         aggregateEnd.push({
             $match: {
                 discount: {$ne:null}
@@ -472,6 +477,7 @@ exports.filter = async (req, res) => {
         });
     }
     if (req.body.start && req.body.start != 0) {
+        isRedis = false;
         aggregateEnd.push({
             $match: {
                 sortPrice: {
@@ -481,6 +487,7 @@ exports.filter = async (req, res) => {
         });
     }
     if (req.body.end && req.body.end != 0) {
+        isRedis = false;
         aggregateEnd.push({
             $match: {
                 sortPrice: {
@@ -492,6 +499,7 @@ exports.filter = async (req, res) => {
     if (req.body.sort) {
         switch (req.body.sort) {
             case "new": {
+                redisText+=`new_`;
                 aggregateEnd.push({
                     $sort: {
                         createdAt: -1,
@@ -500,6 +508,7 @@ exports.filter = async (req, res) => {
                 break;
             }
             case "popular": {
+                redisText+=`popular_`;
                 aggregateEnd.push({
                     $sort: {
                         views: -1,
@@ -509,6 +518,7 @@ exports.filter = async (req, res) => {
             }
 
             case "priceUp": {
+                redisText+=`priceUp_`;
                 aggregateEnd.push({
                     $sort: {
                         sortPrice: 1,
@@ -518,6 +528,7 @@ exports.filter = async (req, res) => {
             }
 
             case "priceDown": {
+                redisText+=`priceDown_`;
                 aggregateEnd.push({
                     $sort: {
                         sortPrice: -1,
@@ -533,91 +544,11 @@ exports.filter = async (req, res) => {
             },
         })
     }
-    // const sizeLookup = [
-    //     {
-    //         $lookup: {
-    //             from: "sizes",
-    //             let: { productId: "$_id" },
-    //             pipeline: [
-    //                 {
-    //                     $match: {
-    //                         $expr: { $eq: ["$productId", "$$productId"] },
-    //                     },
-    //                 },
-    //                 { $sort: { price: 1 } },
-    //                 { $limit: 1 },
-    //                 {
-    //                     $project: {
-    //                         discount: {
-    //                             $cond: {
-    //                                 if: {
-    //                                     $and: [
-    //                                         { $gte: ["$discount_end", new Date()] },
-    //                                         { $lte: ["$discount_start", new Date()] },
-    //                                     ],
-    //                                 },
-    //                                 then: "$discount",
-    //                                 else: null,
-    //                             },
-    //                         },
-    //                         price: 1,
-    //                         _id: 0,
-    //                     },
-    //                 },
-    //                 {
-    //                     $project: {
-    //                         discount: 1,
-    //                         price: 1,
-    //                         sortPrice: { $ifNull: [ "$discount", "$price" ] }
-    //                     }
-    //                 }
-    //             ],
-    //             as: "sizes",
-    //         },
-    //     },
-    //     {
-    //         $project: {
-    //             name: 1,
-    //             category: 1,
-    //             image: 1,
-    //             slug: 1,
-    //             createdAt: 1,
-    //             views: 1,
-    //             size: {
-    //                 $let: {
-    //                     vars: {
-    //                         size: { $arrayElemAt: ["$sizes", 0] },
-    //                     }, 
-    //                     in: "$$size"
-    //                 }
-    //             },
-    //         },
-    //     },
-    //     {
-    //         $project: {
-    //             name: 1,
-    //             category: 1,
-    //             image: 1,
-    //             slug: 1,
-    //             createdAt: 1,
-    //             views: 1,
-    //             price: "$size.price",
-    //             discount: "$size.discount",
-    //             sortPrice: "$size.sortPrice"
-    //         },
-    //     },
-    // ];
-    // if (
-    //     req.body.start ||
-    //     req.body.end ||
-    //     req.body.discount ||
-    //     req.body.sort === "priceUp" ||
-    //     req.body.sort === "priceDown"
-    // ) {
-    //     lookupSizeStart = [...sizeLookup];
-    // } else {
-    //     lookupSizeEnd = [...sizeLookup];
-    // }
+    const reply = await req.GET_ASYNC(redisText)
+    if(reply && isRedis){
+        console.log("USING")
+        return res.status(200).json({success: true, data: JSON.parse(reply)})
+    }
     await Product.aggregate([
         ...aggregateStart,
             {
@@ -678,8 +609,9 @@ exports.filter = async (req, res) => {
                 discount: 1,
             },
         },
-    ]).exec(async (err, data) => {
+    ]).exec((err, data) => {
         if (err) return res.status(400).json({ success: false, err });
+        req.SET_ASYNC(redisText, JSON.stringify(data), 'EX', 60)
         res.status(200).json({
             success: true,
             data,
