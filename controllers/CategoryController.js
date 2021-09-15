@@ -74,18 +74,16 @@ exports.create = (req, res) => {
 };
 exports.getAll = async (req, res) => {
     try {
-        const redisText = "CATEGORY_GET_ALL"
+        const redisText = "CATEGORY_ALL"
         const reply = await req.GET_ASYNC(redisText)
         if(reply){
-            console.log('using cached data')
             return res.status(200).json({success: true, data: JSON.parse(reply)})
         }
         await Category.find().exec( async (err, categories) => {
             if (err) {return res.status(400).json({ success: false, err })}
             if (categories) {
                 const categoryList = createCategories(categories);
-                await req.SET_ASYNC(redisText, JSON.stringify(categoryList), 'EX', 10)
-                console.log('new data cached')
+                await req.SET_ASYNC(redisText, JSON.stringify(categoryList), 'EX', 60)
                 res.status(200).json({ success: true, data: categoryList });
             }
         });
@@ -94,25 +92,39 @@ exports.getAll = async (req, res) => {
     }
 };
 exports.getOne = async (req, res) => {
-    if (!req.params.id) {
-        return res.status(400).json({ success: false, message: "Required" });
-    }
-    await Category.find({}, {slug: 0}).exec((err, categories) => {
-        if (err) {return res.status(400).json({ err });}
-        if (categories) {
-            const category = categories.find((cat) => cat._id == req.params.id);
-            const categoryList = getCategoriesCreate(categories, req.params.id);
-            if(!!category){
-                res.status(200).json({ success: true, data: {
-                    _id: category._id,
-                    name: category.name,
-                    children: categoryList,
-                } });
-            } else {
-                res.status(200).json({ success: true, data: [] });
-            }
+    try {
+        if (!req.params.id) {
+            return res.status(400).json({ success: false, message: "Required" });
         }
-    });
+        const redisText = `CATEGORY_${req.params.id}`
+        const reply = await req.GET_ASYNC(redisText)
+        if(reply){
+            return res.status(200).json({success: true, data: JSON.parse(reply)})
+        }
+        await Category.find({}, {slug: 0}).exec((err, categories) => {
+            if (err) {return res.status(400).json({ err });}
+            if (categories) {
+                const category = categories.find((cat) => cat._id == req.params.id);
+                const categoryList = getCategoriesCreate(categories, req.params.id);
+                if(!!category){
+                    await req.SET_ASYNC(redisText, JSON.stringify({
+                        _id: category._id,
+                        name: category.name,
+                        children: categoryList,
+                    }), 'EX', 60)
+                    res.status(200).json({ success: true, data: {
+                        _id: category._id,
+                        name: category.name,
+                        children: categoryList,
+                    } });
+                } else {
+                    res.status(200).json({ success: true, data: [] });
+                }
+            }
+        });
+    } catch (error) {
+        
+    }
 };
 exports.delete = async (req, res) => {
     await Category.findByIdAndDelete({ _id: req.params.id }, (err, data) => {
