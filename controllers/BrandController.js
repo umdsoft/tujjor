@@ -42,7 +42,6 @@ exports.getAll = async (req, res) => {
             console.log("USING")
             return res.status(200).json({success: true, data: JSON.parse(reply)})
         }
-        console.log("CASHED")
         const brand = await Brand.find({},{ name: 1, image: 1 })
         req.SET_ASYNC(redisText, JSON.stringify(brand), 'EX', 60)
         return res.status(200).json({ success: true, data: brand });
@@ -55,6 +54,7 @@ exports.getAllClient = async (req, res) => {
         const redisText = `BRAND_CLIENT_ALL`
         const reply = await req.GET_ASYNC(redisText)
         if(reply){
+            console.log("USING")
             return res.status(200).json({success: true, data: JSON.parse(reply)})
         }
         const brand = await Brand.find({}, { name: 1 })

@@ -1145,199 +1145,213 @@ exports.getAllTest = async (req, res) => {
     });
 };
 exports.getOneClient = async (req, res) => {
-    let product = await Product.findOne({ slug: req.params.slug, isDelete: false, shopIsActive: 1, status: 1});
-    if(!product){
-        return res.status(404).json({success: false, message: "Not Found this product"})
-    }
-    product.views = product.views + 1;
-    product.save();
-    await Product.aggregate([
-        { $match: { slug: req.params.slug, status: 1, isDelete: false, shopIsActive: 1 } },
-        {
-            $project: {
-                slug: 0,
-                minSize: 0,
-                isDelete: 0,
-                shopIsActive: 0,
-                status: 0,
-                createdAt: 0,
-                updatedAt: 0,
-                views: 0,
-                items: 0,
-                __v: 0,
-            },
-        },
-        {
-            $lookup: {
-                from: "brands",
-                let: { brand: "$brand" },
-                pipeline: [
-                    { $match: { $expr: { $eq: ["$_id", "$$brand"] } } },
-                    { $project: { name: 1 } },
-                ],
-                as: "brand",
-            },
-        },
-        { $unwind: "$brand"},
-        {
-            $lookup: {
-                from: "categories",
-                let: { category: "$category" },
-                pipeline: [
-                    { $match: { $expr: { $eq: ["$_id", "$$category"] } } },
-                    { $project: { name: 1 } },
-                ],
-                as: "category",
-            },
-        },
-        { $unwind: "$category"},
-        
-        {
-            $lookup: {
-                from: "shops",
-                let: { shop: "$shop" },
-                pipeline: [
-                    { $match: { $expr: { $eq: ["$_id", "$$shop"] } } },
-                    {
-                        $project: {
-                            shopName: 1,
-                        },
-                    },
-                ],
-                as: "shop",
-            },
-        },
-        { $unwind: "$shop"},
-        {
-            $lookup: {
-                from: "productimages",
-                let: { productId: "$_id" },
-                pipeline: [
-                    {
-                        $match: {
-                            $expr: { $eq: ["$productId", "$$productId"] },
-                        },
-                    },
-                    {
-                        $project: { productId: 0, __v: 0, _id: 0 },
-                    },
-                ],
-                as: "images",
-            },
-        },
-        {
-            $lookup: {
-                from: "footerimages",
-                let: { productId: "$_id" },
-                pipeline: [
-                    {
-                        $match: {
-                            $expr: { $eq: ["$productId", "$$productId"] },
-                        },
-                    },
-                    {
-                        $project: { productId: 0, __v: 0, _id: 0 },
-                    },
-                ],
-                as: "footerImages",
-            },
-        },
+    try {
+        let product = await Product.findOne({ slug: req.params.slug, isDelete: false, shopIsActive: 1, status: 1});
+        if(!product){
+            return res.status(404).json({success: false, message: "Not Found this product"})
+        }
+        product.views = product.views + 1;
+        product.save();
 
-        {
-            $lookup: {
-                from: "params",
-                let: { productId: "$_id" },
-                pipeline: [
-                    {
-                        $match: {
-                            $expr: {
-                                $eq: ["$productId", "$$productId"],
+        const redisText = `PRODUCT_${req.params.slug}`
+        const reply = await req.GET_ASYNC(redisText)
+        if(reply){
+            console.log("USING")
+            const result = JSON.parse(reply)
+            return res.status(200).json({success: true, data: result.data, comments: result.commentData})
+        }
+        await Product.aggregate([
+            { $match: { slug: req.params.slug, status: 1, isDelete: false, shopIsActive: 1 } },
+            {
+                $project: {
+                    slug: 0,
+                    minSize: 0,
+                    isDelete: 0,
+                    shopIsActive: 0,
+                    status: 0,
+                    createdAt: 0,
+                    updatedAt: 0,
+                    views: 0,
+                    items: 0,
+                    __v: 0,
+                },
+            },
+            {
+                $lookup: {
+                    from: "brands",
+                    let: { brand: "$brand" },
+                    pipeline: [
+                        { $match: { $expr: { $eq: ["$_id", "$$brand"] } } },
+                        { $project: { name: 1 } },
+                    ],
+                    as: "brand",
+                },
+            },
+            { $unwind: "$brand"},
+            {
+                $lookup: {
+                    from: "categories",
+                    let: { category: "$category" },
+                    pipeline: [
+                        { $match: { $expr: { $eq: ["$_id", "$$category"] } } },
+                        { $project: { name: 1 } },
+                    ],
+                    as: "category",
+                },
+            },
+            { $unwind: "$category"},
+            
+            {
+                $lookup: {
+                    from: "shops",
+                    let: { shop: "$shop" },
+                    pipeline: [
+                        { $match: { $expr: { $eq: ["$_id", "$$shop"] } } },
+                        {
+                            $project: {
+                                shopName: 1,
                             },
                         },
-                    },
-                    {
-                        $project: {
-                            slug: 0,
-                            __v: 0,
-                            productId: 0,
+                    ],
+                    as: "shop",
+                },
+            },
+            { $unwind: "$shop"},
+            {
+                $lookup: {
+                    from: "productimages",
+                    let: { productId: "$_id" },
+                    pipeline: [
+                        {
+                            $match: {
+                                $expr: { $eq: ["$productId", "$$productId"] },
+                            },
                         },
-                    },
-                    {
-                        $lookup: {
-                            from: "sizes",
-                            let: { paramId: "$_id" },
-                            pipeline: [
-                                {
-                                    $match: {
-                                        $expr: {
-                                            $eq: ["$paramId", "$$paramId"],
-                                        },
-                                    },
+                        {
+                            $project: { productId: 0, __v: 0, _id: 0 },
+                        },
+                    ],
+                    as: "images",
+                },
+            },
+            {
+                $lookup: {
+                    from: "footerimages",
+                    let: { productId: "$_id" },
+                    pipeline: [
+                        {
+                            $match: {
+                                $expr: { $eq: ["$productId", "$$productId"] },
+                            },
+                        },
+                        {
+                            $project: { productId: 0, __v: 0, _id: 0 },
+                        },
+                    ],
+                    as: "footerImages",
+                },
+            },
+
+            {
+                $lookup: {
+                    from: "params",
+                    let: { productId: "$_id" },
+                    pipeline: [
+                        {
+                            $match: {
+                                $expr: {
+                                    $eq: ["$productId", "$$productId"],
                                 },
-                                {
-                                    $project: {
-                                        price: 1,
-                                        size: 1,
-                                        count: 1,
-                                        discount: {
-                                            $cond: {
-                                                if: {
-                                                    $and: [
-                                                        {
-                                                            $gte: [
-                                                                "$discount_end",
-                                                                new Date(),
-                                                            ],
-                                                        },
-                                                        {
-                                                            $lte: [
-                                                                "$discount_start",
-                                                                new Date(),
-                                                            ],
-                                                        },
-                                                    ],
-                                                },
-                                                then: "$discount",
-                                                else: null,
+                            },
+                        },
+                        {
+                            $project: {
+                                slug: 0,
+                                __v: 0,
+                                productId: 0,
+                            },
+                        },
+                        {
+                            $lookup: {
+                                from: "sizes",
+                                let: { paramId: "$_id" },
+                                pipeline: [
+                                    {
+                                        $match: {
+                                            $expr: {
+                                                $eq: ["$paramId", "$$paramId"],
                                             },
                                         },
                                     },
-                                },
-                            ],
-                            as: "sizes",
+                                    {
+                                        $project: {
+                                            price: 1,
+                                            size: 1,
+                                            count: 1,
+                                            discount: {
+                                                $cond: {
+                                                    if: {
+                                                        $and: [
+                                                            {
+                                                                $gte: [
+                                                                    "$discount_end",
+                                                                    new Date(),
+                                                                ],
+                                                            },
+                                                            {
+                                                                $lte: [
+                                                                    "$discount_start",
+                                                                    new Date(),
+                                                                ],
+                                                            },
+                                                        ],
+                                                    },
+                                                    then: "$discount",
+                                                    else: null,
+                                                },
+                                            },
+                                        },
+                                    },
+                                ],
+                                as: "sizes",
+                            },
                         },
-                    },
-                ],
-                as: "params",
-            },
-        },
-    ]).exec((err, data) => {
-        if (err) return res.status(400).json({ success: false, err });
-
-        Comment.aggregate([
-            { $match: { productId: mongoose.Types.ObjectId(data[0]?._id) } },
-            {
-                $lookup: {
-                    from: "users",
-                    localField: "userId",
-                    foreignField: "_id",
-                    as: "user",
+                    ],
+                    as: "params",
                 },
             },
-            { $unwind: "$user" },
-            {
-                $project: {
-                    name: "$user.name",
-                    comment: 1,
-                    raiting: 1,
-                    _id: 0,
-                },
-            },
-        ]).exec((err, commentData) => {
+        ]).exec((err, data) => {
             if (err) return res.status(400).json({ success: false, err });
-            res.status(200).json({ success: true, data, comments: commentData });
+
+            Comment.aggregate([
+                { $match: { productId: mongoose.Types.ObjectId(data[0]?._id) } },
+                {
+                    $lookup: {
+                        from: "users",
+                        localField: "userId",
+                        foreignField: "_id",
+                        as: "user",
+                    },
+                },
+                { $unwind: "$user" },
+                {
+                    $project: {
+                        name: "$user.name",
+                        comment: 1,
+                        raiting: 1,
+                        _id: 0,
+                    },
+                },
+            ]).exec((err, commentData) => {
+                if (err) return res.status(400).json({ success: false, err });
+                req.SET_ASYNC(redisText, JSON.stringify({data, comments: commentData}), 'EX', 60)
+                res.status(200).json({ success: true, data, comments: commentData });
+            });
         });
-    });
+    } catch (error) {
+        
+    }
+    
 };
 exports.getOneSeller = async (req, res) => {
     await Product.aggregate([
