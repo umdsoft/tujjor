@@ -1158,7 +1158,7 @@ exports.getOneClient = async (req, res) => {
         if(reply){
             console.log("USING")
             const result = JSON.parse(reply)
-            return res.status(200).json({success: true, data: result.data, comments: result.commentData})
+            return res.status(200).json({success: true, data: result.data, comments: result.comments})
         }
         await Product.aggregate([
             { $match: { slug: req.params.slug, status: 1, isDelete: false, shopIsActive: 1 } },
