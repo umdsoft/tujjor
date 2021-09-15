@@ -101,7 +101,7 @@ exports.getOne = async (req, res) => {
         if(reply){
             return res.status(200).json({success: true, data: JSON.parse(reply)})
         }
-        await Category.find({}, {slug: 0}).exec((err, categories) => {
+        await Category.find({}, {slug: 0}).exec(async (err, categories) => {
             if (err) {return res.status(400).json({ err });}
             if (categories) {
                 const category = categories.find((cat) => cat._id == req.params.id);
