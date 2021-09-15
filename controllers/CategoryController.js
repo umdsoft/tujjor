@@ -76,6 +76,7 @@ exports.getAll = async (req, res) => {
     try {
         const redisText = "CATEGORY_GET_ALL"
         const reply = await req.redis.get(redisText)
+        console.log(reply.length)
         if(reply){
             console.log('using cached data')
             return res.status(200).json({success: true, data: JSON.parse(reply)})
