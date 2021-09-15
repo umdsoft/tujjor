@@ -611,6 +611,7 @@ exports.filter = async (req, res) => {
         },
     ]).exec((err, data) => {
         if (err) return res.status(400).json({ success: false, err });
+        console.log("CASHED")
         req.SET_ASYNC(redisText, JSON.stringify(data), 'EX', 60)
         res.status(200).json({
             success: true,
