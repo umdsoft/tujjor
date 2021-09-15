@@ -83,7 +83,7 @@ exports.getAll = async (req, res) => {
             if (err) {return res.status(400).json({ success: false, err })}
             if (categories) {
                 const categoryList = createCategories(categories);
-                await req.SET_ASYNC(redisText, JSON.stringify(categoryList), 'EX', 60)
+                req.SET_ASYNC(redisText, JSON.stringify(categoryList), 'EX', 60)
                 res.status(200).json({ success: true, data: categoryList });
             }
         });
@@ -107,7 +107,7 @@ exports.getOne = async (req, res) => {
                 const category = categories.find((cat) => cat._id == req.params.id);
                 const categoryList = getCategoriesCreate(categories, req.params.id);
                 if(!!category){
-                    await req.SET_ASYNC(redisText, JSON.stringify({
+                    req.SET_ASYNC(redisText, JSON.stringify({
                         _id: category._id,
                         name: category.name,
                         children: categoryList,
