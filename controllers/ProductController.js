@@ -544,11 +544,11 @@ exports.filter = async (req, res) => {
             },
         })
     }
-    // const reply = await req.GET_ASYNC(redisText)
-    // if(reply && isRedis){
-    //     console.log("USING")
-    //     return res.status(200).json({success: true, data: JSON.parse(reply)})
-    // }
+    const reply = await req.GET_ASYNC(redisText)
+    if(reply && isRedis){
+        console.log("USING", redisText)
+        return res.status(200).json({success: true, data: JSON.parse(reply)})
+    }
     await Product.aggregate([
         ...aggregateStart,
             {
@@ -611,8 +611,8 @@ exports.filter = async (req, res) => {
         },
     ]).exec((err, data) => {
         if (err) return res.status(400).json({ success: false, err });
-        // console.log("CASHED")
-        // req.SET_ASYNC(redisText, JSON.stringify(data), 'EX', 60)
+        console.log("CASHED", redisText)
+        req.SET_ASYNC(redisText, JSON.stringify(data), 'EX', 60)
         res.status(200).json({
             success: true,
             data,
