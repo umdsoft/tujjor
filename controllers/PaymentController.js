@@ -66,13 +66,12 @@ exports.payme = async (req, res) => {
                             amount: {$sum:  {$multiply: ["$amount", "$count"]}}  
                         }}
                     ]).exec((err, data)=>{
-                        console.log("ORDER DATA  ",data, order);
                         if(err || !data ) return sendResponse(Errors.OrderNotFound,null);
                         data.forEach((key) => {
                             const tujjorPrice = key.amount * key.percent;
                             let shopPrice = key.amount * (100 - key.percent);
                             if(order.dostavka > 0){
-                                shopPrice += order.dostavka/order.shopCount;
+                                shopPrice += order.dostavka * 100 /order.shopCount;
                             }
                             receivers[0].amount = receivers[0].amount + parseInt(tujjorPrice)
                             receivers.push({
