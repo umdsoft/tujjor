@@ -7,6 +7,7 @@ const dotenv = require("dotenv");
 const connect = require("./config/db");
 const path = require("path");
 const fs = require("fs");
+const redis = require("redis");
 const errorHandler = require("./middleware/error");
 //Connect MongoDB
 connect();
@@ -24,6 +25,13 @@ app.use(cors());
 app.get("/", (req, res) => {
     res.send("Success working Server");
 });
+app.use((req, res, next) => {
+    req.redis = redis.createClient({
+  host: '127.0.0.1',
+  port: 6379,
+});
+    next();
+})
 app.use("/api/stat", require("./routes/statistic"));
 app.use("/api/message", require("./routes/message"));
 app.use("/api/payme", require("./routes/payment"));
