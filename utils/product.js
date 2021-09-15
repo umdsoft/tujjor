@@ -58,7 +58,6 @@ exports.sharpFrontImage = async (filename) => {
 };
 exports.sharpFooterImage = async (filename) => {
     try {
-        
         sharp(path.join(path.dirname(__dirname) + `/public/temp/${filename}`))
         .resize({ with: 1200 })
         .toFile(

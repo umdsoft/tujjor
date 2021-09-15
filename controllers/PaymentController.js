@@ -57,11 +57,22 @@ exports.payme = async (req, res) => {
                     if(err || !order ) return sendResponse(Errors.OrderNotFound,null);
                     if(order.payed === 1) return sendResponse(Errors.OrderAvailable,null);
                     if(order.amount !== params.amount / 100)  return sendResponse(Errors.IncorrectAmount,null);
-                    await OrderProducts.find({orderId: order.orderId}, (err, orderProducts)=>{
-                        if(err || !orderProducts ) return sendResponse(Errors.OrderNotFound,null);
-                        orderProducts.forEach((key) => {
-                            const tujjorPrice = key.count * key.amount * key.percent;
-                            const shopPrice = key.count * key.amount * (100 - key.percent)
+                    await OrderProducts.aggregate([
+                        {$match: {orderId: order.orderId}},
+                        {$group: { 
+                            _id: "$shopId",
+                            account: { $first: "$account"},
+                            percent: { $first: "$percent"},
+                            amount: {$sum:  {$multiply: ["$amount", "$count"]}}  
+                        }}
+                    ]).exec((err, data)=>{
+                        if(err || !data ) return sendResponse(Errors.OrderNotFound,null);
+                        data.forEach((key) => {
+                            const tujjorPrice = key.amount * key.percent;
+                            const shopPrice = key.amount * (100 - key.percent);
+                            if(order.dostavka > 0){
+                                shopPrice += order.dostavka/order.count;
+                            }
                             receivers[0].amount = receivers[0].amount + parseInt(tujjorPrice)
                             receivers.push({
                                 id: key.account,
