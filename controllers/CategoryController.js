@@ -85,7 +85,7 @@ exports.getAll = async (req, res) => {
             if (err) {return res.status(400).json({ success: false, err })}
             if (categories) {
                 const categoryList = createCategories(categories);
-                await req.GET_ASYNC(redisText, JSON.stringify(categoryList), 'EX', 60)
+                await req.SET_ASYNC(redisText, JSON.stringify(categoryList), 'EX', 60)
                 console.log('new data cached')
                 res.status(200).json({ success: true, data: categoryList });
             }

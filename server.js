@@ -32,7 +32,7 @@ app.use((req, res, next) => {
         port: 6379,
     })
     req.GET_ASYNC = promisify(client.get).bind(client)
-    req.GET_ASYNC = promisify(client.set).bind(client)
+    req.SET_ASYNC = promisify(client.set).bind(client)
 
     next();
 })
