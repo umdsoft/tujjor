@@ -66,6 +66,7 @@ exports.payme = async (req, res) => {
                             amount: {$sum:  {$multiply: ["$amount", "$count"]}}  
                         }}
                     ]).exec((err, data)=>{
+                        console.log("ORDER DATA  ",data, order);
                         if(err || !data ) return sendResponse(Errors.OrderNotFound,null);
                         data.forEach((key) => {
                             const tujjorPrice = key.amount * key.percent;
