@@ -80,7 +80,7 @@ exports.getAll = async (req, res) => {
             console.log('using cached data')
             return res.status(200).json({success: true, data: JSON.parse(reply)})
         }
-        await Category.find().exec((err, categories) => {
+        await Category.find().exec( async (err, categories) => {
             if (err) {return res.status(400).json({ success: false, err })}
             if (categories) {
                 const categoryList = createCategories(categories);
