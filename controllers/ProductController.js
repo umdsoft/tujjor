@@ -981,7 +981,7 @@ exports.getAllTest = async (req, res) => {
      if (req.body.sort) {
         switch (req.body.sort) {
             case "new": {
-                aggregateEnd.push({
+                aggregateStart.push({
                     $sort: {
                         createdAt: -1,
                     },
@@ -989,7 +989,7 @@ exports.getAllTest = async (req, res) => {
                 break;
             }
             case "popular": {
-                aggregateEnd.push({
+                aggregateStart.push({
                     $sort: {
                         views: -1,
                     },
@@ -1014,7 +1014,7 @@ exports.getAllTest = async (req, res) => {
             }
         }
     } else {
-        aggregateEnd.push({
+        aggregateStart.push({
             $sort: {
                 createdAt: -1,
             },
