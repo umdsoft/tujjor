@@ -104,7 +104,6 @@ exports.create = (req, res) => {
         
     });
 };
-
 exports.getById = async (req, res) => {
     const shop = await Shop.findOne({user: req.user})
     const order = await Order.findOne({
@@ -200,9 +199,25 @@ exports.getAll = async (req, res) => {
     });
 };
 exports.update = async (req, res) => {
-    let order = await Order.findById({ _id: req.params.id});
-    order.status = order.status + 1;
-    order.save().then(()=>{
+    let orderProducts = await OrderProducts.findById({ _id: req.params.id});
+    let shop = await Shop.findById({user: req.user})
+    if(orderProducts.shopId != shop._id || orderProducts.status >= 1){
+        return res.status(400).json({ success: false, message: "Something went wrong"})
+    }
+    orderProducts.status = orderProducts.status + 1;
+    orderProducts.save().then(()=>{
+        res.status(200).json({success: true})
+    }).catch(()=>{
+        res.status(400).json({success: false})
+    })
+}
+exports.delivered = async (req, res) => {
+    let orderProducts = await OrderProducts.findById({ _id: req.params.id});
+    if(orderProducts || orderProducts.status != 1){
+        return res.status(400).json({ success: false, message: "Something went wrong"})
+    }
+    orderProducts.status = 5;
+    orderProducts.save().then(()=>{
         res.status(200).json({success: true})
     }).catch(()=>{
         res.status(400).json({success: false})
@@ -213,11 +228,11 @@ exports.getMeOrder = (req, res) => {
     if (req.query.status === "payed") {
         status = { $match: { status: 0} };
     } else if (req.query.status === "onTheWay") {
-        status = { $match: { status: {$gt: 1, $lt: 3 } } };
+        status = { $match: { status: 1 } };
     } else if (req.query.status === "delivered") {
-        status = { $match: { status: 4 } };
-    } else if (req.query.status === "canceled") {
         status = { $match: { status: 5 } };
+    } else if (req.query.status === "canceled") {
+        status = { $match: { status: 10 } };
     }
     OrderProducts.aggregate([
         { $match: { user: mongoose.Types.ObjectId(req.user), payed: 1  } },
