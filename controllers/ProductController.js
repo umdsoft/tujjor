@@ -915,6 +915,13 @@ exports.getAllTest = async (req, res) => {
     if(req.body.status == 1){
         aggregateStart.push({$match: {status: 1}})
     }
+    if (req.body.discount) {
+        aggregateEnd.push({
+            $match: {
+                discount: {$ne:null}
+            },
+        });
+    }
     if (req.body.search && req.body.search.length) {
         aggregateStart.push({
             $match: {
@@ -992,7 +999,7 @@ exports.getAllTest = async (req, res) => {
             case "priceUp": {
                 aggregateEnd.push({
                     $sort: {
-                        sortPrice: 1,
+                        price: 1,
                     },
                 });
                 break;
@@ -1000,7 +1007,7 @@ exports.getAllTest = async (req, res) => {
             case "priceDown": {
                 aggregateEnd.push({
                     $sort: {
-                        sortPrice: -1,
+                        price: -1,
                     },
                 });
                 break;
@@ -1016,6 +1023,28 @@ exports.getAllTest = async (req, res) => {
     await Product.aggregate([
         { $match: { shop: mongoose.Types.ObjectId(shop._id), isDelete: false } },
         ...aggregateStart,
+        {
+            $project: {
+                name: 1,
+                image: 1,
+                status: 1,
+                category: 1,
+                slug: 1,
+                discount: {
+                    $cond: {
+                        if: {
+                            $and: [
+                                { $gte: ["$minSize.discount_end", new Date()] },
+                                { $lte: ["$minSize.discount_start", new Date()] },
+                            ],
+                        },
+                        then: "$minSize.discount",
+                        else: null,
+                    },
+                },
+                price: "$minSize.price",
+            },
+        },
         ...aggregateEnd,
         {
             $lookup: {
@@ -1036,19 +1065,8 @@ exports.getAllTest = async (req, res) => {
                 status: 1,
                 category: "$category.name",
                 slug: 1,
-                discount: {
-                    $cond: {
-                        if: {
-                            $and: [
-                                { $gte: ["$minSize.discount_end", new Date()] },
-                                { $lte: ["$minSize.discount_start", new Date()] },
-                            ],
-                        },
-                        then: "$minSize.discount",
-                        else: null,
-                    },
-                },
-                price: "$minSize.price",
+                discount: 1,
+                price: 1,
             },
         },
         {
@@ -1087,14 +1105,6 @@ exports.getOneClient = async (req, res) => {
         }
         product.views = product.views + 1;
         product.save();
-
-        const redisText = `PRODUCT_${req.params.slug}`
-        const reply = await req.GET_ASYNC(redisText)
-        if(reply){
-            console.log("USING")
-            const result = JSON.parse(reply)
-            return res.status(200).json({success: true, data: result.data, comments: result.comments})
-        }
         await Product.aggregate([
             { $match: { slug: req.params.slug, status: 1, isDelete: false, shopIsActive: 1 } },
             {
@@ -1279,7 +1289,6 @@ exports.getOneClient = async (req, res) => {
                 },
             ]).exec((err, commentData) => {
                 if (err) return res.status(400).json({ success: false, err });
-                req.SET_ASYNC(redisText, JSON.stringify({data, comments: commentData}), 'EX', 60)
                 res.status(200).json({ success: true, data, comments: commentData });
             });
         });
