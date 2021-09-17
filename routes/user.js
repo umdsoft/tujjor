@@ -14,10 +14,10 @@ const storage = multer.diskStorage({
     },
 });
 const upload = multer({ storage: storage });
+router.post("/checkCode", UserController.checkCode);
+router.post("/getCode", UserController.sendCode);
 
 router.post("/create", UserController.register);
-router.post("/checkCode", UserController.checkCode);
-router.post("/getCode", UserController.phoneVerification);
 router.post("/login", UserController.loginClient);
 router.post("/admin/login", UserController.loginAdmin);
 router.post("/seller/login", UserController.loginSeller);
@@ -25,5 +25,6 @@ router.get("/all", protectAdmin, UserController.getUsers);
 router.get("/me", protectUser, UserController.me);
 router.delete("/:id", protectAdmin, UserController.delete);
 router.put("/update", protectUser, upload.single("image"), UserController.edit);
-router.post("/reset", protectUser, UserController.resetPassword)
+router.post("/reset", UserController.resetPassword)
+router.post("/reset/checkCode", UserController.checkCodeResetPassword)
 module.exports = router;

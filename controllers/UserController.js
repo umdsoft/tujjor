@@ -72,22 +72,20 @@ exports.register = async (req, res) => {
             });
     }
 };
-exports.phoneVerification = async (req, res) => {
+exports.sendCode = async (req, res) => {
     const phone = req.body.phone;
+    let user = await User.findOne({phone: req.body.phone})
+    if(!user) return res.status(404).json({ success: false, message: "User not found!"})
     let code = 0;
     for (let i = 0; code.toString().length !== 5; i++) {
         code = code*10 + Math.floor(Math.random()*10)
     }
     code = code.toString()
-    let user = await User.findOne({phone: req.body.phone})
-    if(!user) return res.status(400).json({ success: false, message: "User not found!"})
-    if(user.isPhoneVerification){
-        return res.status(400).json({success: false, message: "This user already activated"})
-    }
-    User.findByIdAndUpdate({ _id: user._id}, {$set: {code: code}}, {new: true}).then(data=>{
+    User.findByIdAndUpdate({ _id: user._id}, {$set: {code: code}}).then(()=>{
         SMS(phone, code);
         res.status(200).json({ success: true, message: "confirmation code sent!"})
         }).catch(err=>{
+            res.status(500).json({ success: false, message: "Something went wrong"})
             console.log(err)
         })
 }
@@ -99,16 +97,16 @@ exports.checkCode = async (req, res) => {
         return res.status(400).json({ success: false, message: "User not found!"})
     }
     if(code === user.code){
-        User.findByIdAndUpdate({ _id: user._id}, {$set: {isPhoneVerification: true}}, {new: true}).then(data=>{
+        User.findByIdAndUpdate({ _id: user._id}, {$set: {isPhoneVerification: true}}, {new: true}).then(()=>{
             sendTokenResponse(user, 200, res);
         }).catch(err=>{
+            res.status(500).json({ success: false, message: "Something went wrong"})
             console.log(err)
         })
     } else {
-        res.status(400).json({ success: false, message: "Code not equal", code: user.code})
+        res.status(400).json({ success: false, message: "Code not equal"})
     }
 }
-
 exports.loginAdmin = async (req, res) => {
     if (!req.body.phone || !req.body.password) {
         return res.status(400).json({
@@ -255,6 +253,41 @@ exports.edit = async (req, res) => {
         res.status(201).json({ success: true, data: data });
     });
 };
+exports.checkCodeResetPassword = async (req, res) => {
+    const phone = req.body.phone;
+    const code = req.body.code;
+    const user = await User.findOne({phone});
+    if(!user){
+        return res.status(400).json({ success: false, message: "User not found!"})
+    }
+    if(code === user.code){
+        const hash = await bcrypt.hash(`${phone}${code}`)
+        req.SET_ASYNC(`${phone}`, hash, 'Ex', 300)
+        res.status(200).json({ success: true, data: {hash, phone}})
+    } else {
+        res.status(400).json({ success: false, message: "Code not equal"})
+    }
+}
 exports.resetPassword = async (req, res) => {
-
+    const phone = req.body.phone;
+    const reply = await req.GET_ASYNC(`${phone}`)
+    if(!(req.body.password && req.body.password.length)){
+        return res.status(400).json({ success: false, message: "Minimum of 8 character"})
+    }
+    if(reply){
+        if(req.body.hash === reply){
+            const salt = await bcrypt.genSalt(12);
+            const pass = await bcrypt.hash(req.body.password, salt);
+            User.findOneAndUpdate({phone}, {$set: {password: pass}}, {new: true}).then(()=>{
+                res.status(200).json({ success: true, message: "Password changed successfully"})                
+            }).catch(err=>{
+                console.log(err)
+                res.status(500).json({ success: false, message: "Something went wrong"})
+            })
+        } else {
+            res.status(400).json({ success: false, message: "Hash value not equal"})
+        }
+    } else {
+        res.status(400).json({ success: false, message: "Timeout"})
+    }
 };
