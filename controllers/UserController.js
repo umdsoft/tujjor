@@ -261,7 +261,8 @@ exports.checkCodeResetPassword = async (req, res) => {
         return res.status(400).json({ success: false, message: "User not found!"})
     }
     if(code === user.code){
-        const hash = await bcrypt.hash(`${phone}${code}`)
+        const salt = await bcrypt.genSalt(3);
+        const hash = await bcrypt.hash(`${phone}${code}`, salt)
         req.SET_ASYNC(`${phone}`, hash, 'Ex', 300)
         res.status(200).json({ success: true, data: {hash, phone}})
     } else {
@@ -275,6 +276,7 @@ exports.resetPassword = async (req, res) => {
         return res.status(400).json({ success: false, message: "Minimum of 8 character"})
     }
     if(reply){
+        console.log(reply)
         if(req.body.hash === reply){
             const salt = await bcrypt.genSalt(12);
             const pass = await bcrypt.hash(req.body.password, salt);
