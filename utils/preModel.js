@@ -36,7 +36,6 @@ exports.updateStatusByCategory = (id)=>{
             return;
         }
         if (product) {
-            console.log("BY CATEGORY")
             exports.updateStatusByCategory(id);
         }
     })
