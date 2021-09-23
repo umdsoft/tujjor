@@ -209,7 +209,7 @@ exports.create = async (req, res) => {
         inn: req.body.inn,
         mfo: req.body.mfo,
         email: req.body.email,
-        user: req.body.user,
+        user: req.user,
         image: req.files.image ? `/uploads/shops/${req.files.image[0].filename}` : "",
         description: {
             uz: req.body.description ? req.body.description.uz : "",
@@ -278,7 +278,7 @@ exports.createMyNote = async (req, res) => {
         inn: req.body.inn,
         mfo: req.body.mfo,
         email: req.body.email,
-        user: req.body.user,
+        user: req.user,
         code: `1${getText(count + 1, 3)}`
     });
     temporaryShop.save()
@@ -293,7 +293,7 @@ exports.findMyNotes = async (req, res) =>{
     const shopId = req.params.code;
     TemporaryShop.findOne({code: shopId, user: req.user}, (err, data) => {
         if(err || !data) {
-            res.status(404).json({success: false, message: "Not Found"});
+            return res.status(404).json({success: false, message: "Not Found"});
         }
         res.status(200).json({success: true, data})
     })
