@@ -58,7 +58,7 @@ exports.editStatus = async (req, res) => {
     if (!req.body || !req.body.category || !req.body.percent) {
         return res.status(400).json({ success: false, data: "Something went wrong" });
     }
-    const count = await Shop.countDocuments({status: {$gte: 1}})
+    const count = Shop.countDocuments({status: {$gte: 1}})
     await Shop.findOneAndUpdate(
         { _id: req.params.id },
         { $set: { status: 1, category: req.body.category, percent: req.body.percent, code: getText(count + 1, 3) } },
@@ -94,7 +94,41 @@ exports.editToSeeProducts = async (req, res) => {
         }
     );
 };
-
+exports.delete = async (req, res) => {
+    await Shop.findOne({ _id: req.params.id }, async (err, data) => {
+        if (err || !data) {
+            return res.status(404).json({ success: false, message: "Not Found this Id" });
+        }
+        if(data.status === 0){
+            deleteFile(`/public${data.fileContract}`);
+            deleteFile(`/public${data.fileCertificate}`);
+            deleteFile(`/public${data.image}`);
+            deleteProductByShop(data._id);
+            await Shop.findByIdAndDelete({ _id: data._id }, async (err, data) => {
+                if (data) {
+                    await User.findOneAndUpdate(
+                        { _id: data.user },
+                        { $set: { role: "client" } }
+                        );
+                }
+            });
+        } else {
+            await Shop.findByIdUpdate({ _id: data._id }, {$set: {isDelete: true}}, async (err, data) => {
+                if (data) {
+                    updateStatusByShop(data._id)
+                    await User.findOneAndUpdate(
+                        { _id: data.user },
+                        { $set: { role: "client" } }
+                    );
+                }
+            });
+        }
+        res.status(200).json({
+            success: true,
+            data: [],
+        });
+    });
+};
 // for Seller
 exports.getMe = async (req, res) => {
     await Shop.findOne({ user: req.user })
@@ -230,41 +264,17 @@ exports.create = async (req, res) => {
             res.status(400).json({ success: false, err });
         });
 };
-exports.delete = async (req, res) => {
-    await Shop.findOne({ _id: req.params.id }, async (err, data) => {
-        if (err || !data) {
-            return res.status(404).json({ success: false, message: "Not Found this Id" });
-        }
-        if(data.status === 0){
-            deleteFile(`/public${data.fileContract}`);
-            deleteFile(`/public${data.fileCertificate}`);
-            deleteFile(`/public${data.image}`);
-            deleteProductByShop(data._id);
-            await Shop.findByIdAndDelete({ _id: data._id }, async (err, data) => {
-                if (data) {
-                    await User.findOneAndUpdate(
-                        { _id: data.user },
-                        { $set: { role: "client" } }
-                        );
-                }
-            });
-        } else {
-            await Shop.findByIdUpdate({ _id: data._id }, {$set: {isDelete: true}}, async (err, data) => {
-                if (data) {
-                    updateStatusByShop(data._id)
-                    await User.findOneAndUpdate(
-                        { _id: data.user },
-                        { $set: { role: "client" } }
-                    );
-                }
-            });
-        }
-        res.status(200).json({
-            success: true,
-            data: [],
-        });
-    });
-};
+exports.deleteMe = async (req, res) => {
+    Shop.findOne({user: req.user}, (err, shop)=>{
+        if(err || !shop) return res.status(404).json({success: false, message: "Not found"})
+        if(shop.user != req.user || shop.status != 0) res.status(403).json({ success: false, message: "Something went wrong"})
+        
+        Shop.findByIdAndDelete({ _id: shop._id}, (err, data) => {
+            if(err) return res.status(500).json({ success: false, message: "Something went wrong"})
+            res.status(200).json({success: true, data: []})
+        })
+    })
+}
 exports.createMyNote = async (req, res) => {
     const count = await TemporaryShop.countDocuments({});
     console.log(count)
@@ -296,13 +306,5 @@ exports.findMyNotes = async (req, res) =>{
             return res.status(404).json({success: false, message: "Not Found"});
         }
         res.status(200).json({success: true, data})
-    })
-}
-exports.deleteTemp = async (req, res) =>{
-    TemporaryShop.findOneAndDelete({user: req.user}, (err, data) => {
-        if(err || !data) {
-            return res.status(404).json({success: false, message: "Not Found"});
-        }
-        res.status(200).json({success: true})
     })
 }

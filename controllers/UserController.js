@@ -202,8 +202,8 @@ exports.getUsers = async (req, res) => {
 
 };
 exports.me = async (req, res) => {
-    await User.findOne({ _id: req.user })
-        .select({ password: 0, __v: 0, role: 0, createdAt: 0, updatedAt: 0 })
+    await User.findById({ _id: req.user })
+        .select({ phone: 1, email: 1, name: 1, address: 1})
         .exec(async (err, data) => {
             if (err) return res.status(400).json({ success: false, err });
             res.status(200).json({ success: true, data });

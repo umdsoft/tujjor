@@ -23,15 +23,9 @@ router.get("/one/:id", protectAdmin, ShopController.getOneAdmin);
 router.put("/status/:id", protectAdmin, ShopController.editStatus);
 router.put("/product/show/:id", protectAdmin, ShopController.editToSeeProducts);
 router.put("/admin/update/:id", protectAdmin, ShopController.updateItems);
+router.delete("/:id", protectAdmin, ShopController.delete);
 
 //seller
-router.post(
-    "/image/upload",
-    protectSeller,
-    upload.single("image"),
-    validateFile,
-    ShopController.imageUpload
-);
 router.put("/update", protectSeller, ShopController.edit);
 router.get("/me", protectSeller, ShopController.getMe);
 router.get("/user/me", protectUser, ShopController.getMe);
@@ -39,11 +33,12 @@ router.get("/user/me", protectUser, ShopController.getMe);
 //client
 router.get("/client/:slug", ShopController.getOneClient);
 router.get("/all/filter", ShopController.getShopsClient);
+router.post( "/file/upload", protectUser, upload.single("file"), validateFile, ShopController.fileUpload);
 
 //for create Shop
 router.post("/temp/create", protectUser, ShopController.createMyNote);
 router.get("/temp/:code", protectUser, ShopController.findMyNotes);
-router.delete("/temp", protectUser, ShopController.deleteTemp);
+router.delete("/me", protectUser, ShopController.deleteMe);
 router.post(
     "/create",
     protectUser,
@@ -55,6 +50,5 @@ router.post(
     validateFile,
     ShopController.create
 );
-router.delete("/:id", protectUser, ShopController.delete);
 
 module.exports = router;
