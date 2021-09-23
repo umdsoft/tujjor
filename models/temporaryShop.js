@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const TemporaryShopSchema = new mongoose.Schema(
     {
         fullNameDirector: { type: String, required: true },
-        shopName: { type: String, required: true, trim: true, unique: true },
+        shopName: { type: String, required: true, trim: true},
         shopId: { type: String, required: true},
         address: { type: String, required: true },
         phone: { type: String, required: true},
