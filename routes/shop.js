@@ -43,6 +43,7 @@ router.get("/all/filter", ShopController.getShopsClient);
 //for create Shop
 router.post("/temp/create", protectUser, ShopController.createMyNote);
 router.get("/temp/:code", protectUser, ShopController.findMyNotes);
+router.delete("/temp", protectUser, ShopController.findMyNotes);
 router.post(
     "/create",
     protectUser,

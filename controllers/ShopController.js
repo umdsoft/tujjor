@@ -58,7 +58,7 @@ exports.editStatus = async (req, res) => {
     if (!req.body || !req.body.category || !req.body.percent) {
         return res.status(400).json({ success: false, data: "Something went wrong" });
     }
-    const count = Shop.countDocuments({status: {$gte: 1}})
+    const count = await Shop.countDocuments({status: {$gte: 1}})
     await Shop.findOneAndUpdate(
         { _id: req.params.id },
         { $set: { status: 1, category: req.body.category, percent: req.body.percent, code: getText(count + 1, 3) } },
@@ -299,8 +299,7 @@ exports.findMyNotes = async (req, res) =>{
     })
 }
 exports.deleteTemp = async (req, res) =>{
-    const shopId = req.params.code;
-    TemporaryShop.findOneAndDelete({code: shopId, user: req.user}, (err, data) => {
+    TemporaryShop.findOneAndDelete({user: req.user}, (err, data) => {
         if(err || !data) {
             return res.status(404).json({success: false, message: "Not Found"});
         }
