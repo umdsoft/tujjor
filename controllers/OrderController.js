@@ -212,7 +212,7 @@ exports.update = async (req, res) => {
     })
 }
 exports.delivered = async (req, res) => {
-    let orderProducts = await OrderProducts.findById({ _id: req.params.id});
+    let orderProducts = await OrderProducts.findByOne({ _id: req.params.id, user: req.user});
     if(orderProducts || orderProducts.status != 1){
         return res.status(400).json({ success: false, message: "Something went wrong"})
     }
