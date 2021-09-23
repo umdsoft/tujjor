@@ -298,3 +298,12 @@ exports.findMyNotes = async (req, res) =>{
         res.status(200).json({success: true, data})
     })
 }
+exports.deleteTemp = async (req, res) =>{
+    const shopId = req.params.code;
+    TemporaryShop.findOneAndDelete({code: shopId, user: req.user}, (err, data) => {
+        if(err || !data) {
+            return res.status(404).json({success: false, message: "Not Found"});
+        }
+        res.status(200).json({success: true})
+    })
+}
