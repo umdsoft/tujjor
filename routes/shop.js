@@ -23,7 +23,7 @@ router.get("/one/:id", protectAdmin, ShopController.getOneAdmin);
 router.put("/status/:id", protectAdmin, ShopController.editStatus);
 router.put("/product/show/:id", protectAdmin, ShopController.editToSeeProducts);
 router.put("/admin/update/:id", protectAdmin, ShopController.updateItems);
-router.delete("/:id", protectAdmin, ShopController.delete);
+router.delete("/user/:id", protectAdmin, ShopController.delete);
 
 //seller
 router.put("/update", protectSeller, ShopController.edit);
