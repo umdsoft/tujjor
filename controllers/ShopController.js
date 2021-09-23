@@ -59,7 +59,6 @@ exports.editStatus = async (req, res) => {
         return res.status(400).json({ success: false, data: "Something went wrong" });
     }
     const count = Shop.countDocuments({status: {$gte: 1}})
-    console.log(count)
     await Shop.findOneAndUpdate(
         { _id: req.params.id },
         { $set: { status: 1, category: req.body.category, percent: req.body.percent, code: getText(count + 1, 3) } },
@@ -267,7 +266,8 @@ exports.delete = async (req, res) => {
     });
 };
 exports.createMyNote = async (req, res) => {
-    const count = TemporaryShop.countDocuments({});
+    const count = await TemporaryShop.countDocuments({});
+    console.log(count)
     const temporaryShop = new TemporaryShop({
         fullNameDirector: req.body.fullNameDirector,
         shopName: req.body.shopName,
