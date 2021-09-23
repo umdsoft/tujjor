@@ -33,7 +33,7 @@ router.get("/user/me", protectUser, ShopController.getMe);
 //client
 router.get("/client/:slug", ShopController.getOneClient);
 router.get("/all/filter", ShopController.getShopsClient);
-router.post( "/file/upload", protectUser, upload.single("file"), validateFile, ShopController.fileUpload);
+router.post( "/image/upload", protectUser, upload.single("image"), validateFile, ShopController.imageUpload);
 
 //for create Shop
 router.post("/temp/create", protectUser, ShopController.createMyNote);
