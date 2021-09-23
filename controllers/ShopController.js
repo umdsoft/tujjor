@@ -268,7 +268,7 @@ exports.deleteMe = async (req, res) => {
     Shop.findOne({user: req.user}, (err, shop)=>{
         if(err || !shop) return res.status(404).json({success: false, message: "Not found"})
         console.log(shop.user, req.user, shop.status);
-        if(shop.user != req.user || shop.status != 0) return res.status(403).json({ success: false, message: "Something went wrong"})
+        if(shop.user.toString() != req.user.toString() || shop.status != 0) return res.status(403).json({ success: false, message: "Something went wrong"})
         
         Shop.findByIdAndDelete({ _id: shop._id}, (err, data) => {
             if(err) return res.status(500).json({ success: false, message: "Something went wrong"})
