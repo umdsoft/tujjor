@@ -19,13 +19,10 @@ exports.deleteProductByShop = (id) => {
     });
 };
 exports.updateStatusByShop = (id)=>{
-    Product.findOneAndUpdate({shop: id, status: 1}, {$set: {status: 0}}).exec((err, product) => {
+    Product.updateMany({shop: id, status: 1}, {$set: {status: 0}}).exec((err, product) => {
         if (err) {
             console.log(err);
             return;
-        }
-        if (product) {
-            exports.updateStatusByShop(id);
         }
     })
 }

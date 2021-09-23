@@ -9,6 +9,7 @@ const ShopSchema = new mongoose.Schema(
         phone: { type: String, required: true},
         bankName: { type: String, required: true },
         inn: { type: String, required: true},
+        mfo: { type: String, required: true},
         email: { type: String, required: true},
         user: {
             type: mongoose.Schema.ObjectId,

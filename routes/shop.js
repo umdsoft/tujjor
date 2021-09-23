@@ -33,10 +33,16 @@ router.post(
     ShopController.imageUpload
 );
 router.put("/update", protectSeller, ShopController.edit);
-router.get("/me", protectSeller, ShopController.getOne);
-router.get("/user/me", protectUser, ShopController.getOne);
+router.get("/me", protectSeller, ShopController.getMe);
+router.get("/user/me", protectUser, ShopController.getMe);
 
 //client
+router.get("/client/:slug", ShopController.getOneClient);
+router.get("/all/filter", ShopController.getShopsClient);
+
+//for create Shop
+router.post("/temp/create", protectUser, ShopController.createMyNote);
+router.get("/temp/:code", protectUser, ShopController.findMyNotes);
 router.post(
     "/create",
     protectUser,
@@ -48,8 +54,6 @@ router.post(
     validateFile,
     ShopController.create
 );
-router.get("/client/:slug", ShopController.getOneClient);
-router.get("/all/filter", ShopController.getShopsClient);
 router.delete("/:id", protectUser, ShopController.delete);
 
 module.exports = router;
