@@ -1057,7 +1057,7 @@ exports.getAllTest = async (req, res) => {
                 as: "category",
             },
         },
-        { $unwind: "$category" },
+        { $unwind: { path: "$category", preserveNullAndEmptyArrays: true }},
         {
             $project: {
                 name: 1,
