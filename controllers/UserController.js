@@ -203,7 +203,7 @@ exports.getUsers = async (req, res) => {
 };
 exports.me = async (req, res) => {
     await User.findById({ _id: req.user })
-        .select({ phone: 1, email: 1, name: 1, address: 1})
+        .select({ phone: 1, email: 1, name: 1, address: 1, image: 1})
         .exec(async (err, data) => {
             if (err) return res.status(400).json({ success: false, err });
             res.status(200).json({ success: true, data });
@@ -276,7 +276,6 @@ exports.resetPassword = async (req, res) => {
         return res.status(400).json({ success: false, message: "Minimum of 8 character"})
     }
     if(reply){
-        console.log(reply)
         if(req.body.hash === reply){
             const salt = await bcrypt.genSalt(12);
             const pass = await bcrypt.hash(req.body.password, salt);
