@@ -5,6 +5,8 @@ const path = require("path");
 const bcrypt = require("bcrypt");
 const { deleteFile } = require("../utils");
 const SMS = require("../utils/sms");
+const ApplicationShop = require("../models/applicationShop");
+const Shop = require("../models/shop");
 
 const sendTokenResponse = (user, statusCode, res) => {
     // Create token
@@ -202,11 +204,19 @@ exports.getUsers = async (req, res) => {
 
 };
 exports.me = async (req, res) => {
+    const application = await ApplicationShop.findOne({user: req.user});
+    const shop = await Shop.findOne({user: req.user});
     await User.findById({ _id: req.user })
         .select({ phone: 1, email: 1, name: 1, address: 1, image: 1})
         .exec(async (err, data) => {
             if (err) return res.status(400).json({ success: false, err });
-            res.status(200).json({ success: true, data });
+            res.status(200).json({ 
+                success: true, 
+                data: {
+                    ...data,
+                    application: (application && application.status) ? 1: 0,
+                    shop: (shop && shop.status) ? 1: 0
+                }});
         });
 };
 exports.delete = async (req, res) => {

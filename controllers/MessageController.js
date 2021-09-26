@@ -4,8 +4,7 @@ exports.create = async (req, res) => {
         name: req.body.name,
         phone: req.body.phone,
         email: req.body.email,
-        message: req.body.message,
-        type: "client-admin",
+        message: req.body.message
     })
         
     message.save()
