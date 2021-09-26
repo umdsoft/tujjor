@@ -213,7 +213,11 @@ exports.me = async (req, res) => {
             res.status(200).json({ 
                 success: true, 
                 data: {
-                    ...data,
+                    phone: data.phone,
+                    email: data.email,
+                    name: data.name,
+                    address: data.address,
+                    image: data.image,
                     application: (application && application.status) ? 1: 0,
                     shop: (shop && shop.status) ? 1: 0
                 }});
