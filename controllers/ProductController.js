@@ -1380,3 +1380,80 @@ exports.getOneSeller = async (req, res) => {
         res.status(200).json({ success: true, data });
     });
 };
+exports.popularProducts = async (req, res) => {
+    const redisText = "POPULAT_PRODUCTS";
+    const reply = await req.GET_ASYNC(redisText)
+    if(reply){
+        console.log("USING", redisText)
+        return res.status(200).json({success: true, data: JSON.parse(reply)})
+    }
+    await Product.aggregate([
+        {$match: {views: {$gte: 5}}},
+        { $sample: { size: 20 } },
+            {
+                $project: {
+                    name: 1,
+                    category: 1,
+                    image: 1,
+                    slug: 1,
+                    createdAt: 1,
+                    views: 1,
+                    discount: {
+                        $cond: {
+                            if: {
+                                $and: [
+                                    { $gte: ["$minSize.discount_end", new Date()] },
+                                    { $lte: ["$minSize.discount_start", new Date()] },
+                                ],
+                            },
+                            then: "$minSize.discount",
+                            else: null,
+                        },
+                    },
+                    price: "$minSize.price",
+                },
+            },
+            {
+                $project: {
+                    name: 1,
+                    category: 1,
+                    image: 1,
+                    slug: 1,
+                    createdAt: 1,
+                    views: 1,
+                    price: 1,
+                    discount: 1,
+                    sortPrice: { $ifNull: [ "$discount", "$price" ] }
+                },
+            },
+        {
+            $lookup: {
+                from: "categories",
+                localField: "category",
+                foreignField: "_id",
+                as: "category",
+            },
+        },
+        { $unwind: "$category" },
+        {
+            $project: {
+                name: 1,
+                category: "$category.name",
+                image: 1,
+                slug: 1,
+                price: 1,
+                discount: 1,
+            },
+        },
+    ]).exec((err, data) => {
+        if (err) return res.status(400).json({ success: false, err });
+        if(isRedis){
+            console.log("CASHED", redisText)
+            req.SET_ASYNC(redisText, JSON.stringify(data), 'EX', 5)
+        }
+        res.status(200).json({
+            success: true,
+            data,
+        });
+    });
+}
