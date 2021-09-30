@@ -1447,10 +1447,8 @@ exports.popularProducts = async (req, res) => {
         },
     ]).exec((err, data) => {
         if (err) return res.status(400).json({ success: false, err });
-        if(isRedis){
-            console.log("CASHED", redisText)
-            req.SET_ASYNC(redisText, JSON.stringify(data), 'EX', 5)
-        }
+        console.log("CASHED", redisText)
+        req.SET_ASYNC(redisText, JSON.stringify(data), 'EX', 5)
         res.status(200).json({
             success: true,
             data,
