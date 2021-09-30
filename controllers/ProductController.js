@@ -1381,12 +1381,6 @@ exports.getOneSeller = async (req, res) => {
     });
 };
 exports.popularProducts = async (req, res) => {
-    const redisText = "POPULAT_PRODUCTS";
-    const reply = await req.GET_ASYNC(redisText)
-    if(reply){
-        console.log("USING", redisText)
-        return res.status(200).json({success: true, data: JSON.parse(reply)})
-    }
     await Product.aggregate([
         {$match: {views: {$gte: 5}}},
         { $sample: { size: 20 } },
@@ -1447,8 +1441,6 @@ exports.popularProducts = async (req, res) => {
         },
     ]).exec((err, data) => {
         if (err) return res.status(400).json({ success: false, err });
-        console.log("CASHED", redisText)
-        req.SET_ASYNC(redisText, JSON.stringify(data), 'EX', 5)
         res.status(200).json({
             success: true,
             data,
