@@ -235,7 +235,7 @@ exports.delete = async (req, res) => {
     return res.status(200).json({ success: true, data: [] });
 };
 exports.edit = async (req, res) => {
-    let filename, obj;
+    let filename, obj = req.body;
 
     if(req.file){
         filename = req.file.filename
@@ -250,12 +250,7 @@ exports.edit = async (req, res) => {
                 deleteFile(`/public/temp/${filename}`);
             }
         );
-        obj = {
-            ...req.body,
-            image: `/uploads/users/${filename}`,
-        };
-    } else {
-        obj = req.body
+        obj['image'] = `/uploads/users/${filename}`
     }
     console.log(req.body)
     if(obj.password || obj.role || obj.phone || obj.email){
