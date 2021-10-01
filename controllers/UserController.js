@@ -257,7 +257,7 @@ exports.edit = async (req, res) => {
     } else {
         obj = req.body
     }
-    console.log(body)
+    console.log(req.body)
     if(obj.password || obj.role || obj.phone || obj.email){
         return res.status(400).json({ success: false, message: "Something went wrong"})
     }
