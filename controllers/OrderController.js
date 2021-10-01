@@ -202,7 +202,8 @@ exports.update = async (req, res) => {
     try {
         let orderProducts = await OrderProducts.findById({ _id: req.params.id});
         let shop = await Shop.findById({user: req.user})
-        if(!shop || orderProducts.shopId != shop._id || orderProducts.status >= 1){
+        console.log(orderProducts, shop)
+        if(!shop  || !orderProducts || orderProducts.shopId != shop._id || orderProducts.status >= 1){
             return res.status(400).json({ success: false, message: "Something went wrong"})
         }
         orderProducts.status = orderProducts.status + 1;
@@ -212,7 +213,7 @@ exports.update = async (req, res) => {
             res.status(400).json({success: false})
         })
     } catch (error) {
-        console.log(error)
+        console.log("ERROR ", error)
     }
 }
 exports.delivered = async (req, res) => {
