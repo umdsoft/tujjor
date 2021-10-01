@@ -202,7 +202,6 @@ exports.update = async (req, res) => {
     try {
         let orderProducts = await OrderProducts.findById({ _id: req.params.id});
         let shop = await Shop.findOne({user: req.user})
-        console.log(orderProducts, shop)
         if(!shop  || !orderProducts || orderProducts.shopId.toString() != shop._id.toString() || orderProducts.status >= 1){
             return res.status(400).json({ success: false, message: "Something went wrong"})
         }
