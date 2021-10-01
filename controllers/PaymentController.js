@@ -153,76 +153,81 @@ exports.payme = async (req, res) => {
     }
 
     async function PerformTransaction(params) {
-        await Transaction.findOne({ tid: params.id }, async (err, transaction) => {
-            if (!transaction) return sendResponse(Errors.TransactionNotFound, null);
-            if (transaction.state === 1) {
-                if (transaction.time > Date.now()) {
-                    await Transaction.updateOne(
-                        { tid: params.id },
+        try {
+            await Transaction.findOne({ tid: params.id }, async (err, transaction) => {
+                if (!transaction) return sendResponse(Errors.TransactionNotFound, null);
+                if (transaction.state === 1) {
+                    if (transaction.time > Date.now()) {
+                        await Transaction.updateOne(
+                            { tid: params.id },
+                            {
+                                $set: {
+                                    state: -1,
+                                    reason: 4,
+                                },
+                            }
+                        );
+                    }
+                    const order = await Order.findOne({
+                        orderId: transaction.order,
+                    });
+                    const products = await OrderProducts.find({orderId: order.orderId})
+                    products.forEach( async(key) => {
+                        new PayedList({
+                            user: order.user,
+                            shop: key.shopId,
+                            category: key.category,
+                            brand: key.brand,
+                            amount: key.amount,
+                            count: key.count,
+                        }).save();
+                        let size = await Size.findOne({_id:key.sizeId});
+                        size.count = size.count - key.count;
+                        size.save();
+                    });
+                    
+                    await Order.updateOne(
+                        { orderId: transaction.order },
                         {
                             $set: {
-                                state: -1,
-                                reason: 4,
+                                payed: 1,
+                                paySystem: "payme",
                             },
                         }
                     );
+                    await OrderProducts.updateMany({orderId: order.orderId}, {$set: {payed: 1}})
+                    await Transaction.updateOne(
+                        { tid: transaction.tid },
+                        {
+                            $set: {
+                                state: 2,
+                                perform_time: Date.now(),
+                            },
+                        }
+                    );
+                    const tt = await Transaction.findOne({
+                        tid: transaction.tid,
+                    });
+                    return sendResponse(null, {
+                        transaction: transaction.transaction,
+                        perform_time: tt.perform_time,
+                        state: 2,
+                    });
                 }
-                const order = await Order.findOne({
-                    orderId: transaction.order,
-                });
-                const products = await OrderProducts.find({orderId: order.orderId})
-                products.forEach( async(key) => {
-                    new PayedList({
-                        user: order.user,
-                        shop: key.shopId,
-                        category: key.category,
-                        brand: key.brand,
-                        amount: key.amount,
-                        count: key.count,
-                    }).save();
-                    let size = await Size.findOne({_id:key.sizeId});
-                    size.count = size.count - key.count;
-                    size.save();
-                });
-                
-                await Order.updateOne(
-                    { orderId: transaction.order },
-                    {
-                        $set: {
-                            payed: 1,
-                            paySystem: "payme",
-                        },
-                    }
-                );
-                await OrderProducts.updateMany({orderId: order.orderId}, {$set: {payed: 1}})
-                await Transaction.updateOne(
-                    { tid: transaction.tid },
-                    {
-                        $set: {
-                            state: 2,
-                            perform_time: Date.now(),
-                        },
-                    }
-                );
-                const tt = await Transaction.findOne({
-                    tid: transaction.tid,
-                });
-                return sendResponse(null, {
-                    transaction: transaction.transaction,
-                    perform_time: tt.perform_time,
-                    state: 2,
-                });
-            }
-            if (transaction.state === 2) {
-                return sendResponse(null, {
-                    transaction: transaction.transaction,
-                    perform_time: transaction.perform_time,
-                    state: transaction.state,
-                });
-            } else {
-                return sendResponse(Errors.UnexpectedTransactionState, null);
-            }
-        });
+                if (transaction.state === 2) {
+                    return sendResponse(null, {
+                        transaction: transaction.transaction,
+                        perform_time: transaction.perform_time,
+                        state: transaction.state,
+                    });
+                } else {
+                    return sendResponse(Errors.UnexpectedTransactionState, null);
+                }
+            });
+        } catch (error) {
+            console.log("ERROR ", error)
+        }
+        
     }
 
     async function CancelTransaction(params) {

@@ -1383,7 +1383,7 @@ exports.getOneSeller = async (req, res) => {
 exports.popularProducts = async (req, res) => {
     await Product.aggregate([
         {$match: {views: {$gte: 2}}},
-        { $sample: { size: 20 } },
+        { $sample: { size: 10 } },
             {
                 $project: {
                     name: 1,
