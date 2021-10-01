@@ -199,17 +199,21 @@ exports.getAll = async (req, res) => {
     });
 };
 exports.update = async (req, res) => {
-    let orderProducts = await OrderProducts.findById({ _id: req.params.id});
-    let shop = await Shop.findById({user: req.user})
-    if(orderProducts.shopId != shop._id || orderProducts.status >= 1){
-        return res.status(400).json({ success: false, message: "Something went wrong"})
+    try {
+        let orderProducts = await OrderProducts.findById({ _id: req.params.id});
+        let shop = await Shop.findById({user: req.user})
+        if(!shop || orderProducts.shopId != shop._id || orderProducts.status >= 1){
+            return res.status(400).json({ success: false, message: "Something went wrong"})
+        }
+        orderProducts.status = orderProducts.status + 1;
+        orderProducts.save().then(()=>{
+            res.status(200).json({success: true})
+        }).catch(()=>{
+            res.status(400).json({success: false})
+        })
+    } catch (error) {
+        console.log(error)
     }
-    orderProducts.status = orderProducts.status + 1;
-    orderProducts.save().then(()=>{
-        res.status(200).json({success: true})
-    }).catch(()=>{
-        res.status(400).json({success: false})
-    })
 }
 exports.delivered = async (req, res) => {
     let orderProducts = await OrderProducts.findOne({ _id: req.params.id, user: req.user});
