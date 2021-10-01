@@ -203,7 +203,7 @@ exports.update = async (req, res) => {
         let orderProducts = await OrderProducts.findById({ _id: req.params.id});
         let shop = await Shop.findOne({user: req.user})
         console.log(orderProducts, shop)
-        if(!shop  || !orderProducts || orderProducts.shopId != shop._id || orderProducts.status >= 1){
+        if(!shop  || !orderProducts || orderProducts.shopId.toString() != shop._id.toString() || orderProducts.status >= 1){
             return res.status(400).json({ success: false, message: "Something went wrong"})
         }
         orderProducts.status = orderProducts.status + 1;
