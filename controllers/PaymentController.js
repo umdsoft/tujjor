@@ -30,10 +30,12 @@ exports.payme = async (req, res) => {
         CancelTransaction(body.params);
     }
     async function CheckPerformTransaction(params) {
+        console.log(params.account.order)
         await Order.findOne({ orderId: params.account.order }, (err, data) => {
             if (err || !data) {
                 return sendResponse(Errors.OrderNotFound, null);
             }
+            console.log("WORKING Check Transaction")
             if (data.status) {
                 return sendResponse(Errors.OrderAvailable, null);
             }
@@ -95,6 +97,7 @@ exports.payme = async (req, res) => {
                                 time: params.time,
                                 receivers: receivers,
                             });
+                            console.log("WORKING Check Transaction")
                             transaction
                                 .save()
                                 .then(() => {
