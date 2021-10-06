@@ -165,19 +165,10 @@ exports.getAll = async (req, res) => {
         await OrderProducts.aggregate([
             { $match: { status: status, shopId: mongoose.Types.ObjectId(shop._id), payed: 1} },
             {$project: {
-                name: 1,
-                image: 1,
-                paramImage: 1,
-                size: 1,
-                amount: 1,
-                count: 1,
-                description: 1,
-                status: 1,
                 orderId: 1
             }},
             {$group: {
-                _id: "$orderId",
-                products: {$push: "$$ROOT"}
+                _id: "$orderId"
             }},
             { $skip: (page - 1) * limit }, 
             { $limit: limit },
@@ -219,7 +210,18 @@ exports.getAll = async (req, res) => {
                                 },
                                 amount: 1,
                                 orderId: 1,
-                                address: 1,
+                                address: {
+                                    region: {
+                                        name: 1,
+                                        _id: 0
+                                    },
+                                    district: {
+                                        name: 1,
+                                        _id: 0
+                                    },
+                                    address: 1,
+                                    phone: 1
+                                },
                                 createdAt: 1
                             }
                         }
