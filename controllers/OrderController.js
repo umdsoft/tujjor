@@ -126,7 +126,6 @@ exports.getById = async (req, res) => {
             }
         })
         .populate({path: "user", select: "name"})
-        console.log("ORDER ", order);
 
         await OrderProducts.aggregate([
             {$match: { shopId: mongoose.Types.ObjectId(shop._id), payed: 1, orderId: parseInt(req.params.orderId)} },
@@ -146,11 +145,11 @@ exports.getById = async (req, res) => {
             res.status(200).json({
                 success: true,
                 data: {
-                    amount: order.amount,
-                    orderId: order.orderId,
-                    address: order.address,
-                    createdAt: order.createdAt,
-                    user: order.user,
+                    amount: order && order.amount,
+                    orderId: order && order.orderId,
+                    address:  order && order.address,
+                    createdAt: order && order.createdAt,
+                    user: order && order.user,
                     products: data
                 }
             });
