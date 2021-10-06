@@ -113,7 +113,10 @@ exports.getById = async (req, res) => {
         const order = await Order.findOne({
             orderId: req.params.orderId,
             payed: 1
-        },{amount: 1, orderId: 1, address: 1})
+        },{amount: 1, orderId: 1, address: 1, user: 1})
+        .populate({path: "address.region", select: {"address.region.name": 1}})
+        .populate({path: "address.district", select: {"address.district.name": 1}})
+        .populate({path: "user", select: {"user.name": 1}})
         await OrderProducts.aggregate([
             {$match: { shopId: mongoose.Types.ObjectId(shop._id), payed: 1, orderId: parseInt(req.params.orderId)} },
             {$project: {
@@ -215,9 +218,7 @@ exports.getAll = async (req, res) => {
                         { $unwind: { path: "$address.district", preserveNullAndEmptyArrays: true }},
                         {
                             $project: {
-                                user: {
-                                    name: 1
-                                },
+                                user: "$user.name",
                                 amount: 1,
                                 orderId: 1,
                                 address: {
