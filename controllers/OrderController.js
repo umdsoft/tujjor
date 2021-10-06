@@ -222,16 +222,8 @@ exports.getAll = async (req, res) => {
                                 amount: 1,
                                 orderId: 1,
                                 address: {
-                                    // region: {
-                                    //     name: 1,
-                                    //     _id: 0
-                                    // },
-                                    // district: {
-                                    //     name: 1,
-                                    //     _id: 0
-                                    // },
-                                    region: 1,
-                                    district: 1,
+                                    region: "$region.name",
+                                    district: "$district.name",
                                     address: 1,
                                     phone: 1
                                 },
