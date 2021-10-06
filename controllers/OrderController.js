@@ -39,7 +39,7 @@ exports.create = (req, res) => {
                     };
                     return {
                         status: 0,
-                        orderId: count,
+                        orderId: count+1,
                         user: req.user,
                         count: element.count,
                         //product Items
@@ -68,7 +68,7 @@ exports.create = (req, res) => {
             const order = new Order({
                 user: req.user,
                 amount: req.body.amount,
-                orderId: count,
+                orderId: count+1,
                 address: {
                     region: req.body.address ? req.body.address.region : null,
                     district: req.body.address ? req.body.address.district : null,
