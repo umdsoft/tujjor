@@ -230,6 +230,8 @@ exports.getAll = async (req, res) => {
                                     //     name: 1,
                                     //     _id: 0
                                     // },
+                                    region: 1,
+                                    district: 1,
                                     address: 1,
                                     phone: 1
                                 },
