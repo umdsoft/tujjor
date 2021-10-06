@@ -114,9 +114,9 @@ exports.getById = async (req, res) => {
             orderId: req.params.orderId,
             payed: 1
         },{amount: 1, orderId: 1, address: 1, user: 1})
-        .populate({path: "address.region", select: {"address.region.name": 1}})
-        .populate({path: "address.district", select: {"address.district.name": 1}})
-        .populate({path: "user", select: {"user.name": 1}})
+        .populate("address.region")
+        .populate("address.district")
+        .populate("user")
         await OrderProducts.aggregate([
             {$match: { shopId: mongoose.Types.ObjectId(shop._id), payed: 1, orderId: parseInt(req.params.orderId)} },
             {$project: {
