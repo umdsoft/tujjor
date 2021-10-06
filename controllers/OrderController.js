@@ -13,95 +13,95 @@ exports.create = (req, res) => {
                 .status(400)
                 .json({ success: false, message: "Something went wrong" });
         }
-        Order.countDocuments({}, async (err, count) => {
-            let summ = 0;
-            const DOSTAVKA_PRICE = 20000;
-            let shops =  [];
-            const products = await Promise.all(
-                req.body.products.map(async (element) => {
-                    let size = await Size.findById({_id: element.size});
-                    let product = await Product.findById({_id: element.product});
-                    let param = await Param.findById({_id: element.param});
-                    let shop = await Shop.findById({ _id: product.shop });
-                    if(shops.indexOf(shop._id.toString()) === -1) shops.push(shop._id.toString());
-                    if(size.discount && new Date(size.discount_start) <= new Date() && new Date(size.discount_end) >= new Date()){
-                    if (size.discount !== element.amount) {
+        const lastDat = await Order.findOne().sort( { createdAt: -1 } );
+        const count = lastDat ? lastDat.orderId + 1 : 1;
+        let summ = 0;
+        const DOSTAVKA_PRICE = 20000;
+        let shops =  [];
+        const products = await Promise.all(
+            req.body.products.map(async (element) => {
+                let size = await Size.findById({_id: element.size});
+                let product = await Product.findById({_id: element.product});
+                let param = await Param.findById({_id: element.param});
+                let shop = await Shop.findById({ _id: product.shop });
+                if(shops.indexOf(shop._id.toString()) === -1) shops.push(shop._id.toString());
+                if(size.discount && new Date(size.discount_start) <= new Date() && new Date(size.discount_end) >= new Date()){
+                if (size.discount !== element.amount) {
+                    return;
+                } else {
+                    summ += size.discount * element.count
+                }               
+                } else {
+                    if (size.price !== element.amount) {
                         return;
                     } else {
-                        summ += size.discount * element.count
-                    }               
-                    } else {
-                        if (size.price !== element.amount) {
-                            return;
-                        } else {
-                            summ += size.price*element.count
-                        }
-                    };
-                    return {
-                        status: 0,
-                        orderId: count+1,
-                        user: req.user,
-                        count: element.count,
-                        //product Items
-                        productId: product._id,
-                        name: product.name,
-                        image: product.image,
-                        description: product.description,
-                        category: product.category,
-                        brand: product.brand,
-                        //param Items
-                        paramId: param._id,
-                        paramImage: param.image,
-                        //size Items
-                        sizeId: size._id,
-                        size: size.size,
-                        amount: element.amount,
-                        //shop Items
-                        shopId: shop._id,
-                        account: shop.shopId,
-                        percent: shop.percent
-                    };
-                })
-            )
-            const dostavka = req.body.toMyHouse ? shops.length * DOSTAVKA_PRICE: 0
-            summ += dostavka;
-            const order = new Order({
-                user: req.user,
-                amount: req.body.amount,
-                orderId: count+1,
-                address: {
-                    region: req.body.address ? req.body.address.region : null,
-                    district: req.body.address ? req.body.address.district : null,
-                    address: req.body.address ? req.body.address.address : null,
-                    phone: req.body.address ? req.body.address.phone : null,
-                },
-                shopCount : shops.length,
-                dostavka : dostavka
-            });
-            if (summ !== req.body.amount || !products.length) {
-                return res.status(400).json({ success: false, message: "Something went wrong" });
-            }
-            products.forEach((element, index)=>{
-                if(index === products.length-1){
-                    new OrderProducts(element).save().then(()=>{
-                    order.save().then(() => {
-                            return res.status(201).json({ success: true, data: {orderId: order.orderId, amount: order.amount}});
-                        })
-                        .catch((err) => {
-                           return res.status(400).json({ success: false, err });
-                        });
-                    }).catch(err=>{
-                        OrderProducts.deleteMany({orderId: order.orderId})
-                        return res.status(400).json({ success: false, err });
-                    })
-                } else {
-                    new OrderProducts(element).save().catch(err=>{
-                        OrderProducts.deleteMany({orderId: order.orderId})
-                        return res.status(400).json({ success: false, err });
-                    })
-                }
+                        summ += size.price*element.count
+                    }
+                };
+                return {
+                    status: 0,
+                    orderId: count,
+                    user: req.user,
+                    count: element.count,
+                    //product Items
+                    productId: product._id,
+                    name: product.name,
+                    image: product.image,
+                    description: product.description,
+                    category: product.category,
+                    brand: product.brand,
+                    //param Items
+                    paramId: param._id,
+                    paramImage: param.image,
+                    //size Items
+                    sizeId: size._id,
+                    size: size.size,
+                    amount: element.amount,
+                    //shop Items
+                    shopId: shop._id,
+                    account: shop.shopId,
+                    percent: shop.percent
+                };
             })
+        )
+        const dostavka = req.body.toMyHouse ? shops.length * DOSTAVKA_PRICE: 0
+        summ += dostavka;
+        const order = new Order({
+            user: req.user,
+            amount: req.body.amount,
+            orderId: count,
+            address: {
+                region: req.body.address ? req.body.address.region : null,
+                district: req.body.address ? req.body.address.district : null,
+                address: req.body.address ? req.body.address.address : null,
+                phone: req.body.address ? req.body.address.phone : null,
+            },
+            shopCount : shops.length,
+            dostavka : dostavka
         });
+        if (summ !== req.body.amount || !products.length) {
+            return res.status(400).json({ success: false, message: "Something went wrong" });
+        }
+        products.forEach((element, index)=>{
+            if(index === products.length-1){
+                new OrderProducts(element).save().then(()=>{
+                order.save().then(() => {
+                        return res.status(201).json({ success: true, data: {orderId: order.orderId, amount: order.amount}});
+                    })
+                    .catch((err) => {
+                        return res.status(400).json({ success: false, err });
+                    });
+                }).catch(err=>{
+                    OrderProducts.deleteMany({orderId: order.orderId})
+                    return res.status(400).json({ success: false, err });
+                })
+            } else {
+                new OrderProducts(element).save().catch(err=>{
+                    OrderProducts.deleteMany({orderId: order.orderId})
+                    return res.status(400).json({ success: false, err });
+                })
+            }
+        })
     } catch (error) {
         res.status(500).json({ success: false, message: "Something went wrong"});
     }
