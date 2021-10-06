@@ -5,7 +5,7 @@ const Size = require("../models/size");
 const Product = require("../models/product");
 const Param = require("../models/param");
 const mongoose = require("mongoose");
-exports.create = (req, res) => {
+exports.create = async (req, res) => {
     try {
         
         if(!(req.body.products && req.body.products.length)){
