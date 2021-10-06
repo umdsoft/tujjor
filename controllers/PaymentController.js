@@ -82,6 +82,9 @@ exports.payme = async (req, res) => {
                                     amount: parseInt(shopPrice),
                                 });
                             })
+                            if(receivers[0].amount === 0){
+                                receivers.splice(0, 1);
+                            }
                             console.log("RECIVERS ",receivers)
                              const transaction = new Transaction({
                                 tid: params.id,

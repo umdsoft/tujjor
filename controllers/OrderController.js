@@ -128,7 +128,7 @@ exports.getById = async (req, res) => {
         })
         .populate({path: "user", select: "name"})
         if(!order){
-            return res.status(500).json({success: false, message: "Something went wrong"});
+            return res.status(404).json({success: false, message: "Not Found"});
         }
         await OrderProducts.aggregate([
             {$match: { shopId: mongoose.Types.ObjectId(shop._id), payed: 1, orderId: parseInt(req.params.orderId)} },
