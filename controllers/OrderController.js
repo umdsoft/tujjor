@@ -222,14 +222,14 @@ exports.getAll = async (req, res) => {
                                 amount: 1,
                                 orderId: 1,
                                 address: {
-                                    region: {
-                                        name: 1,
-                                        _id: 0
-                                    },
-                                    district: {
-                                        name: 1,
-                                        _id: 0
-                                    },
+                                    // region: {
+                                    //     name: 1,
+                                    //     _id: 0
+                                    // },
+                                    // district: {
+                                    //     name: 1,
+                                    //     _id: 0
+                                    // },
                                     address: 1,
                                     phone: 1
                                 },
