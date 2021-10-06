@@ -211,11 +211,10 @@ exports.getAll = async (req, res) => {
                             foreignField: "_id",
                             as: "user"
                         }},
+                        { $unwind: { path: "$user", preserveNullAndEmptyArrays: true }},
                         {
                             $project: {
-                                user: {
-                                    name: 1
-                                },
+                                user: 1,
                                 amount: 1,
                                 orderId: 1,
                                 address: 1,
@@ -227,15 +226,15 @@ exports.getAll = async (req, res) => {
                 }
             },
             {$unwind: "$order"},
-            {$project: {
-                products: 1,
-                user: "$order.user",
-                amount: "$order.amount",
-                orderId: "$order.orderId",
-                address: "$order.address",
-                createdAt: "$order.createdAt",
-                _id: 0
-            }},
+            // {$project: {
+            //     products: 1,
+            //     user: "$order.user",
+            //     amount: "$order.amount",
+            //     orderId: "$order.orderId",
+            //     address: "$order.address",
+            //     createdAt: "$order.createdAt",
+            //     _id: 0
+            // }},
 
             {$sort: {createdAt: -1}},
         ]).exec((err, data) => {
