@@ -165,6 +165,14 @@ exports.getAll = async (req, res) => {
         await OrderProducts.aggregate([
             { $match: { status: status, shopId: mongoose.Types.ObjectId(shop._id), payed: 1} },
             {$project: {
+                name: 1,
+                image: 1,
+                paramImage: 1,
+                size: 1,
+                amount: 1,
+                count: 1,
+                description: 1,
+                status: 1,
                 orderId: 1
             }},
             {$group: {
