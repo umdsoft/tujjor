@@ -212,6 +212,8 @@ exports.getAll = async (req, res) => {
                             as: "user"
                         }},
                         { $unwind: { path: "$user", preserveNullAndEmptyArrays: true }},
+                        { $unwind: { path: "$address.region", preserveNullAndEmptyArrays: true }},
+                        { $unwind: { path: "$address.district", preserveNullAndEmptyArrays: true }},
                         {
                             $project: {
                                 user: {
