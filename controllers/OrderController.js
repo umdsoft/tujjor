@@ -106,11 +106,12 @@ exports.create = (req, res) => {
         res.status(500).json({ success: false, message: "Something went wrong"});
     }
 };
+
 exports.getById = async (req, res) => {
     try {
         const shop = await Shop.findOne({user: req.user})
         const order = await Order.findOne({
-            orderId: req.params.orderId,
+            orderId: parseInt(req.params.orderId),
             payed: 1
         },{amount: 1, orderId: 1, address: 1, user: 1, createdAt: 1})
         .populate({ path: "address", 
@@ -147,17 +148,17 @@ exports.getById = async (req, res) => {
             res.status(200).json({
                 success: true,
                 data: {
-                    amount: order && order.amount,
-                    orderId: order && order.orderId,
-                    address:  order && order.address,
-                    createdAt: order && order.createdAt,
-                    user: order && order.user,
+                    amount: order.amount,
+                    orderId: order.orderId,
+                    address:  order.address,
+                    createdAt: order.createdAt,
+                    user: order.user,
                     products: data
                 }
             });
         });
     } catch (error) {
-        res.status(500).json({ success: false, message: "Something went wrong"})
+        res.status(500).json({ success: false, message: "Something went wrong "})
     }
 }
 exports.getAll = async (req, res) => {
