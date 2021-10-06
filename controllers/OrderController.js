@@ -108,7 +108,6 @@ exports.create = (req, res) => {
 };
 exports.getById = async (req, res) => {
     try {
-        
         const shop = await Shop.findOne({user: req.user})
         const order = await Order.findOne({
             orderId: req.params.orderId,
@@ -127,6 +126,8 @@ exports.getById = async (req, res) => {
             }
         })
         .populate({path: "user", select: "name"})
+        console.log("ORDER ", order);
+
         await OrderProducts.aggregate([
             {$match: { shopId: mongoose.Types.ObjectId(shop._id), payed: 1, orderId: parseInt(req.params.orderId)} },
             {$project: {
