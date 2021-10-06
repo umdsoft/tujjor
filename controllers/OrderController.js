@@ -231,7 +231,6 @@ exports.getAll = async (req, res) => {
             },
             {$unwind: "$order"},
             {$project: {
-                products: 1,
                 user: "$order.user",
                 amount: "$order.amount",
                 orderId: "$order.orderId",
