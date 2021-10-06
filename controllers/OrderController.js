@@ -212,15 +212,15 @@ exports.getAll = async (req, res) => {
                             as: "user"
                         }},
                         { $unwind: { path: "$user", preserveNullAndEmptyArrays: true }},
-                        {
-                            $project: {
-                                user: 1,
-                                amount: 1,
-                                orderId: 1,
-                                address: 1,
-                                createdAt: 1
-                            }
-                        }
+                        // {
+                        //     $project: {
+                        //         user: 1,
+                        //         amount: 1,
+                        //         orderId: 1,
+                        //         address: 1,
+                        //         createdAt: 1
+                        //     }
+                        // }
                     ],
                     as: "order"
                 }
