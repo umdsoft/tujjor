@@ -176,7 +176,8 @@ exports.getAll = async (req, res) => {
                 orderId: 1
             }},
             {$group: {
-                _id: "$orderId"
+                _id: "$orderId",
+                products: {$push: "$$ROOT"}
             }},
             { $skip: (page - 1) * limit }, 
             { $limit: limit },
@@ -239,6 +240,7 @@ exports.getAll = async (req, res) => {
             },
             {$unwind: "$order"},
             {$project: {
+                products: 1,
                 user: "$order.user",
                 amount: "$order.amount",
                 orderId: "$order.orderId",
