@@ -111,7 +111,7 @@ exports.payme = async (req, res) => {
                                         create_time: transaction.create_time,
                                         perform_time: transaction.perform_time,
                                         cancel_time: transaction.cancel_time,
-                                        receivers: transaction.receivers
+                                        receivers: receivers
                                     });
                                 })
                                 .catch((err) => {
