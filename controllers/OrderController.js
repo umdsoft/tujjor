@@ -195,7 +195,7 @@ exports.getAll = async (req, res) => {
             }},
             {$group: {
                 _id: "$orderId",
-                amount: {$sum:  {$multiply: ["$payedAmount", "$count"]}} 
+                amount: {$sum:  "$payedAmount"} 
             }},
             { $skip: (page - 1) * limit }, 
             { $limit: limit },
