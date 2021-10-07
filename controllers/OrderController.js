@@ -113,7 +113,7 @@ exports.getById = async (req, res) => {
         const order = await Order.findOne({
             orderId: parseInt(req.params.orderId),
             payed: 1
-        },{amount: 1, orderId: 1, address: 1, user: 1, createdAt: 1})
+        },{orderId: 1, address: 1, user: 1, createdAt: 1})
         .populate({ path: "address", 
             populate: {
                 path: "region",
@@ -148,7 +148,6 @@ exports.getById = async (req, res) => {
             res.status(200).json({
                 success: true,
                 data: {
-                    amount: order.amount,
                     orderId: order.orderId,
                     address:  order.address,
                     createdAt: order.createdAt,
@@ -194,7 +193,8 @@ exports.getAll = async (req, res) => {
                 orderId: 1
             }},
             {$group: {
-                _id: "$orderId"
+                _id: "$orderId",
+                amount: {$sum:  {$multiply: ["$amount", "$count"]}} 
             }},
             { $skip: (page - 1) * limit }, 
             { $limit: limit },
@@ -256,7 +256,7 @@ exports.getAll = async (req, res) => {
             {$unwind: "$order"},
             {$project: {
                 user: "$order.user",
-                amount: "$order.amount",
+                amount: 1,
                 orderId: "$order.orderId",
                 address: "$order.address",
                 createdAt: "$order.createdAt",
