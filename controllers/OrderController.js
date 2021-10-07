@@ -195,7 +195,8 @@ exports.getAll = async (req, res) => {
             }},
             {$group: {
                 _id: "$orderId",
-                amount: {$sum:  "$payedAmount"} 
+                amount: {$sum:  "$payedAmount"},
+                count: {$sum: 1}
             }},
             { $skip: (page - 1) * limit }, 
             { $limit: limit },
@@ -258,6 +259,7 @@ exports.getAll = async (req, res) => {
             {$project: {
                 user: "$order.user",
                 amount: 1,
+                count: 1,
                 orderId: "$order.orderId",
                 address: "$order.address",
                 createdAt: "$order.createdAt",
