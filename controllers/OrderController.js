@@ -38,6 +38,7 @@ exports.create = async (req, res) => {
                         summ += size.price*element.count
                     }
                 };
+                console.log(element.percent, element.amount, shop.percent)
                 return {
                     status: 0,
                     orderId: count,
