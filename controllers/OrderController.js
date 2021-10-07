@@ -38,7 +38,6 @@ exports.create = async (req, res) => {
                         summ += size.price*element.count
                     }
                 };
-                console.log(element.percent, element.amount, shop.percent)
                 return {
                     status: 0,
                     orderId: count,
@@ -58,7 +57,7 @@ exports.create = async (req, res) => {
                     sizeId: size._id,
                     size: size.size,
                     amount: element.amount,
-                    payedAmount: element.percent * element.amount *(100 - shop.percent) / 100,
+                    payedAmount: element.count * element.amount *(100 - shop.percent) / 100,
                     //shop Items
                     shopId: shop._id,
                     account: shop.shopId,
