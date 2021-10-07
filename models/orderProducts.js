@@ -67,6 +67,7 @@ const OrderProductsSchema = new mongoose.Schema(
         size: { type: String, required: true },
         count: { type: Number, required: true },
         amount: { type: Number, required: true },
+        payedAmount: {type: Number, required: true},
         account: { type: String, required: true },
         percent: { type: Number, required: true },
         description: {

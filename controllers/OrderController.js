@@ -57,6 +57,7 @@ exports.create = async (req, res) => {
                     sizeId: size._id,
                     size: size.size,
                     amount: element.amount,
+                    payedAmount: element.percent * element.amount *(100 - shop.percent) / 100,
                     //shop Items
                     shopId: shop._id,
                     account: shop.shopId,
@@ -137,7 +138,7 @@ exports.getById = async (req, res) => {
                 image: 1,
                 paramImage: 1,
                 size: 1,
-                amount: 1,
+                amount: "$payedAmount",
                 count: 1,
                 description: 1,
                 status: 1,
@@ -186,7 +187,7 @@ exports.getAll = async (req, res) => {
                 image: 1,
                 paramImage: 1,
                 size: 1,
-                amount: 1,
+                payedAmount: 1,
                 count: 1,
                 description: 1,
                 status: 1,
@@ -194,7 +195,7 @@ exports.getAll = async (req, res) => {
             }},
             {$group: {
                 _id: "$orderId",
-                amount: {$sum:  {$multiply: ["$amount", "$count"]}} 
+                amount: {$sum:  {$multiply: ["$payedAmount", "$count"]}} 
             }},
             { $skip: (page - 1) * limit }, 
             { $limit: limit },

@@ -10,6 +10,7 @@ const PayedList = new mongoose.Schema(
         },
         brand: { type: mongoose.Schema.ObjectId, ref: "Brand", required: true },
         amount: { type: Number, require: true },
+        payedAmount: { type: Number, require: true },
         count: { type: Number, require: true },
     },
     { timestamps: true }

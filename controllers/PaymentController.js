@@ -7,8 +7,8 @@ const PayedList = require("../models/payedList");
 exports.payme = async (req, res) => {
     let SummAmount = 0;
     const MERCHANT_ID = "6113b418754e932e68fd87ad";
-    // const PAYCOM_PASSWORD = "&ibgXksdw0S9#aORZ80Vb0HO0SQNFYmEEkgq" //test
-    const PAYCOM_PASSWORD = "Pb61wSM%ajGhIhxqEsDAWOW8Hg0hkbjG9JCJ" //production
+    const PAYCOM_PASSWORD = "&ibgXksdw0S9#aORZ80Vb0HO0SQNFYmEEkgq" //test
+    // const PAYCOM_PASSWORD = "Pb61wSM%ajGhIhxqEsDAWOW8Hg0hkbjG9JCJ" //production
     const body = req.body;
     if (req.method !== "POST") {
         return sendResponse(Errors.TransportError, null);
@@ -189,6 +189,7 @@ exports.payme = async (req, res) => {
                             shop: key.shopId,
                             category: key.category,
                             brand: key.brand,
+                            payedAmount: key.payedAmount,
                             amount: key.amount,
                             count: key.count,
                         }).save();
