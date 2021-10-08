@@ -22,7 +22,7 @@ exports.getAll = async (req, res) => {
     return res.status(200).json({ success: true, data: await Application.find() });
 };
 exports.getOne = async (req, res) => {
-    await Application.findOne({ user: req.params.user })
+    await Application.findOne({ user: req.user })
         .select({ user: 0, __v: 0 })
         .then((data) => {
             return res.status(200).json({ success: true, data });
