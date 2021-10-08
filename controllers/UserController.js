@@ -213,6 +213,7 @@ exports.me = async (req, res) => {
             res.status(200).json({ 
                 success: true, 
                 data: {
+                    _id: data._id,
                     phone: data.phone,
                     email: data.email,
                     name: data.name,
