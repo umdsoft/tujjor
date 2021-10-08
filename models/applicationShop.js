@@ -6,7 +6,6 @@ const ApplicationShopSchema = new mongoose.Schema(
         user: {
             type: mongoose.Schema.ObjectId,
             ref: "User",
-            unique: true,
             required: true,
         },
         phone: { type: String, required: true },
