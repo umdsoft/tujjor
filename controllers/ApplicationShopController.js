@@ -3,7 +3,7 @@ const Application = require("../models/applicationShop");
 exports.create = (req, res) => {
     const application = new Application({
         name: req.body.name,
-        user: req.body.user,
+        user: req.user,
         phone: req.body.phone,
         email: req.body.email,
         companyName: req.body.companyName,
