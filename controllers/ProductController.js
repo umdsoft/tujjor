@@ -1489,29 +1489,29 @@ exports.getDiscounts = async (req, res) => {
                 price: "$minSize.price",
             },
         },
-        { $match: { discount: { $ne:null} }}, 
-        { $sort: { updatedAt: -1}},
+        // { $match: { discount: { $ne:null} }}, 
+        // { $sort: { updatedAt: -1}},
         { $skip: (page - 1) * limit },
         { $limit: limit },
-        {
-            $lookup: {
-                from: "categories",
-                localField: "category",
-                foreignField: "_id",
-                as: "category",
-            },
-        },
-        { $unwind: "$category" },
-        {
-            $project: {
-                name: 1,
-                category: "$category.name",
-                image: 1,
-                slug: 1,
-                price: 1,
-                discount: 1,
-            },
-        },
+        // {
+        //     $lookup: {
+        //         from: "categories",
+        //         localField: "category",
+        //         foreignField: "_id",
+        //         as: "category",
+        //     },
+        // },
+        // { $unwind: "$category" },
+        // {
+        //     $project: {
+        //         name: 1,
+        //         category: "$category.name",
+        //         image: 1,
+        //         slug: 1,
+        //         price: 1,
+        //         discount: 1,
+        //     },
+        // },
     ]).exec((err, data) => {
         if (err) return res.status(400).json({ success: false, err });
         if(isRedis){
