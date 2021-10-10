@@ -70,6 +70,7 @@ const OrderProductsSchema = new mongoose.Schema(
         payedAmount: {type: Number, required: true},
         account: { type: String, required: true },
         percent: { type: Number, required: true },
+        article: { type: String, required: true },
         description: {
             uz: { type: String},
             ru: { type: String},

@@ -58,10 +58,9 @@ exports.editStatus = async (req, res) => {
     if (!req.body || !req.body.category || !req.body.percent) {
         return res.status(400).json({ success: false, data: "Something went wrong" });
     }
-    const count = Shop.countDocuments({status: {$gte: 1}})
     await Shop.findOneAndUpdate(
         { _id: req.params.id },
-        { $set: { status: 1, category: req.body.category, percent: req.body.percent, code: getText(count + 1, 3) } },
+        { $set: { status: 1, category: req.body.category, percent: req.body.percent } },
         { new: true, fields: { isDelete: 0, __v: 0 } },
         async (err, data) => {
             if (err) {
@@ -232,6 +231,8 @@ exports.getOneClient = (req, res) => {
 
 //for create shop
 exports.create = async (req, res) => {
+    const lastShop = await Shop.findOne({}, {code: 1}).sort({code: -1});
+    const count = parseInt(lastShop.code) + 1;
     const shop = new Shop({
         fullNameDirector: req.body.fullNameDirector,
         shopName: req.body.shopName,
@@ -248,6 +249,7 @@ exports.create = async (req, res) => {
             uz: req.body.description ? req.body.description.uz : "",
             ru: req.body.description ? req.body.description.ru : "",
         },
+        code: getText(count + 1, 3),
         category: ["Not Selected"],
         slug: req.body.shopName ? getSlug(req.body.shopName) : "",
         fileContract: `/uploads/shops/${req.files.fileContract[0].filename}`,

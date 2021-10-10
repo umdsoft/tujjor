@@ -48,6 +48,7 @@ exports.create = async (req, res) => {
                     name: product.name,
                     image: product.image,
                     description: product.description,
+                    article: product.article,
                     category: product.category,
                     brand: product.brand,
                     //param Items
@@ -140,6 +141,7 @@ exports.getById = async (req, res) => {
                 size: 1,
                 amount: "$payedAmount",
                 count: 1,
+                article: 1,
                 description: 1,
                 status: 1,
                 orderId: 1
@@ -189,6 +191,7 @@ exports.getAll = async (req, res) => {
                 size: 1,
                 payedAmount: 1,
                 count: 1,
+                article: 1,
                 description: 1,
                 status: 1,
                 orderId: 1
