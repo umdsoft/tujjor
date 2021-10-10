@@ -25,8 +25,6 @@ router.post("/test/all", protectSeller, ProductController.getAllTest);
 router.get("/:slug", ProductController.getOneClient);
 router.get("/seller/:slug", ProductController.getOneSeller);
 router.post("/filter", ProductController.filter);
-router.get("/home/popular", ProductController.popularProducts);
-router.get("/home/discount", ProductController.getDiscounts);
 router.post("/count", ProductController.count);
 
 //create

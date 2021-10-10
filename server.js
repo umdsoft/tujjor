@@ -36,6 +36,7 @@ app.use((req, res, next) => {
 
     next();
 })
+app.use("/api/home", require("./routes/home"));
 app.use("/api/stat", require("./routes/statistic"));
 app.use("/api/message", require("./routes/message"));
 app.use("/api/payme", require("./routes/payment"));
