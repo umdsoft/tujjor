@@ -1493,15 +1493,15 @@ exports.getDiscounts = async (req, res) => {
         // { $sort: { updateAt: -1}},
         { $skip: (page - 1) * limit },
         { $limit: limit },
-        {
-            $lookup: {
-                from: "categories",
-                localField: "category",
-                foreignField: "_id",
-                as: "category",
-            },
-        },
-        { $unwind: "$category" },
+        // {
+        //     $lookup: {
+        //         from: "categories",
+        //         localField: "category",
+        //         foreignField: "_id",
+        //         as: "category",
+        //     },
+        // },
+        // { $unwind: "$category" },
         // {
         //     $project: {
         //         name: 1,
