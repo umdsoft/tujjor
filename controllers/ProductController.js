@@ -1455,11 +1455,10 @@ exports.getDiscounts = async (req, res) => {
     if (page === 0 || limit === 0) {
         return res.status(400).json({ success: false, message: "Error page or limit" });
     }
-    let isRedis = true;
     let redisText = `PF_${page}_${limit}_discount_`
     let aggregateStart = [{$match: {status: 1, isDelete: false, shopIsActive: 1}}];
     const reply = await req.GET_ASYNC(redisText)
-    if(reply && isRedis){
+    if(reply){
         console.log("USING", redisText)
         return res.status(200).json({success: true, data: JSON.parse(reply)})
     }
@@ -1472,8 +1471,8 @@ exports.getDiscounts = async (req, res) => {
                 image: 1,
                 slug: 1,
                 views: 1,
-                createdAt: 1,
-                updatedAt: 1,
+                // createdAt: 1,
+                // updatedAt: 1,
                 discount: {
                     $cond: {
                         if: {
@@ -1514,9 +1513,7 @@ exports.getDiscounts = async (req, res) => {
         // },
     ]).exec((err, data) => {
         if (err) return res.status(400).json({ success: false, err });
-        if(isRedis){
-            req.SET_ASYNC(redisText, JSON.stringify(data), 'EX', 60)
-        }
+        req.SET_ASYNC(redisText, JSON.stringify(data), 'EX', 60)
         res.status(200).json({
             success: true,
             data,
