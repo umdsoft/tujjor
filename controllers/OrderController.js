@@ -151,6 +151,7 @@ exports.getById = async (req, res) => {
             res.status(200).json({
                 success: true,
                 data: {
+                    dostavka: !!order.dostavka,
                     orderId: order.orderId,
                     address:  order.address,
                     createdAt: order.createdAt,
