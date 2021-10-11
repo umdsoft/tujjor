@@ -151,7 +151,7 @@ exports.getById = async (req, res) => {
             res.status(200).json({
                 success: true,
                 data: {
-                    dostavka: !!order.dostavka,
+                    dostavka: order.dostavka,
                     orderId: order.orderId,
                     address:  order.address,
                     createdAt: order.createdAt,
@@ -242,6 +242,7 @@ exports.getAll = async (req, res) => {
                                 user: "$user.name",
                                 amount: 1,
                                 orderId: 1,
+                                dostavka: 1,
                                 address: {
                                     region:{
                                         name: "$address.region.name"
@@ -264,6 +265,7 @@ exports.getAll = async (req, res) => {
                 user: "$order.user",
                 amount: 1,
                 count: 1,
+                dostavka: "$order.dostavka",
                 orderId: "$order.orderId",
                 address: "$order.address",
                 createdAt: "$order.createdAt",
