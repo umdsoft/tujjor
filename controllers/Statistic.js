@@ -209,7 +209,7 @@ exports.dashboardShop = async (req, res) => {
     const lastOrders = await OrderProducts.find({payed: 1, shopId: shop._id}, 
         {name: 1, amount: 1, status: 1, size: 1, paramImage: 1, image: 1, description: 1, orderId: 1}).sort({createdAt: -1}).limit(5)
     await OrderProducts.aggregate([
-        { $match: {shopId: mongoose.Types.ObjectId(shop._id), payed: 1, status: 0}},
+        { $match: {shopId: mongoose.Types.ObjectId(shop._id), payed: 1}},
         {$group: { _id: "$orderId"}},
         {$group: { _id: null, count: { $sum: 1 } }},
     ]).exec((err, data)=>{
