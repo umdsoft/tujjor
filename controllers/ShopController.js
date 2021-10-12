@@ -72,12 +72,13 @@ exports.editStatus = async (req, res) => {
     );
 };
 exports.editToSeeProducts = async (req, res) => {
-    if (!(req.body.status === 1 || req.body.status === 2)) {
+    const status = parseInt(req.body.status)
+    if (!(status === 1 || status === 2)) {
         return res.status(400).json({ success: false, data: "Something went wrong" });
     }
     await Shop.findByIdAndUpdate(
         { _id: req.params.id },
-        { $set: { status: req.body.status } },
+        { $set: { status: status } },
         { new: true, fields: { isDelete: 0, __v: 0 } },
         async (err, data) => {
             if (err) {
@@ -86,7 +87,7 @@ exports.editToSeeProducts = async (req, res) => {
             if (data) {
                 Product.updateMany(
                     { shop: data._id },
-                    { $set: { shopIsActive: req.body.status === 2 ? 1 : 0 } }
+                    { $set: { shopIsActive: status === 2 ? 1 : 0 } }
                 )
             }
             res.status(200).json({ success: true, data });
