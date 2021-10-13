@@ -85,7 +85,6 @@ exports.editToSeeProducts = async (req, res) => {
                 return res.status(400).json({ success: false, data: "Not Found" });
             }
             if (data) {
-                
                 Product.updateMany(
                     { shop: data._id },
                     { $set: { shopIsActive: status === 2 ? 1 : 0 } }

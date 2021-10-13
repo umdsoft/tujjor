@@ -49,6 +49,7 @@ exports.create = async (req, res) => {
                     image: product.image,
                     description: product.description,
                     article: product.article,
+                    slug: product.slug,
                     category: product.category,
                     brand: product.brand,
                     //param Items
@@ -314,7 +315,7 @@ exports.delivered = async (req, res) => {
         res.status(400).json({success: false})
     })
 }
-exports.getMeOrder = (req, res) => {
+exports.getMeOrder = async (req, res) => {
     let status = {};
     if (req.query.status === "payed") {
         status = { $match: { status: 0} };
@@ -348,3 +349,14 @@ exports.getMeOrder = (req, res) => {
         });
     });
 };
+
+
+exports.changeData = async (req, res) => {
+    const orderProducts = await OrderProducts.find();
+    orderProducts.forEach(async (key) => {
+        const product = await Product.findById({_id: key.productId});
+        key['article'] = product.article;
+        key['slug'] = product.slug;
+        key.save();
+    })
+}

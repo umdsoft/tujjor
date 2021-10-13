@@ -71,6 +71,7 @@ const OrderProductsSchema = new mongoose.Schema(
         account: { type: String, required: true },
         percent: { type: Number, required: true },
         article: { type: String, required: true },
+        slug: {type: String, required: true},
         description: {
             uz: { type: String},
             ru: { type: String},
@@ -82,3 +83,5 @@ const OrderProductsSchema = new mongoose.Schema(
 );
 
 module.exports = mongoose.model("OrderProducts", OrderProductsSchema);
+
+
