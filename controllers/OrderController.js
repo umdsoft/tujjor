@@ -143,6 +143,7 @@ exports.getById = async (req, res) => {
                 amount: "$payedAmount",
                 count: 1,
                 article: 1,
+                slug: 1,
                 description: 1,
                 status: 1,
                 orderId: 1
@@ -351,13 +352,13 @@ exports.getMeOrder = async (req, res) => {
 };
 
 
-exports.changeData = async (req, res) => {
-    const orderProducts = await OrderProducts.find();
-    orderProducts.forEach(async (key, index) => {
-        const product = await Product.findById({_id: key.productId});
-        key['article'] = product.article;
-        key['slug'] = product.slug;
-        key.save();
-        console.log(orderProducts.length, index);
-    })
-}
+// exports.changeData = async (req, res) => {
+//     const orderProducts = await OrderProducts.find();
+//     orderProducts.forEach(async (key, index) => {
+//         const product = await Product.findById({_id: key.productId});
+//         key['article'] = product.article;
+//         key['slug'] = product.slug;
+//         key.save();
+//         console.log(orderProducts.length, index);
+//     })
+// }
