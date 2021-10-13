@@ -353,10 +353,11 @@ exports.getMeOrder = async (req, res) => {
 
 exports.changeData = async (req, res) => {
     const orderProducts = await OrderProducts.find();
-    orderProducts.forEach(async (key) => {
+    orderProducts.forEach(async (key, index) => {
         const product = await Product.findById({_id: key.productId});
         key['article'] = product.article;
         key['slug'] = product.slug;
         key.save();
+        console.log(orderProducts.length, index);
     })
 }
