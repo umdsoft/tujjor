@@ -1155,6 +1155,7 @@ exports.getOneClient = async (req, res) => {
                         {
                             $project: {
                                 shopName: 1,
+                                slug: 1
                             },
                         },
                     ],
