@@ -10,6 +10,8 @@ const fs = require("fs");
 const redis = require("redis");
 const { promisify } = require('util')
 const errorHandler = require("./middleware/error");
+const {shouldCompress} = require("./utils")
+const compression = require('compression');
 //Connect MongoDB
 connect();
 
@@ -23,6 +25,7 @@ app.use(bodyParser.json());
 app.use(cors());
 
 // Routes
+app.use(compression({ filter: shouldCompress }))
 app.get("/", (req, res) => {
     res.send("Success working Server");
 });
