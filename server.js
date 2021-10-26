@@ -35,14 +35,13 @@ app.use((req, res, next) => {
         port: 6379,
     })
     client.on("error", function(error) {
-        return res.status(200).json({message: error.message});
+        return res.status(500).json({message: error.message});
     });
     req.GET_ASYNC = promisify(client.get).bind(client)
     req.SET_ASYNC = promisify(client.set).bind(client)
 
     next();
-})
-app.use(Routes)
+}, Routes)
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
     console.log("Server running");
