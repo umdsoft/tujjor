@@ -9,9 +9,9 @@ const path = require("path");
 const fs = require("fs");
 const redis = require("redis");
 const { promisify } = require('util')
-const errorHandler = require("./middleware/error");
 const {shouldCompress} = require("./utils")
 const compression = require('compression');
+const Routes = require('./routes')
 //Connect MongoDB
 connect();
 
@@ -34,34 +34,15 @@ app.use((req, res, next) => {
         host: '127.0.0.1',
         port: 6379,
     })
+    client.on("error", function(error) {
+        return res.status(200).json({message: error.message});
+    });
     req.GET_ASYNC = promisify(client.get).bind(client)
     req.SET_ASYNC = promisify(client.set).bind(client)
 
     next();
 })
-app.use("/api/home", require("./routes/home"));
-app.use("/api/stat", require("./routes/statistic"));
-app.use("/api/message", require("./routes/message"));
-app.use("/api/payme", require("./routes/payment"));
-app.use("/api/region", require("./routes/regions"));
-app.use("/api/like", require("./routes/like"));
-app.use("/api/order", require("./routes/order"));
-app.use("/api/tag", require("./routes/tag"));
-app.use("/api/basket", require("./routes/basket"));
-app.use("/api/category", require("./routes/category"));
-app.use("/api/banner", require("./routes/banner"));
-app.use("/api/slider", require("./routes/slider"));
-app.use("/api/question", require("./routes/question"));
-app.use("/api/application", require("./routes/applicationShop"));
-app.use("/api/user", require("./routes/user"));
-app.use("/api/shop", require("./routes/shop"));
-app.use("/api/brand", require("./routes/brand"));
-app.use("/api/uploads", require("./routes/images"));
-app.use("/api/help", require("./routes/help"));
-app.use("/api/info", require("./routes/info"));
-app.use("/api/news", require("./routes/news"));
-app.use("/api/product", require("./routes/product"));
-app.use(errorHandler)
+app.use(Routes)
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
     console.log("Server running");
