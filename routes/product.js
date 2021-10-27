@@ -21,7 +21,6 @@ const upload = multer({ storage: storage });
 
 //get all && filter
 router.get("/all", protectSeller, ProductController.getAll);
-router.post("/test/all", protectSeller, ProductController.getAllTest);
 router.get("/:slug", ProductController.getOneClient);
 router.get("/seller/:slug", ProductController.getOneSeller);
 router.post("/filter", ProductController.filter);
@@ -29,22 +28,25 @@ router.post("/count", ProductController.count);
 
 //create
 router.post("/comment/create", protectUser, ProductController.commentCreate);
-router.post("/create", upload.single("image"), validateFile, ProductController.create);
+router.post("/create", protectSeller, upload.single("image"), validateFile, ProductController.create);
 router.post(
     "/param/create",
+    protectSeller,
     upload.single("image"),
     validateFile,
     ProductController.createParam
 );
-router.post("/size/create", ProductController.createSize);
+router.post("/size/create", protectSeller, ProductController.createSize);
 router.post(
     "/image/create",
+    protectSeller,
     upload.single("image"),
     validateFile,
     ProductController.createImage
 );
 router.post(
     "/footerimage/create",
+    protectSeller,
     upload.single("image"),
     validateFile,
     ProductController.createFooterImage
@@ -55,21 +57,22 @@ router.post("/discount/create", protectSeller, ProductController.createDiscount)
 router.post("/discount/create/all", protectSeller, ProductController.createDiscountAll);
 
 //update
-router.put("/:id",  ProductController.edit);
-router.put("/cardImage/:id", upload.single("image"), validateFile, ProductController.editCardImage);
+router.put("/:id", protectSeller, ProductController.edit);
+router.put("/cardImage/:id", protectSeller, upload.single("image"), validateFile, ProductController.editCardImage);
 router.put(
     "/param/:id",
+    protectSeller,
     upload.single("image"),
     validateFile,
     ProductController.editParam
 );
-router.put("/size/:id", ProductController.editSize);
+router.put("/size/:id", protectSeller, ProductController.editSize);
 
 //delete
-router.delete("/:id", ProductController.delete);
-router.delete("/image/:id", ProductController.deleteImage);
-router.delete("/footerImage/:id", ProductController.deleteFooterImage);
-router.delete("/param/:id", ProductController.deleteParam);
-router.delete("/size/:id", ProductController.deleteSize);
+router.delete("/:id", protectSeller, ProductController.delete);
+router.delete("/image/:id", protectSeller, ProductController.deleteImage);
+router.delete("/footerImage/:id", protectSeller, ProductController.deleteFooterImage);
+router.delete("/param/:id", protectSeller, ProductController.deleteParam);
+router.delete("/size/:id", protectSeller, ProductController.deleteSize);
 
 module.exports = router;

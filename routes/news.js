@@ -4,7 +4,7 @@ const md5 = require('md5');
 const path = require('path');
 const NewsController = require('../controllers/NewsController');
 const { validateFile } = require('../middleware/errorFileUpload');
-
+const { protectAdmin } = require("../middleware/auth");
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
         if (file.mimetype.startsWith('video')) {
@@ -20,14 +20,13 @@ const storage = multer.diskStorage({
 const upload = multer({storage: storage});
 
 //admin
-router.post('/create', upload.single('file'), validateFile, NewsController.create);
-router.get('/all', NewsController.getAll);
-router.get('/:slug', NewsController.getOne);
-router.get('/type', NewsController.getType);
-router.put('/:id', NewsController.edit);
-router.put('/file/:id', upload.single('file'), validateFile, NewsController.editFile);
-router.delete('/:id', NewsController.delete);
+router.post('/create', protectAdmin, upload.single('file'), validateFile, NewsController.create);
+router.get('/all', protectAdmin, NewsController.getAll);
+router.put('/:id', protectAdmin, NewsController.edit);
+router.put('/file/:id', protectAdmin, upload.single('file'), validateFile, NewsController.editFile);
+router.delete('/:id', protectAdmin, NewsController.delete);
 
 //client
 router.get('/client/all', NewsController.getClientAll);
+router.get('/:slug', NewsController.getOne);
 module.exports = router;

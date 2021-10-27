@@ -4,7 +4,7 @@ const md5 = require("md5");
 const path = require("path");
 const SliderController = require("../controllers/SliderController");
 const { validateFile } = require("../middleware/errorFileUpload");
-
+const { protectAdmin } = require("../middleware/auth");
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
         cb(null, "./public/temp");
@@ -17,13 +17,15 @@ const upload = multer({ storage: storage });
 
 router.post(
     "/create",
+    protectAdmin,
     upload.single("image"),
     validateFile,
     SliderController.create
 );
 router.get("/all", SliderController.getAll);
-router.delete("/:id", SliderController.delete);
-router.put("/:id",  SliderController.edit);
-router.put("/image/:id", upload.single("image"), validateFile, SliderController.editImage);
+router.get("/admin/all", protectAdmin, SliderController.getAllForAdmin);
+router.delete("/:id", protectAdmin, SliderController.delete);
+router.put("/:id", protectAdmin, SliderController.edit);
+router.put("/image/:id", protectAdmin, upload.single("image"), validateFile, SliderController.editImage);
 
 module.exports = router;

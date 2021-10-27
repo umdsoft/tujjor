@@ -29,11 +29,11 @@ exports.create = (req, res) => {
 exports.getAll = async (req, res) => {
     return res.status(200).json({ success: true, data: await News.find() });
 };
+exports.getAllForAdmin = async (req, res) => {
+    return res.status(200).json({ success: true, data: await News.find() });
+};
 exports.getOne = async (req, res) => {
     res.status(200).json({ success: true, data: await News.findOne({ slug: req.params.slug }) });
-};
-exports.getType = async (req, res) => {
-    res.status(200).json({ success: true, data: req });
 };
 exports.edit = async (req, res) => {
     await News.findByIdAndUpdate({ _id: req.params.id }, { $set: req.body }, (err, data) => {
@@ -74,5 +74,14 @@ exports.delete = async (req, res) => {
 };
 
 exports.getClientAll = async (req, res) => {
-    return res.status(200).json({ success: true, data: await News.find({ status: true, startTime: { $gte: Date.now() } }) });
+    const redisText = "NEWS_ALL";
+    const reply = await req.GET_ASYNC(redisText)
+    if(reply){
+        return res.status(200).json({success: true, data: JSON.parse(reply)})
+    }
+    News.find({ status: true, startTime: { $gte: Date.now() } }, (err, data) => {
+        if (err) return res.status(400).json({ success: false, err });
+        req.SET_ASYNC(redisText, JSON.stringify(data), 'EX', 60)
+        res.status(200).json({ success: true, data });
+    })
 };

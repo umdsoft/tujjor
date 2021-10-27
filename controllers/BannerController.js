@@ -20,6 +20,19 @@ exports.create = (req, res) => {
         });
 };
 
+exports.getAllForAdmin = async (req, res) => {
+    const redisText = "BANNER_ALL"
+    Banner.find({},{__v: 0})
+        .then((data) => {
+            req.SET_ASYNC(redisText, JSON.stringify(data), 'EX', 60)
+            res.status(200).json({ success: true, data });
+        })
+        .catch((err) => {
+            res.status(500).json({
+                message: err.message || "Something went wrong while retrieving banner.",
+            });
+        });
+};
 exports.getAll = async (req, res) => {
     const redisText = "BANNER_ALL"
     const reply = await req.GET_ASYNC(redisText)

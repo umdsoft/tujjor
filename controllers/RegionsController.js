@@ -22,7 +22,8 @@ exports.deleteRegion = async (req, res) => {
     await Region.findByIdAndDelete(req.params.id);
     res.status(200).json({ success: true, data: [] });
 };
-exports.getRegions = async (req, res) => {
+exports.getRegionsForAdmin = async (req, res) => {
+    const redisText = "REGION_ALL"
     await Region.aggregate([
         { $sort: { createdAt: -1 } },
         {
@@ -39,6 +40,33 @@ exports.getRegions = async (req, res) => {
                 success: false,
                 err,
             });
+        req.SET_ASYNC(redisText, JSON.stringify(data), 'EX', 60)
+        res.status(200).json({ success: true, data });
+    });
+}
+exports.getRegions = async (req, res) => {
+    const redisText = "REGION_ALL"
+    const reply = await req.GET_ASYNC(redisText)
+    if(reply){
+        return res.status(200).json({success: true, data: JSON.parse(reply)})
+    }
+    await Region.aggregate([
+        { $sort: { createdAt: -1 } },
+        {
+            $lookup: {
+                from: "districts",
+                localField: "_id",
+                foreignField: "region",
+                as: "districts",
+            },
+        },
+    ]).exec((err, data) => {
+        if (err)
+            return res.status(400).json({
+                success: false,
+                err,
+            });
+        req.SET_ASYNC(redisText, JSON.stringify(data), 'EX', 60)
         res.status(200).json({ success: true, data });
     });
 };

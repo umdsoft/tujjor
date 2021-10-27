@@ -10,7 +10,7 @@ const NewsSchema = new mongoose.Schema(
             ru: { type: String, required: true },
         },
         hashtag: { type: String, index: true },
-        startTime: { type: String, required: true },
+        startTime: { type: Date, required: true },
         file: { type: String, required: true },
         status: { type: Boolean, required: true, default: true },
         slug: { type: String, required: true, unique: true },

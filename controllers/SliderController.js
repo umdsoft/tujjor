@@ -30,17 +30,36 @@ exports.create = async (req, res) => {
             });
         });
 };
-
-exports.getAll = (req, res) => {
+exports.getAllForAdmin = async (req, res)=>{
+    const redisText = "SLIDER_ALL"
     Slider.find({},{__v: 0})
-        .then((data) => {
-            res.status(200).json({ success: true, data });
-        })
-        .catch((err) => {
-            res.status(500).json({
-                message: err.message || "Something went wrong while retrieving slider.",
-            });
+    .then((data) => {
+        req.SET_ASYNC(redisText, JSON.stringify(data), 'EX', 60)
+        res.status(200).json({ success: true, data });
+    })
+    .catch((err) => {
+        res.status(500).json({
+            message: err.message || "Something went wrong while retrieving slider.",
         });
+    });
+}
+exports.getAll = (req, res) => {
+    const redisText = "SLIDER_ALL"
+    const reply = await req.GET_ASYNC(redisText)
+    if(reply){
+        console.log("USING")
+        return res.status(200).json({success: true, data: JSON.parse(reply)})
+    }
+    Slider.find({},{__v: 0})
+    .then((data) => {
+        req.SET_ASYNC(redisText, JSON.stringify(data), 'EX', 60)
+        res.status(200).json({ success: true, data });
+    })
+    .catch((err) => {
+        res.status(500).json({
+            message: err.message || "Something went wrong while retrieving slider.",
+        });
+    });
 };
 exports.edit = async (req, res) => {
     await Slider.findByIdAndUpdate({ _id: req.params.id }, { $set: req.body })
