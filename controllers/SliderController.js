@@ -84,7 +84,18 @@ exports.edit = async (req, res) => {
 };
 
 exports.uploadImage = async (req, res) => {
-    res.status(200).json({url: `/uploads/sliders/${req.file.filename}`})
+    const { filename } = req.file;
+    await sharp(path.join(path.dirname(__dirname) + `/public/temp/${filename}`))
+        .jpeg({
+            quality: 70,
+        })
+        .toFile(path.join(path.dirname(__dirname) + `/public/uploads/sliders/${filename}`), (err) => {
+            if (err) {
+                console.log(err);
+            }
+            deleteFile(`/public/temp/${filename}`);
+        });
+    res.status(200).json({url: `/uploads/sliders/${filename}`})
 };
 exports.delete = (req, res) => {
     Slider.findByIdAndRemove(req.params.id)
