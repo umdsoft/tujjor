@@ -21,12 +21,12 @@ const upload = multer({storage: storage});
 
 //admin
 router.post('/create', protectAdmin, upload.single('file'), validateFile, NewsController.create);
-router.get('/all', protectAdmin, NewsController.getAll);
+router.get('/admin/all', protectAdmin, NewsController.getAll);
 router.put('/:id', protectAdmin, NewsController.edit);
 router.put('/file/:id', protectAdmin, upload.single('file'), validateFile, NewsController.editFile);
 router.delete('/:id', protectAdmin, NewsController.delete);
 
 //client
-router.get('/client/all', NewsController.getClientAll);
+router.get('/all', NewsController.getClientAll);
 router.get('/:slug', NewsController.getOne);
 module.exports = router;
