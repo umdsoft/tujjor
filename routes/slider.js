@@ -26,6 +26,6 @@ router.get("/all", SliderController.getAll);
 router.get("/admin/all", protectAdmin, SliderController.getAllForAdmin);
 router.delete("/:id", protectAdmin, SliderController.delete);
 router.put("/:id", protectAdmin, SliderController.edit);
-router.put("/image/:id", protectAdmin, upload.single("image"), validateFile, SliderController.editImage);
+router.put("/image", protectAdmin, upload.single("image"), validateFile, SliderController.uploadImage);
 
 module.exports = router;

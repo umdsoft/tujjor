@@ -83,16 +83,8 @@ exports.edit = async (req, res) => {
         });
 };
 
-exports.editImage = async (req, res) => {
-    const img = { image: `/uploads/sliders/${req.file.filename}` };
-    await Slider.findById({ _id: req.params.id }, async (err, data) => {
-        if (err) return res.status(200).json({ success: false, err });
-        deleteFile(`/public${data.image}`);
-    });
-    await Slider.findByIdAndUpdate({ _id: req.params.id }, { $set: img }).exec((err, data) => {
-        if (err) return res.status(400).json({ success: false, err });
-        return res.status(200).json({ success: true, data });
-    });
+exports.uploadImage = async (req, res) => {
+    res.status(200).json({url: `/uploads/sliders/${req.file.filename}`})
 };
 exports.delete = (req, res) => {
     Slider.findByIdAndRemove(req.params.id)
