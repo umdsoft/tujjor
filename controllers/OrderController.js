@@ -335,6 +335,7 @@ exports.getMeOrder = async (req, res) => {
             name: 1,
             image: 1,
             paramImage: 1,
+            productId: 1,
             size: 1,
             amount: 1,
             count: 1,
