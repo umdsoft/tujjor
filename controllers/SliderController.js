@@ -17,6 +17,7 @@ exports.create = async (req, res) => {
         });
     const slider = new Slider({
         image: `/uploads/sliders/${filename}`,
+        url: req.body.url
     });
     slider
         .save()
