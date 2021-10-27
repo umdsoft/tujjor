@@ -43,7 +43,7 @@ exports.getAllForAdmin = async (req, res)=>{
         });
     });
 }
-exports.getAll = (req, res) => {
+exports.getAll = async (req, res) => {
     const redisText = "SLIDER_ALL"
     const reply = await req.GET_ASYNC(redisText)
     if(reply){
