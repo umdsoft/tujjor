@@ -197,7 +197,7 @@ exports.createFooterImage = async (req, res) => {
 exports.commentCreate = async (req, res) => {
     const comment = new Comment({
         userId: req.user,
-        productId: req.body.product,
+        productId: req.body.productId,
         comment: req.body.comment,
         raiting: req.body.raiting,
     });
