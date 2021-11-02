@@ -199,7 +199,7 @@ exports.commentCreate = async (req, res) => {
         userId: req.user,
         productId: req.body.productId,
         comment: req.body.comment,
-        raiting: req.body.raiting,
+        rating: req.body.rating,
     });
     comment
         .save()
@@ -1148,7 +1148,7 @@ exports.getOneClient = async (req, res) => {
                     $project: {
                         name: "$user.name",
                         comment: 1,
-                        raiting: 1,
+                        rating: 1,
                         _id: 0,
                     },
                 },
