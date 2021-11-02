@@ -1135,23 +1135,23 @@ exports.getOneClient = async (req, res) => {
 
             Comment.aggregate([
                 { $match: { productId: mongoose.Types.ObjectId(data[0]?._id) } },
-                {
-                    $lookup: {
-                        from: "users",
-                        localField: "userId",
-                        foreignField: "_id",
-                        as: "user",
-                    },
-                },
-                { $unwind: "$user" },
-                {
-                    $project: {
-                        name: "$user.name",
-                        comment: 1,
-                        rating: 1,
-                        _id: 0,
-                    },
-                },
+                // {
+                //     $lookup: {
+                //         from: "users",
+                //         localField: "userId",
+                //         foreignField: "_id",
+                //         as: "user",
+                //     },
+                // },
+                // { $unwind: "$user" },
+                // {
+                //     $project: {
+                //         name: "$user.name",
+                //         comment: 1,
+                //         rating: 1,
+                //         _id: 0,
+                //     },
+                // },
             ]).exec((err, commentData) => {
                 if (err) return res.status(400).json({ success: false, err });
                 res.status(200).json({ success: true, data, comments: commentData });
