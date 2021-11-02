@@ -1132,7 +1132,7 @@ exports.getOneClient = async (req, res) => {
             },
         ]).exec((err, data) => {
             if (err) return res.status(400).json({ success: false, err });
-
+            console.log(data)
             Comment.aggregate([
                 { $match: { productId: mongoose.Types.ObjectId(data[0]?._id) } },
                 // {
