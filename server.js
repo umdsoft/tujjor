@@ -21,11 +21,14 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use(logger("dev", {
     'skip': (req, res) => req.method === "OPTIONS"
 }));
+app.use(compression({
+  filter: shouldCompress,
+  threshold: 0
+}));
 app.use(bodyParser.json());
 app.use(cors());
 
 // Routes
-app.use(compression({ filter: shouldCompress }))
 app.get("/", (req, res) => {
     res.send("Success working Server");
 });
