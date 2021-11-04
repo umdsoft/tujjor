@@ -19,21 +19,11 @@ const upload = multer({ storage: storage });
 router.post(
     "/create",
     protectAdmin,
-    upload.single("image"),
-    validateFile,
     BannerController.create
 );
+router.post("/upload", protectAdmin, upload.single("image"), BannerController.uploadImage);
 router.get("/admin/all", protectAdmin, BannerController.getAllForAdmin);
 router.delete("/:id", protectAdmin,  BannerController.delete);
 router.put("/:id", protectAdmin, BannerController.edit);
-router.put(
-    "/image/:id",
-    protectAdmin,
-    upload.single("image"),
-    validateFile,
-    BannerController.editImage
-    );
-    
-    //client
 router.get("/all", BannerController.getAll);
 module.exports = router;

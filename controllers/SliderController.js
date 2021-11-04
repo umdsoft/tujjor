@@ -4,19 +4,8 @@ const path = require("path");
 const { deleteFile } = require("../utils");
 
 exports.create = async (req, res) => {
-    const { filename } = req.file;
-    await sharp(path.join(path.dirname(__dirname) + `/public/temp/${filename}`))
-        .jpeg({
-            quality: 70,
-        })
-        .toFile(path.join(path.dirname(__dirname) + `/public/uploads/sliders/${filename}`), (err) => {
-            if (err) {
-                console.log(err);
-            }
-            deleteFile(`/public/temp/${filename}`);
-        });
     const slider = new Slider({
-        image: `/uploads/sliders/${filename}`,
+        image: req.body.image,
         url: req.body.url
     });
     slider

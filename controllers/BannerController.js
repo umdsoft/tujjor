@@ -1,9 +1,13 @@
 const Banner = require("../models/banner");
 const { deleteFile } = require("../utils");
 
+exports.uploadImage = async (req, res) => {
+    const { filename } = req.file;
+    res.status(200).json({url: `/uploads/banners/${filename}`})
+};
 exports.create = (req, res) => {
     const banner = new Banner({
-        image: `/uploads/banners/${req.file.filename}`,
+        image: req.body.image,
         url: req.body.url,
         position: req.body.position,
     });
@@ -13,13 +17,11 @@ exports.create = (req, res) => {
             res.status(200).json({ success: true, data });
         })
         .catch((err) => {
-            deleteFile(`/public/uploads/banners/${req.file.filename}`);
             res.status(400).json({
                 message: err.message || "Something went wrong while creating the banner.",
             });
         });
 };
-
 exports.getAllForAdmin = async (req, res) => {
     const redisText = "BANNER_ALL"
     Banner.find({},{__v: 0})
@@ -51,7 +53,6 @@ exports.getAll = async (req, res) => {
             });
         });
 };
-
 exports.edit = async (req, res) => {
     await Banner.findByIdAndUpdate({ _id: req.params.id }, { $set: req.body })
         .then((data) => {
@@ -72,17 +73,6 @@ exports.edit = async (req, res) => {
                 message: "Something went wrong updating note with id " + req.params.id,
             });
         });
-};
-exports.editImage = async (req, res) => {
-    const img = { image: `/uploads/brands/${req.file.filename}` };
-    await Banner.findById({ _id: req.params.id }, async (err, data) => {
-        if (err) return res.status(200).json({ success: false, err });
-        deleteFile(`/public${data.image}`);
-    });
-    await Brand.findByIdAndUpdate({ _id: req.params.id }, { $set: img }).exec((err, data) => {
-        if (err) return res.status(400).json({ success: false, err });
-        return res.status(200).json({ success: true, data });
-    });
 };
 exports.delete = (req, res) => {
     Banner.findByIdAndRemove(req.params.id)

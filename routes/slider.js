@@ -18,14 +18,12 @@ const upload = multer({ storage: storage });
 router.post(
     "/create",
     protectAdmin,
-    upload.single("image"),
-    validateFile,
     SliderController.create
 );
 router.get("/all", SliderController.getAll);
 router.get("/admin/all", protectAdmin, SliderController.getAllForAdmin);
 router.delete("/:id", protectAdmin, SliderController.delete);
 router.put("/:id", protectAdmin, SliderController.edit);
-router.post("/image", protectAdmin, upload.single("image"), validateFile, SliderController.uploadImage);
+router.post("/upload", protectAdmin, upload.single("image"), validateFile, SliderController.uploadImage);
 
 module.exports = router;
