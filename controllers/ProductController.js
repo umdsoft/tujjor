@@ -53,7 +53,6 @@ async function updateProductMinSize(index, data, res){
 //     if(!shop) return res.status(400).json({ success: false})
 //     Product.find({shop: shop._id}).sort({createdAt: 1}).then(data=>{
 //         data.forEach((key, index)=>{
-//             console.log("WORKING")
 //             key['article'] = `${shop.code}${getText(index + 1, 5)}`
 //             key.save();
 //         })
@@ -552,7 +551,6 @@ exports.filter = async (req, res) => {
     }
     const reply = await req.GET_ASYNC(redisText)
     if(reply && isRedis){
-        console.log("USING", redisText)
         return res.status(200).json({success: true, data: JSON.parse(reply)})
     }
     await Product.aggregate([
@@ -618,7 +616,6 @@ exports.filter = async (req, res) => {
     ]).exec((err, data) => {
         if (err) return res.status(400).json({ success: false, err });
         if(isRedis){
-            console.log("CASHED", redisText)
             req.SET_ASYNC(redisText, JSON.stringify(data), 'EX', 60)
         }
         res.status(200).json({
@@ -1144,7 +1141,6 @@ exports.getOneClient = async (req, res) => {
             },
         ]).exec((err, data) => {
             if (err) return res.status(400).json({ success: false, err });
-            console.log(data)
             Comment.aggregate([
                 { $match: { productId: mongoose.Types.ObjectId(data[0]?._id) } },
                 // {

@@ -92,7 +92,6 @@ exports.getAll = async (req, res) => {
         const redisText = "CATEGORY_ALL"
         const reply = await req.GET_ASYNC(redisText)
         if(reply){
-            console.log("USING")
             return res.status(200).json({success: true, data: JSON.parse(reply)})
         }
         await Category.find().exec( async (err, categories) => {

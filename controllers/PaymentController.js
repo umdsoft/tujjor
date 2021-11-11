@@ -80,11 +80,9 @@ exports.payme = async (req, res) => {
                                     amount: parseInt(shopPrice),
                                 });
                             })
-                            console.log("RECIVERS1 ",receivers)
                             if(receivers[0].amount === 0){
                                 receivers.splice(0, 1);
                             }
-                            console.log("RECIVERS2 ",receivers)
                              const transaction = new Transaction({
                                 tid: params.id,
                                 amount: params.amount / 100,
@@ -99,7 +97,6 @@ exports.payme = async (req, res) => {
                                 time: params.time,
                                 receivers: receivers,
                             });
-                            console.log("WORKING Check Transaction")
                             transaction
                                 .save()
                                 .then(() => {

@@ -281,7 +281,6 @@ exports.deleteMe = async (req, res) => {
 }
 exports.createMyNote = async (req, res) => {
     const count = await TemporaryShop.countDocuments({});
-    console.log(count)
     const temporaryShop = new TemporaryShop({
         fullNameDirector: req.body.fullNameDirector,
         shopName: req.body.shopName,

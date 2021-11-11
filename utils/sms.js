@@ -23,10 +23,8 @@ function SMS(phone, message) {
             data: text,
         })
             .then((resp) => {
-                // console.log(true);
             })
             .catch((e) => {
-                // console.log(e);
             });
     });
 }

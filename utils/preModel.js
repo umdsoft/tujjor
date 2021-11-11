@@ -44,7 +44,6 @@ exports.updateStatusByBrand = (id)=>{
             return;
         }
         if (product) {
-            console.log("BY BRAND")
             exports.updateStatusByBrand(id);
         }
     })

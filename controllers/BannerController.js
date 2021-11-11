@@ -39,7 +39,6 @@ exports.getAll = async (req, res) => {
     const redisText = "BANNER_ALL"
     const reply = await req.GET_ASYNC(redisText)
     if(reply){
-        console.log("USING")
         return res.status(200).json({success: true, data: JSON.parse(reply)})
     }
     Banner.find({},{__v: 0})

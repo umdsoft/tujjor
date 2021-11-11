@@ -36,7 +36,6 @@ exports.getAll = async (req, res) => {
     const redisText = "SLIDER_ALL"
     const reply = await req.GET_ASYNC(redisText)
     if(reply){
-        console.log("USING")
         return res.status(200).json({success: true, data: JSON.parse(reply)})
     }
     Slider.find({},{__v: 0})

@@ -253,7 +253,6 @@ exports.edit = async (req, res) => {
         );
         obj['image'] = `/uploads/users/${filename}`
     }
-    console.log(req.body)
     if(obj.password || obj.role || obj.phone || obj.email){
         return res.status(400).json({ success: false, message: "Something went wrong"})
     }
