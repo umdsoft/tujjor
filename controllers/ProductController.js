@@ -419,6 +419,12 @@ exports.filter = async (req, res) => {
                         },
                     },
                     {
+                        "article": {
+                            $regex: `.*${req.body.search}.*`,
+                            $options: "i",
+                        }
+                    },
+                    {
                         items: {
                             $regex: `.*${req.body.search}.*`,
                             $options: "i",
@@ -651,6 +657,12 @@ exports.count = async (req, res) => {
                             $regex: `.*${req.body.search}.*`,
                             $options: "i",
                         },
+                    },
+                    {
+                        "article": {
+                            $regex: `.*${req.body.search}.*`,
+                            $options: "i",
+                        }
                     },
                     {
                         "description.uz": {
