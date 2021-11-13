@@ -9,6 +9,8 @@ const connectDB = async () => {
             useUnifiedTopology: true,
             useFindAndModify: false,
         });
+        mongoose.set('bufferCommands', false);
+        mongoose.set('bufferTimeoutMS', 500);
         console.log(`MongoDB connected : ${conn.connection.host}`);
     } catch (err) {
         throw err;
