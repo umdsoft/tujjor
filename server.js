@@ -13,9 +13,8 @@ const {shouldCompress} = require("./utils")
 const compression = require('compression');
 const Routes = require('./routes')
 //Connect MongoDB
-setTimeout(function() {
-  connect();
-}, 6000);
+
+connect();
 
 // Settings
 dotenv.config({ path: "./config/config.env" });
