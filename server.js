@@ -15,7 +15,7 @@ const Routes = require('./routes')
 //Connect MongoDB
 setTimeout(function() {
   connect();
-}, 60000);
+}, 6000);
 
 // Settings
 dotenv.config({ path: "./config/config.env" });
