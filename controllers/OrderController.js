@@ -18,7 +18,7 @@ exports.create = async (req, res) => {
         let summ = 0;
         const DOSTAVKA_PRICE = 20000;
         let shops =  [];
-        console.log("REQ.Body ", req.body.products);
+        console.log("REQ.Body ", req.body);
         const products = await Promise.all(
             req.body.products.map(async (element) => {
                 
