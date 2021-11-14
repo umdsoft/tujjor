@@ -51,8 +51,9 @@ exports.payme = async (req, res) => {
     }
     async function CreateTransaction(params) {
         try {
-            await Transaction.findOne({ order: trim(params.account.order) }, async (err, data) => {
-                console.log("TRANSACTION ", data)
+            log(await Transaction.find());
+            await Transaction.findOne({ order: params.account.order }, async (err, data) => {
+                console.log("TRANSACTION ", err, data)
                 let receivers = [{
                     id: MERCHANT_ID,
                     amount: 0
