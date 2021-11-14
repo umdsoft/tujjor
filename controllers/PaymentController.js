@@ -4,14 +4,11 @@ const OrderProducts = require("../models/orderProducts");
 const Size = require("../models/size");
 const Transaction = require("../models/transaction");
 const PayedList = require("../models/payedList");
-function trim(val){
-    const value = val.toString().trim()
-    return value
-}
 exports.payme = async (req, res) => {
+    let SummAmount = 0;
     const MERCHANT_ID = "6113b418754e932e68fd87ad";
-    const PAYCOM_PASSWORD = "&ibgXksdw0S9#aORZ80Vb0HO0SQNFYmEEkgq" //test
-    // const PAYCOM_PASSWORD = "Pb61wSM%ajGhIhxqEsDAWOW8Hg0hkbjG9JCJ" //production
+    // const PAYCOM_PASSWORD = "&ibgXksdw0S9#aORZ80Vb0HO0SQNFYmEEkgq" //test
+    const PAYCOM_PASSWORD = "Pb61wSM%ajGhIhxqEsDAWOW8Hg0hkbjG9JCJ" //production
     const body = req.body;
     if (req.method !== "POST") {
         return sendResponse(Errors.TransportError, null);
@@ -33,7 +30,7 @@ exports.payme = async (req, res) => {
         CancelTransaction(body.params);
     }
     async function CheckPerformTransaction(params) {
-        await Order.findOne({ orderId: trim(params.account.order) }, (err, data) => {
+        await Order.findOne({ orderId: params.account.order }, (err, data) => {
             if (err || !data) {
                 return sendResponse(Errors.OrderNotFound, null);
             }
@@ -50,17 +47,13 @@ exports.payme = async (req, res) => {
     }
     async function CreateTransaction(params) {
         try {
-            console.log(await Transaction.find());
             await Transaction.findOne({ order: params.account.order }, async (err, data) => {
-                console.log("TRANSACTION ", err, data)
                 let receivers = [{
                     id: MERCHANT_ID,
                     amount: 0
                 }];
                 if (!data) {
-                    let orderId =  trim(params.account.order);
-                    await Order.findOne({orderId: 3},async (err,order)=>{
-                        console.log("1 NOT FOUND ", err, data);
+                    await Order.findOne({orderId: params.account.order},async (err,order)=>{
                         if(err || !order ) return sendResponse(Errors.OrderNotFound,null);
                         if(order.payed === 1) return sendResponse(Errors.OrderAvailable,null);
                         if(order.amount !== params.amount / 100)  return sendResponse(Errors.IncorrectAmount,null);
@@ -70,16 +63,15 @@ exports.payme = async (req, res) => {
                                 _id: "$shopId",
                                 account: { $first: "$account"},
                                 percent: { $first: "$percent"},
-                                amount: {$sum:  {$multiply: [{ $toInt: "$amount" } ,{ $toInt: "$count" }]}}  
+                                amount: {$sum:  {$multiply: ["$amount", "$count"]}}  
                             }}
                         ]).exec((err, data)=>{
                             if(err || !data ) return sendResponse(Errors.OrderNotFound,null);
-                            console.log("DATA ",data);
                             data.forEach((key) => {
-                                const tujjorPrice = parseInt(key.amount) * parseInt(key.percent);
-                                let shopPrice = parseInt(key.amount) * (100 - parseInt(key.percent));
+                                const tujjorPrice = key.amount * key.percent;
+                                let shopPrice = key.amount * (100 - key.percent);
                                 if(order.dostavka > 0){
-                                    shopPrice += parseInt(order.dostavka) * 100 /parseInt(order.shopCount);
+                                    shopPrice += order.dostavka * 100 /order.shopCount;
                                 }
                                 receivers[0].amount = receivers[0].amount + parseInt(tujjorPrice)
                                 receivers.push({
@@ -100,7 +92,7 @@ exports.payme = async (req, res) => {
                                 perform_time: 0,
                                 cancel_time: 0,
                                 create_time: Date.now(),
-                                order: trim(params.account.order),
+                                order: parseInt(params.account.order),
                                 time: params.time,
                                 receivers: receivers,
                             });
@@ -125,7 +117,7 @@ exports.payme = async (req, res) => {
                 }
     
                 if (data) {
-                    if(params.id.toString() !== data.tid.toString()){
+                    if(params.id !== data.tid){
                         return sendResponse(Errors.YesTransaction, null);
                     }
                     if (data.state === 1) {
@@ -331,7 +323,6 @@ exports.payme = async (req, res) => {
 
     async function CheckTransaction(params) {
         await Transaction.findOne({ tid: params.id }, (err, data) => {
-            console.log(err, data);
             if (err || !data) return sendResponse(Errors.TransactionNotFound, null);
             return sendResponse(null, {
                 create_time: data.create_time,
