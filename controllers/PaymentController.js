@@ -69,10 +69,10 @@ exports.payme = async (req, res) => {
                             if(err || !data ) return sendResponse(Errors.OrderNotFound,null);
                             data.forEach((key) => {
                                 console.log(key)
-                                const tujjorPrice = key.amount * key.percent;
-                                let shopPrice = key.amount * (100 - key.percent);
+                                const tujjorPrice = parseInt(key.amount) * parseInt(key.percent);
+                                let shopPrice = parseInt(key.amount) * (100 - parseInt(key.percent));
                                 if(order.dostavka > 0){
-                                    shopPrice += order.dostavka * 100 /order.shopCount;
+                                    shopPrice += parseInt(order.dostavka) * 100 /parseInt(order.shopCount);
                                 }
                                 receivers[0].amount = receivers[0].amount + parseInt(tujjorPrice)
                                 receivers.push({
