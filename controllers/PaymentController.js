@@ -63,7 +63,7 @@ exports.payme = async (req, res) => {
                                 _id: "$shopId",
                                 account: { $first: "$account"},
                                 percent: { $first: "$percent"},
-                                amount: {$sum:  "$payedAmount"}  
+                                amount: {$sum:  {$multiply: ["$amount", "$count"]}}  
                             }}
                         ]).exec((err, data)=>{
                             if(err || !data ) return sendResponse(Errors.OrderNotFound,null);

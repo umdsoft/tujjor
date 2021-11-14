@@ -18,8 +18,10 @@ exports.create = async (req, res) => {
         let summ = 0;
         const DOSTAVKA_PRICE = 20000;
         let shops =  [];
+        console.log("REQ.Body ", req.body.products);
         const products = await Promise.all(
             req.body.products.map(async (element) => {
+                
                 let size = await Size.findById({_id: element.size});
                 let product = await Product.findById({_id: element.product});
                 let param = await Param.findById({_id: element.param});
