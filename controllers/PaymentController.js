@@ -35,7 +35,6 @@ exports.payme = async (req, res) => {
     }
     async function CheckPerformTransaction(params) {
         await Order.findOne({ orderId: trim(params.account.order) }, (err, data) => {
-            console.log(err, data);
             if (err || !data) {
                 return sendResponse(Errors.OrderNotFound, null);
             }
@@ -59,6 +58,7 @@ exports.payme = async (req, res) => {
                 }];
                 if (!data) {
                     await Order.findOne({orderId: trim(params.account.order)},async (err,order)=>{
+                        console.log(err, data);
                         if(err || !order ) return sendResponse(Errors.OrderNotFound,null);
                         if(order.payed === 1) return sendResponse(Errors.OrderAvailable,null);
                         if(order.amount !== params.amount / 100)  return sendResponse(Errors.IncorrectAmount,null);
@@ -329,6 +329,7 @@ exports.payme = async (req, res) => {
 
     async function CheckTransaction(params) {
         await Transaction.findOne({ tid: params.id }, (err, data) => {
+            console.log(err, data);
             if (err || !data) return sendResponse(Errors.TransactionNotFound, null);
             return sendResponse(null, {
                 create_time: data.create_time,
