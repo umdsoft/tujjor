@@ -5,7 +5,9 @@ const Size = require("../models/size");
 const Transaction = require("../models/transaction");
 const PayedList = require("../models/payedList");
 function trim(val){
-    return parseInt(val.toString().trim())
+    const value = parseInt(val.toString().trim())
+    console.log("VAL ", value);
+    return value
 }
 exports.payme = async (req, res) => {
     const MERCHANT_ID = "6113b418754e932e68fd87ad";
