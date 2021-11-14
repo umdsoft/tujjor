@@ -67,8 +67,8 @@ exports.payme = async (req, res) => {
                             }}
                         ]).exec((err, data)=>{
                             if(err || !data ) return sendResponse(Errors.OrderNotFound,null);
+                            console.log("DATA ",data);
                             data.forEach((key) => {
-                                console.log(key)
                                 const tujjorPrice = parseInt(key.amount) * parseInt(key.percent);
                                 let shopPrice = parseInt(key.amount) * (100 - parseInt(key.percent));
                                 if(order.dostavka > 0){
