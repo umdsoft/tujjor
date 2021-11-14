@@ -52,13 +52,14 @@ exports.payme = async (req, res) => {
     async function CreateTransaction(params) {
         try {
             await Transaction.findOne({ order: trim(params.account.order) }, async (err, data) => {
+                console.log("TRANSACTION ", data)
                 let receivers = [{
                     id: MERCHANT_ID,
                     amount: 0
                 }];
                 if (!data) {
                     await Order.findOne({orderId: trim(params.account.order)},async (err,order)=>{
-                        console.log(err, data);
+                        console.log("1 NOT FOUND ", err, data);
                         if(err || !order ) return sendResponse(Errors.OrderNotFound,null);
                         if(order.payed === 1) return sendResponse(Errors.OrderAvailable,null);
                         if(order.amount !== params.amount / 100)  return sendResponse(Errors.IncorrectAmount,null);
