@@ -59,8 +59,7 @@ exports.payme = async (req, res) => {
                 }];
                 if (!data) {
                     let orderId =  trim(params.account.order);
-                    console.log(orderId, typeof orderId);
-                    await Order.findOne({orderId},async (err,order)=>{
+                    await Order.findOne({orderId: 3},async (err,order)=>{
                         console.log("1 NOT FOUND ", err, data);
                         if(err || !order ) return sendResponse(Errors.OrderNotFound,null);
                         if(order.payed === 1) return sendResponse(Errors.OrderAvailable,null);
