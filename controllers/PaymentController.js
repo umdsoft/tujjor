@@ -5,8 +5,7 @@ const Size = require("../models/size");
 const Transaction = require("../models/transaction");
 const PayedList = require("../models/payedList");
 function trim(val){
-    const value = parseInt(val.toString().trim())
-    console.log("VAL ", value);
+    const value = val.toString().trim()
     return value
 }
 exports.payme = async (req, res) => {
@@ -60,7 +59,7 @@ exports.payme = async (req, res) => {
                 }];
                 if (!data) {
                     let orderId =  trim(params.account.order);
-                    console.log(orderId);
+                    console.log(orderId, typeof orderId);
                     await Order.findOne({orderId},async (err,order)=>{
                         console.log("1 NOT FOUND ", err, data);
                         if(err || !order ) return sendResponse(Errors.OrderNotFound,null);
