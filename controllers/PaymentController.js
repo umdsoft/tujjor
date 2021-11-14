@@ -4,8 +4,10 @@ const OrderProducts = require("../models/orderProducts");
 const Size = require("../models/size");
 const Transaction = require("../models/transaction");
 const PayedList = require("../models/payedList");
+function trim(val){
+    return ParseInt(val.toString().trim())
+}
 exports.payme = async (req, res) => {
-    let SummAmount = 0;
     const MERCHANT_ID = "6113b418754e932e68fd87ad";
     const PAYCOM_PASSWORD = "&ibgXksdw0S9#aORZ80Vb0HO0SQNFYmEEkgq" //test
     // const PAYCOM_PASSWORD = "Pb61wSM%ajGhIhxqEsDAWOW8Hg0hkbjG9JCJ" //production
@@ -30,7 +32,7 @@ exports.payme = async (req, res) => {
         CancelTransaction(body.params);
     }
     async function CheckPerformTransaction(params) {
-        await Order.findOne({ orderId: params.account.order }, (err, data) => {
+        await Order.findOne({ orderId: trim(params.account.order) }, (err, data) => {
             if (err || !data) {
                 return sendResponse(Errors.OrderNotFound, null);
             }
@@ -47,13 +49,13 @@ exports.payme = async (req, res) => {
     }
     async function CreateTransaction(params) {
         try {
-            await Transaction.findOne({ order: params.account.order }, async (err, data) => {
+            await Transaction.findOne({ order: trim(params.account.order) }, async (err, data) => {
                 let receivers = [{
                     id: MERCHANT_ID,
                     amount: 0
                 }];
                 if (!data) {
-                    await Order.findOne({orderId: params.account.order},async (err,order)=>{
+                    await Order.findOne({orderId: trim(params.account.order)},async (err,order)=>{
                         if(err || !order ) return sendResponse(Errors.OrderNotFound,null);
                         if(order.payed === 1) return sendResponse(Errors.OrderAvailable,null);
                         if(order.amount !== params.amount / 100)  return sendResponse(Errors.IncorrectAmount,null);
@@ -93,7 +95,7 @@ exports.payme = async (req, res) => {
                                 perform_time: 0,
                                 cancel_time: 0,
                                 create_time: Date.now(),
-                                order: parseInt(params.account.order),
+                                order: trim(params.account.order),
                                 time: params.time,
                                 receivers: receivers,
                             });
