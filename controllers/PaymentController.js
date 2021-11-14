@@ -45,7 +45,6 @@ exports.payme = async (req, res) => {
             });
         });
     }
-
     async function CreateTransaction(params) {
         try {
             await Transaction.findOne({ order: params.account.order }, async (err, data) => {
@@ -337,6 +336,8 @@ exports.payme = async (req, res) => {
     }
 
     function sendResponse(error, result) {
+        console.log("Result ", result);
+        console.log("Error ", error);
         res.writeHead(200, {
             "Content-Type": "application/json; charset=utf-8",
         });
