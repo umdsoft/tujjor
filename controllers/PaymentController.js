@@ -35,6 +35,7 @@ exports.payme = async (req, res) => {
     }
     async function CheckPerformTransaction(params) {
         await Order.findOne({ orderId: trim(params.account.order) }, (err, data) => {
+            console.log(err, data);
             if (err || !data) {
                 return sendResponse(Errors.OrderNotFound, null);
             }
