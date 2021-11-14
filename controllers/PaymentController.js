@@ -120,7 +120,7 @@ exports.payme = async (req, res) => {
                 }
     
                 if (data) {
-                    if(params.id !== data.tid){
+                    if(params.id.toString() !== data.tid.toString()){
                         return sendResponse(Errors.YesTransaction, null);
                     }
                     if (data.state === 1) {
