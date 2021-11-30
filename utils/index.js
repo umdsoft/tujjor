@@ -47,9 +47,8 @@ exports.getSlug = (str) => {
     }
     let start = Date.now().toString().slice(7);
 
-    return `${start}-${transliterate(str.toLowerCase()).split(" ").join("-")}`;
+    return `${start}-${transliterate(str.toLowerCase().split("/").join("")).split(" ").join("-")}`;
 };
-
 exports.deleteFile = (url) => {
     fs.unlink(path.join(path.dirname(__dirname) + url), (err) => {});
 };
