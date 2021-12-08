@@ -1,6 +1,7 @@
 const JWT = require("jsonwebtoken");
 const User = require("../models/user");
-exports.protectUser = async (req, res, next) => {
+const Client = require("../models/client");
+exports.protectClient = async (req, res, next) => {
     let token;
     if (req.headers.token && req.headers.token.startsWith("Bearer")) {
         token = req.headers.token.split(" ")[1];
@@ -14,9 +15,9 @@ exports.protectUser = async (req, res, next) => {
     try {
         //  verify token
         const decoded = JWT.verify(token, process.env.JWT_SECRET);
-        let user = await User.findById(decoded.id);
-        if (!!user) {
-            req.user = user._id;
+        let client = await Client.findById(decoded.id);
+        if (!!client) {
+            req.user = client._id;
             next();
         } else {
             return res.status(401).json({
@@ -25,6 +26,7 @@ exports.protectUser = async (req, res, next) => {
             });
         }
     } catch (err) {
+        console.log(err);
         return res.status(401).json({
             success: false,
             data: "No authorize to access this route",

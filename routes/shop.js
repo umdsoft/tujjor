@@ -3,7 +3,7 @@ const ShopController = require("../controllers/ShopController");
 const multer = require("multer");
 const md5 = require("md5");
 const path = require("path");
-const { protectAdmin, protectSeller, protectUser } = require("../middleware/auth");
+const { protectAdmin, protectSeller, protectClient } = require("../middleware/auth");
 const { validateFile } = require("../middleware/errorFileUpload");
 
 const storage = multer.diskStorage({
@@ -28,20 +28,20 @@ router.delete("/user/:id", protectAdmin, ShopController.delete);
 //seller
 router.put("/update", protectSeller, ShopController.edit);
 router.get("/me", protectSeller, ShopController.getMe);
-router.get("/user/me", protectUser, ShopController.getMe);
+router.get("/user/me", protectClient, ShopController.getMe);
 
 //client
 router.get("/client/:slug", ShopController.getOneClient);
 router.get("/all/filter", ShopController.getShopsClient);
-router.post( "/image/upload", protectUser, upload.single("image"), validateFile, ShopController.imageUpload);
+router.post( "/image/upload", protectClient, upload.single("image"), validateFile, ShopController.imageUpload);
 
 //for create Shop
-router.post("/temp/create", protectUser, ShopController.createMyNote);
-router.get("/temp/:code", protectUser, ShopController.findMyNotes);
-router.delete("/me", protectUser, ShopController.deleteMe);
+router.post("/temp/create", protectClient, ShopController.createMyNote);
+router.get("/temp/:code", protectClient, ShopController.findMyNotes);
+router.delete("/me", protectClient, ShopController.deleteMe);
 router.post(
     "/create",
-    protectUser,
+    protectClient,
     upload.fields([
         { name: "image", maxCount: 1 },
         { name: "fileContract", maxCount: 1 },

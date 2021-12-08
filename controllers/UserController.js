@@ -1,4 +1,5 @@
 const User = require("../models/user");
+const Client = require("../models/client");
 const jwt = require("jsonwebtoken");
 const sharp = require("sharp");
 const path = require("path");
@@ -25,86 +26,41 @@ const sendTokenResponse = (user, statusCode, res) => {
         token,
     });
 };
-exports.register = async (req, res) => {
-    const user = await User.findOne({phone: req.body.phone});
-    if(user){
-        if(user.isPhoneVerification){
-            res.status(400).json({ success: false, message: "This user already registered" })   
-        } else {
-            User.findOneAndDelete({phone: req.body.phone}).then( async()=>{
-                const salt = await bcrypt.genSalt(12);
-                const pass = await bcrypt.hash(req.body.password, salt);
-                const user = new User({
-                    name: req.body.name,
-                    password: pass,
-                    phone: req.body.phone,
-                    email: req.body.email,
-                });
-                await user.save()
-                    .then(() => {
-                        res.status(201).json({ success: true, phone: user.phone})
-                    })
-                    .catch((err) => {
-                        res.status(400).json({
-                            success: false,
-                            err,
-                        });
-                    });
-            })
-        }
-    } else {
-        const salt = await bcrypt.genSalt(12);
-        const pass = await bcrypt.hash(req.body.password, salt);
-        const user = new User({
-            name: req.body.name,
-            password: pass,
-            phone: req.body.phone,
-            email: req.body.email,
-        });
-        await user
-            .save()
-            .then(() => {
-                res.status(201).json({ success: true, phone: user.phone})
-            })
-            .catch((err) => {
-                res.status(400).json({
-                    success: false,
-                    err,
-                });
-            });
-    }
-};
 exports.sendCode = async (req, res) => {
     const phone = req.body.phone;
-    let user = await User.findOne({phone: req.body.phone})
-    if(!user) return res.status(404).json({ success: false, message: "User not found!"})
+    let client = await Client.findOne({phone: req.body.phone}) 
     let code = 0;
     for (let i = 0; code.toString().length !== 5; i++) {
         code = code*10 + Math.floor(Math.random()*10)
     }
     code = code.toString()
-    User.findByIdAndUpdate({ _id: user._id}, {$set: {code: code}}).then(()=>{
-        SMS(phone, code);
-        res.status(200).json({ success: true, message: "confirmation code sent!"})
+    if(!client) {
+        const client = new Client({
+            phone: req.body.phone,
+            code: code
+        });
+        console.log(client);
+        client.save().then(()=>{
+            SMS(phone, code);
+            res.status(200).json({ success: true, message: "confirmation code sent!"})
         }).catch(err=>{
             res.status(500).json({ success: false, message: "Something went wrong"})
-            console.log(err)
         })
+    } else {
+        Client.findByIdAndUpdate({ _id: client._id}, {$set: {code: code}}).then(()=>{
+                SMS(phone, code);
+                res.status(200).json({ success: true, message: "confirmation code sent!"})
+            }).catch(err=>{
+                res.status(500).json({ success: false, message: "Something went wrong"})
+            })
+    }
 }
 exports.checkCode = async (req, res) => {
     const phone = req.body.phone;
     const code = req.body.code;
-    const user = await User.findOne({phone});
-    if(!user){
-        return res.status(400).json({ success: false, message: "User not found!"})
-    }
-    if(code === user.code){
-        User.findByIdAndUpdate({ _id: user._id}, {$set: {isPhoneVerification: true}}, {new: true}).then(()=>{
-            sendTokenResponse(user, 200, res);
-        }).catch(err=>{
-            res.status(500).json({ success: false, message: "Something went wrong"})
-            console.log(err)
-        })
+    const client = await Client.findOne({phone});
+    if(code === client.code){
+        sendTokenResponse(client, 200, res);
     } else {
         res.status(400).json({ success: false, message: "Code not equal"})
     }
@@ -157,34 +113,34 @@ exports.loginSeller = async (req, res) => {
         sendTokenResponse(user, 200, res);
     });
 };
-exports.loginClient = async (req, res) => {
-    if (!req.body.phone || !req.body.password) {
-        return res.status(400).json({
-            success: false,
-            data: "required",
-        });
-    }
-    await User.findOne({ phone: req.body.phone }, (err, user) => {
-        if (err) return res.send(err);
-        if (!user) {
-            return res.status(401).json({
-                success: false,
-                data: "phone or password wrong",
-            });
-        }
-        if (!bcrypt.compareSync(req.body.password, user.password)) {
-            return res.status(401).json({
-                success: false,
-                data: "phone or password wrong",
-            });
-        }
-        if(user.isPhoneVerification){
-            sendTokenResponse(user, 200, res);
-        } else {
-            res.status(403).json({success: false, message: "Not activated!"})
-        }
-    });
-};
+// exports.login = async (req, res) => {
+//     if (!req.body.phone || !req.body.password) {
+//         return res.status(400).json({
+//             success: false,
+//             data: "required",
+//         });
+//     }
+//     await User.findOne({ phone: req.body.phone }, (err, user) => {
+//         if (err) return res.send(err);
+//         if (!user) {
+//             return res.status(401).json({
+//                 success: false,
+//                 data: "phone or password wrong",
+//             });
+//         }
+//         if (!bcrypt.compareSync(req.body.password, user.password)) {
+//             return res.status(401).json({
+//                 success: false,
+//                 data: "phone or password wrong",
+//             });
+//         }
+//         if(user.isPhoneVerification){
+//             sendTokenResponse(user, 200, res);
+//         } else {
+//             res.status(403).json({success: false, message: "Not activated!"})
+//         }
+//     });
+// };
 exports.getUsers = async (req, res) => {
     const page = parseInt(req.query.page);
     const limit = parseInt(req.query.limit);
@@ -203,9 +159,25 @@ exports.getUsers = async (req, res) => {
     })
 
 };
-exports.me = async (req, res) => {
+exports.clientMe = async (req, res) => {
     const application = await ApplicationShop.findOne({user: req.user});
     const shop = await Shop.findOne({user: req.user});
+    await Client.findById({ _id: req.user })
+        .select({ phone: 1, email: 1, name: 1, address: 1, image: 1})
+        .exec(async (err, data) => {
+            if (err) return res.status(400).json({ success: false, err });
+            res.status(200).json({ 
+                success: true, 
+                data: {
+                    _id: data._id,
+                    phone: data.phone,
+                    address: data.address,
+                    application: (application && application.status) ? 1: 0,
+                    shop: (shop && shop.status) ? 1: 0
+                }});
+        });
+};
+exports.me = async (req, res) => {
     await User.findById({ _id: req.user })
         .select({ phone: 1, email: 1, name: 1, address: 1, image: 1})
         .exec(async (err, data) => {
@@ -216,11 +188,7 @@ exports.me = async (req, res) => {
                     _id: data._id,
                     phone: data.phone,
                     email: data.email,
-                    name: data.name,
-                    address: data.address,
-                    image: data.image,
-                    application: (application && application.status) ? 1: 0,
-                    shop: (shop && shop.status) ? 1: 0
+                    name: data.name
                 }});
         });
 };
@@ -235,34 +203,34 @@ exports.delete = async (req, res) => {
     deleteFile(`/public${result.image}`);
     return res.status(200).json({ success: true, data: [] });
 };
-exports.edit = async (req, res) => {
-    let filename, obj = req.body;
+// exports.edit = async (req, res) => {
+//     let filename, obj = req.body;
 
-    if(req.file){
-        filename = req.file.filename
-        sharp(path.join(path.dirname(__dirname) + `/public/temp/${filename}`))
-        .resize(100, 100)
-        .toFile(
-            path.join(path.dirname(__dirname) + `/public/uploads/users/${filename}`),
-            (err) => {
-                if (err) {
-                    console.log(err);
-                }
-                deleteFile(`/public/temp/${filename}`);
-            }
-        );
-        obj['image'] = `/uploads/users/${filename}`
-    }
-    if(obj.password || obj.role || obj.phone || obj.email){
-        return res.status(400).json({ success: false, message: "Something went wrong"})
-    }
-    User.findByIdAndUpdate({ _id: req.user }, { $set: obj }, { new: true , fields: { address: 1},}).exec((err, data) => {
-        if (err) {
-            return res.status(400).json({ success: false, err });
-        }
-        res.status(201).json({ success: true, data: data });
-    });
-};
+//     if(req.file){
+//         filename = req.file.filename
+//         sharp(path.join(path.dirname(__dirname) + `/public/temp/${filename}`))
+//         .resize(100, 100)
+//         .toFile(
+//             path.join(path.dirname(__dirname) + `/public/uploads/users/${filename}`),
+//             (err) => {
+//                 if (err) {
+//                     console.log(err);
+//                 }
+//                 deleteFile(`/public/temp/${filename}`);
+//             }
+//         );
+//         obj['image'] = `/uploads/users/${filename}`
+//     }
+//     if(obj.password || obj.role || obj.phone || obj.email){
+//         return res.status(400).json({ success: false, message: "Something went wrong"})
+//     }
+//     User.findByIdAndUpdate({ _id: req.user }, { $set: obj }, { new: true , fields: { address: 1},}).exec((err, data) => {
+//         if (err) {
+//             return res.status(400).json({ success: false, err });
+//         }
+//         res.status(201).json({ success: true, data: data });
+//     });
+// };
 exports.checkCodeResetPassword = async (req, res) => {
     const phone = req.body.phone;
     const code = req.body.code;

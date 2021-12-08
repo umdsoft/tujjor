@@ -1,6 +1,6 @@
 const router = require('express').Router();
 const InfoController = require('../controllers/InfoController')
-const { protectUser } = require("../middleware/auth");
+const { protectClient } = require("../middleware/auth");
 
 router.post('/create', InfoController.create);
 router.get('/all', InfoController.getAll);
