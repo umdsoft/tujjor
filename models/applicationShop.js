@@ -5,7 +5,7 @@ const ApplicationShopSchema = new mongoose.Schema(
         name: { type: String, required: true },
         user: {
             type: mongoose.Schema.ObjectId,
-            ref: "User",
+            ref: "Client",
             unique: true,
             required: true,
         },

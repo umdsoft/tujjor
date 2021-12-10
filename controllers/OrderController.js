@@ -83,7 +83,6 @@ exports.create = async (req, res) => {
             dostavka : dostavka
         });
         if (summ !== req.body.amount || !products.length) {
-            console.log("AMOUNT ERROR");
             return res.status(400).json({ success: false, message: "Something went wrong" });
         }
         products.forEach((element, index)=>{
@@ -93,17 +92,14 @@ exports.create = async (req, res) => {
                         return res.status(201).json({ success: true, data: {orderId: order.orderId, amount: order.amount}});
                     })
                     .catch((err) => {
-                        console.log("96", err);
                         return res.status(400).json({ success: false, err });
                     });
                 }).catch(err=>{
                     OrderProducts.deleteMany({orderId: order.orderId})
-                    console.log("101", err);
                     return res.status(400).json({ success: false, err });
                 })
             } else {
                 new OrderProducts(element).save().catch(err=>{
-                    console.log("106", err);
                     OrderProducts.deleteMany({orderId: order.orderId})
                     return res.status(400).json({ success: false, err });
                 })

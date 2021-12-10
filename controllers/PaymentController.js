@@ -336,8 +336,6 @@ exports.payme = async (req, res) => {
     }
 
     function sendResponse(error, result) {
-        console.log("Result ", result);
-        console.log("Error ", error);
         res.writeHead(200, {
             "Content-Type": "application/json; charset=utf-8",
         });

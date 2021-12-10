@@ -13,7 +13,7 @@ const TemporaryShopSchema = new mongoose.Schema(
         email: { type: String, required: true},
         user: {
             type: mongoose.Schema.ObjectId,
-            ref: "User",
+            ref: "Client",
             required: true,
             index: true
         },

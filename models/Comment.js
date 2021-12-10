@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const Comment = new mongoose.Schema({
     userId: {
         type: mongoose.Schema.ObjectId,
-        ref: "User",
+        ref: "Client",
         required: true,
         index: true,
     },

@@ -93,4 +93,45 @@ exports.protectSeller = async (req, res, next) => {
         });
     }
 };
-
+exports.protectAuthOrder = async (req, res, next) => {
+    let token;
+    const phone = req.body.address ? req.body.address.phone : null;
+    if(!phone){
+        return res.status(400).json({message: "Invalid phone number"});
+    }
+    if (req.headers.token && req.headers.token.startsWith("Bearer")) {
+        token = req.headers.token.split(" ")[1];
+    }
+    if (!token) {
+        return createAndCheck(req, next, phone)
+    }
+    try {
+        //  verify token
+        const decoded = JWT.verify(token, process.env.JWT_SECRET);
+        let client = await Client.findById(decoded.id);
+        if (!!client) {
+            req.user = client._id;
+            next();
+        } else {
+            return createAndCheck(req, next, phone)
+        }
+    } catch (err) {
+        return res.status(400).json({
+            success: false,
+            message: err?.message,
+        });
+    }
+}
+async function createAndCheck(req, next, phone){
+    const result = await Client.findOne({phone});
+    if(result){
+        req.user = result._id;
+        next();
+    } else {
+        const client = new Client({phone});
+        client.save().then(() => {
+            req.user = client._id;
+            next();
+        })
+    }
+}

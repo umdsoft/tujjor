@@ -4,7 +4,7 @@ const OrderProducts = require("../models/orderProducts")
 const Order = require("../models/order")
 const Shop = require("../models/shop")
 const Product = require("../models/product")
-const User = require("../models/user")
+const Client = require("../models/client")
 exports.statShop = async (req, res) => {
     PayedList.aggregate([
         {
@@ -188,7 +188,7 @@ exports.statCategory = async (req, res) => {
 };
 
 exports.dashboardAdmin = async (req, res) => {
-    const users = await User.countDocuments({role: "client"});
+    const users = await Client.countDocuments();
     const shops = await Shop.countDocuments({status: {$ne: 0}, isDelete: false});
     const products = await Product.countDocuments({status: 1, isDelete: false});
     const orders = await Order.countDocuments({payed: 1});

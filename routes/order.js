@@ -1,8 +1,8 @@
 const router = require("express").Router();
 const OrderController = require("../controllers/OrderController");
-const { protectClient, protectSeller } = require("../middleware/auth");
+const { protectClient, protectSeller, protectAuthOrder } = require("../middleware/auth");
 
-router.post("/create", protectClient, OrderController.create);
+router.post("/create", protectAuthOrder, OrderController.create);
 router.get("/all",protectSeller, OrderController.getAll);
 router.get("/me", protectClient, OrderController.getMeOrder);
 router.put("/client/:id", protectClient, OrderController.delivered);

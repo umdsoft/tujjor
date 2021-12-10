@@ -1,8 +1,8 @@
 const User = require("../models/user");
 const Client = require("../models/client");
-const jwt = require("jsonwebtoken");
-const sharp = require("sharp");
-const path = require("path");
+// const jwt = require("jsonwebtoken");
+// const sharp = require("sharp");
+// const path = require("path");
 const bcrypt = require("bcrypt");
 const { deleteFile } = require("../utils");
 const SMS = require("../utils/sms");
@@ -39,7 +39,6 @@ exports.sendCode = async (req, res) => {
             phone: req.body.phone,
             code: code
         });
-        console.log(client);
         client.save().then(()=>{
             SMS(phone, code);
             res.status(200).json({ success: true, message: "confirmation code sent!"})

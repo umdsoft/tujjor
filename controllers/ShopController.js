@@ -1,5 +1,6 @@
 const Shop = require("../models/shop");
 const User = require("../models/user");
+const Client = require("../models/client");
 const Product = require("../models/product");
 const TemporaryShop = require("../models/temporaryShop");
 const { getSlug, deleteFile, getText } = require("../utils");
@@ -58,18 +59,26 @@ exports.editStatus = async (req, res) => {
     if (!req.body || !req.body.category || !req.body.percent) {
         return res.status(400).json({ success: false, data: "Something went wrong" });
     }
-    await Shop.findOneAndUpdate(
-        { _id: req.params.id },
-        { $set: { status: 1, category: req.body.category, percent: req.body.percent } },
-        { new: true, fields: { isDelete: 0, __v: 0 } },
-        async (err, data) => {
-            if (err) {
-                return res.status(400).json({ success: false, data: "Not Found" });
-            }
-            await User.findOneAndUpdate({ _id: data.user }, { $set: { role: "seller" } });
-            res.status(200).json({ success: true, data });
-        }
-    );
+    Client.findOne({ _id: data.user }).then((client) => {
+        const user = new User({
+            phone: client.phone,
+            name: client.name,
+            role: "seller"
+        })
+        user.save().then(async ()=>{
+            await Shop.findOneAndUpdate(
+                { _id: req.params.id },
+                { $set: { status: 1, user: user._id, category: req.body.category, percent: req.body.percent } },
+                { new: true, fields: { isDelete: 0, __v: 0 } },
+                async (err, data) => {
+                    if (err) {
+                        return res.status(400).json({ success: false, data: "Not Found" });
+                    }
+                    res.status(200).json({ success: true, data });
+                }
+            );
+        })
+    })
 };
 exports.editToSeeProducts = async (req, res) => {
     const status = parseInt(req.body.status)
