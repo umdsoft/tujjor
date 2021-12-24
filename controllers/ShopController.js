@@ -59,7 +59,7 @@ exports.editStatus = async (req, res) => {
     if (!req.body || !req.body.category || !req.body.percent) {
         return res.status(400).json({ success: false, data: "Something went wrong" });
     }
-    Client.findOne({ _id: data.user }).then((client) => {
+    Client.findOne({ _id: req.user }).then((client) => {
         const user = new User({
             phone: client.phone,
             name: client.name,
