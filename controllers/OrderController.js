@@ -135,7 +135,7 @@ exports.getById = async (req, res) => {
             return res.status(404).json({success: false, message: "Not Found"});
         }
         await OrderProducts.aggregate([
-            {$match: { shopId: mongoose.Types.ObjectId(shop._id), payed: 1, orderId: parseInt(req.params.orderId)} },
+            {$match: { shopId: mongoose.Types.ObjectId(shop._id), orderId: parseInt(req.params.orderId)} },
             {$project: {
                 name: 1,
                 image: 1,
