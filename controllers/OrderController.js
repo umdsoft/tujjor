@@ -39,7 +39,7 @@ exports.create = async (req, res) => {
                     }
                 };
                 return {
-                    status: 0,
+                    status: -1,
                     orderId: count,
                     user: req.user,
                     count: element.count,
@@ -319,7 +319,9 @@ exports.delivered = async (req, res) => {
 }
 exports.getMeOrder = async (req, res) => {
     let status = {};
-    if (req.query.status === "payed") {
+    if (req.query.status === "notPayed") {
+        status = { $match: { status: -1} };
+    } else if (req.query.status === "payed") {
         status = { $match: { status: 0} };
     } else if (req.query.status === "onTheWay") {
         status = { $match: { status: 1 } };
