@@ -80,6 +80,7 @@ exports.create = async (req, res) => {
                 address: req.body.address ? req.body.address.address : null,
                 phone: req.body.address ? req.body.address.phone : null,
             },
+            name: req.body.name,
             shopCount : shops.length,
             dostavka : dostavka
         });
