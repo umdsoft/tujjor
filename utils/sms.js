@@ -1,11 +1,11 @@
 const axios = require("axios");
 
-function SMS(phone, message) {
+async function SMS(phone, message) {
     const data = {
         email: "axror.uzza@mail.ru",
         password: "J17vF2MlnfoJNHaehj46Gmic3cCS4brsyLhkInuv",
     };
-    axios({
+    await axios({
         method: "POST",
         url: "http://notify.eskiz.uz/api/auth/login",
         data,
@@ -25,7 +25,8 @@ function SMS(phone, message) {
             .then((resp) => {
             })
             .catch((e) => {
+                throw e;
             });
-    });
+    })
 }
 module.exports = SMS;

@@ -5,6 +5,7 @@ const Size = require("../models/size");
 const Product = require("../models/product");
 const Param = require("../models/param");
 const mongoose = require("mongoose");
+const SMS = require("../utils/sms");
 exports.create = async (req, res) => {
     try {
         
@@ -354,7 +355,14 @@ exports.getMeOrder = async (req, res) => {
         });
     });
 };
-
+exports.sendSms = async (req, res)=>{
+    const {phone,link} = req.body;
+    SMS(phone, link).then(()=>{
+        res.status(200).json({ success: true })
+    }).catch(() =>{
+        res.status(500).json({ success: false, message: "Something went wrong"})
+    })
+}
 
 // exports.changeData = async (req, res) => {
 //     const orderProducts = await OrderProducts.find();
