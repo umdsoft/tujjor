@@ -174,6 +174,7 @@ exports.getAll = async (req, res) => {
         const limit = parseInt(req.query.limit);
         const status = parseInt(req.query.status);
         const shop = await Shop.findOne({user: req.user})
+        console.log("status ", status);
         let count = 0;
         await OrderProducts.aggregate([ 
             { $match: { status: status, shopId: mongoose.Types.ObjectId(shop._id), payed: 1} },
