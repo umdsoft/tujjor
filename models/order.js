@@ -12,6 +12,7 @@ const OrderSchema = new mongoose.Schema(
             index: true,
             required: true,
         },
+        name: String,
         shopCount: {type: Number, required: true},
         dostavka: { type: Number, required: true},
         paySystem: {
