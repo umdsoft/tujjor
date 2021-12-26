@@ -116,8 +116,7 @@ exports.getById = async (req, res) => {
     try {
         const shop = await Shop.findOne({user: req.user})
         const order = await Order.findOne({
-            orderId: parseInt(req.params.orderId),
-            payed: 1
+            orderId: parseInt(req.params.orderId)
         },{orderId: 1, address: 1, user: 1, createdAt: 1, dostavka: 1})
         .populate({ path: "address", 
             populate: {
