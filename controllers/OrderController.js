@@ -158,6 +158,7 @@ exports.getById = async (req, res) => {
                     orderId: order.orderId,
                     address:  order.address,
                     createdAt: order.createdAt,
+                    name: order.name,
                     user: order.user,
                     products: data
                 }
