@@ -40,7 +40,7 @@ exports.create = async (req, res) => {
                     }
                 };
                 return {
-                    status: -1,
+                    status: 11,
                     orderId: count,
                     user: req.user,
                     count: element.count,
@@ -322,7 +322,7 @@ exports.delivered = async (req, res) => {
 exports.getMeOrder = async (req, res) => {
     let status = {};
     if (req.query.status === "notPayed") {
-        status = { $match: { status: -1} };
+        status = { $match: { status: 11} };
     } else if (req.query.status === "payed") {
         status = { $match: { status: 0} };
     } else if (req.query.status === "onTheWay") {
