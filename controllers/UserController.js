@@ -40,16 +40,22 @@ exports.sendCode = async (req, res) => {
             code: code
         });
         client.save().then(()=>{
-            SMS(phone, code);
-            res.status(200).json({ success: true, message: "confirmation code sent!"})
-        }).catch(err=>{
+            SMS(phone, code).then(()=>{
+                    res.status(200).json({ success: true, message: "confirmation code sent!"})
+                }).catch(e =>{
+                    throw e
+                })
+        }).catch(()=>{
             res.status(500).json({ success: false, message: "Something went wrong"})
         })
     } else {
         Client.findByIdAndUpdate({ _id: client._id}, {$set: {code: code}}).then(()=>{
-                SMS(phone, code);
-                res.status(200).json({ success: true, message: "confirmation code sent!"})
-            }).catch(err=>{
+                SMS(phone, code).then(()=>{
+                    res.status(200).json({ success: true, message: "confirmation code sent!"})
+                }).catch(e =>{
+                    throw e
+                })
+            }).catch(()=>{
                 res.status(500).json({ success: false, message: "Something went wrong"})
             })
     }
