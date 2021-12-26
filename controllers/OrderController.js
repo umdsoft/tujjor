@@ -177,7 +177,7 @@ exports.getAll = async (req, res) => {
         console.log("status ", status);
         let count = 0;
         await OrderProducts.aggregate([ 
-            { $match: { status: status, shopId: mongoose.Types.ObjectId(shop._id), payed: 1} },
+            { $match: {shopId: mongoose.Types.ObjectId(shop._id), payed: 1} },
             {
                 $group: {_id: "$orderId"}
             },
@@ -189,7 +189,7 @@ exports.getAll = async (req, res) => {
             count = data[0]?data[0].count:0
         })
         await OrderProducts.aggregate([
-            { $match: { status: status, shopId: mongoose.Types.ObjectId(shop._id), payed: 1} },
+            { $match: {shopId: mongoose.Types.ObjectId(shop._id), payed: 1} },
             {$project: {
                 name: 1,
                 image: 1,
