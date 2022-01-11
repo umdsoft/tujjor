@@ -18,6 +18,7 @@ router.post("/checkCode", UserController.checkCode);
 router.post("/getCode", UserController.sendCode);
 
 router.post("/admin/login", UserController.loginAdmin);
+router.post("/admin/create", protectAdmin, UserController.create);
 router.post("/seller/login", UserController.loginSeller);
 router.get("/all", protectAdmin, UserController.getUsers);
 router.get("/me", protectClient, UserController.clientMe);

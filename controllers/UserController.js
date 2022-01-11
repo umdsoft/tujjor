@@ -70,6 +70,31 @@ exports.checkCode = async (req, res) => {
         res.status(400).json({ success: false, message: "Code not equal"})
     }
 }
+exports.create = async (req, res) =>{
+    const user = await User.findOne({phone: req.body.phone});
+    if(user){
+        res.status(409).json({ success: false, message: "User already exists"});
+    } else {
+        const salt = await bcrypt.genSalt(12);
+        const pass = await bcrypt.hash(req.body.password, salt);
+        const user = new User({
+            name: req.body.name,
+            password: pass,
+            phone: req.body.phone
+        });
+        await user
+            .save()
+            .then(() => {
+                res.status(201).json({ success: true, phone: user.phone})
+            })
+            .catch((err) => {
+                res.status(400).json({
+                    success: false,
+                    err,
+                });
+            });
+    }
+}
 exports.loginAdmin = async (req, res) => {
     if (!req.body.phone || !req.body.password) {
         return res.status(400).json({

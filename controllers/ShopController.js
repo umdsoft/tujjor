@@ -1,6 +1,7 @@
 const Shop = require("../models/shop");
 const User = require("../models/user");
 const Client = require("../models/client");
+const bcrypt = require("bcrypt");
 const Product = require("../models/product");
 const TemporaryShop = require("../models/temporaryShop");
 const { getSlug, deleteFile, getText } = require("../utils");
@@ -56,29 +57,39 @@ exports.updateItems = async (req, res) => {
     );
 }
 exports.editStatus = async (req, res) => {
-    if (!req.body || !req.body.category || !req.body.percent) {
+    const shop = await Shop.findById(req.params.id);
+    console.log(shop)
+    if (!shop || !req.body || !req.body.category || !req.body.percent) {
         return res.status(400).json({ success: false, data: "Something went wrong" });
     }
-    Client.findOne({ _id: req.user }).then((client) => {
-        const user = new User({
-            phone: client.phone,
-            name: client.name,
-            role: "seller"
-        })
-        user.save().then(async ()=>{
-            await Shop.findOneAndUpdate(
-                { _id: req.params.id },
-                { $set: { status: 1, user: user._id, category: req.body.category, percent: req.body.percent } },
-                { new: true, fields: { isDelete: 0, __v: 0 } },
-                async (err, data) => {
-                    if (err) {
-                        return res.status(400).json({ success: false, data: "Not Found" });
+    try {
+        Client.findOne({ _id: shop.user }).then( async (client) => {
+            const salt = await bcrypt.genSalt(12);
+            const pass = await bcrypt.hash(shop.phone, salt);
+            const user = new User({
+                phone: shop.phone,
+                name: client.name,
+                password: pass,
+                role: "seller"
+            })
+            user.save().then(async ()=>{
+                await Shop.findOneAndUpdate(
+                    { _id: req.params.id },
+                    { $set: { status: 1, user: user._id, category: req.body.category, percent: req.body.percent } },
+                    { new: true, fields: { isDelete: 0, __v: 0 } },
+                    async (err, data) => {
+                        if (err) {
+                            return res.status(400).json({ success: false, data: "Not Found" });
+                        }
+                        res.status(200).json({ success: true, data });
                     }
-                    res.status(200).json({ success: true, data });
-                }
-            );
+                );
+            })
         })
-    })
+    } catch (error) {
+        res.status(500).json({ message: 'Internal Server Error'});
+    }
+    
 };
 exports.editToSeeProducts = async (req, res) => {
     const status = parseInt(req.body.status)
@@ -243,7 +254,7 @@ exports.getOneClient = (req, res) => {
 //for create shop
 exports.create = async (req, res) => {
     const lastShop = await Shop.findOne({}, {code: 1}).sort({code: -1});
-    const count = parseInt(lastShop.code) + 1;
+    const count = parseInt(lastShop?.code || 0) + 1;
     const shop = new Shop({
         fullNameDirector: req.body.fullNameDirector,
         shopName: req.body.shopName,
