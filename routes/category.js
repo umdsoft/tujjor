@@ -1,7 +1,8 @@
 const router = require("express").Router();
 const CategoryController = require("../controllers/CategoryController");
-const { protectAdmin } = require("../middleware/auth");
-router.post("/create",protectAdmin, CategoryController.create);
+const {protectAdmin} = require("../middleware/auth");
+
+router.post("/create", protectAdmin, CategoryController.create);
 router.get("/admin/all", protectAdmin, CategoryController.getAllForAdmin);
 router.get("/all", CategoryController.getAll);
 router.get("/:id", CategoryController.getOne);
