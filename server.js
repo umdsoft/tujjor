@@ -26,7 +26,9 @@ app.use(cors());
 app.get("/", (req, res) => {
   res.send("Success working Server");
 });
-
+app.get("/test", (req, res) => {
+  res.send("222");
+});
 app.use("/api/home", require("./routes/home"));
 app.use("/api/stat", require("./routes/statistic"));
 app.use("/api/message", require("./routes/message"));
