@@ -7,7 +7,6 @@ const dotenv = require("dotenv");
 const connect = require("./config/db");
 const path = require("path");
 const fs = require("fs");
-const redis = require("redis");
 const {promisify} = require("util");
 const {shouldCompress} = require("./utils");
 const compression = require("compression");
@@ -36,20 +35,9 @@ app.use(cors());
 app.get("/", (req, res) => {
   res.send("Success working Server");
 });
-const client = redis.createClient({
-  host: "127.0.0.1",
-  port: 6379,
-});
-app.use((req, res, next) => {
-  try {
-    req.GET_ASYNC = promisify(client.get).bind(client);
-    req.SET_ASYNC = promisify(client.set).bind(client);
-    next();
-  } catch (error) {
-    return res.status(500).json({message: error.message});
-  }
-}, Routes);
+
+app.use(Routes);
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
-  console.log("Server running");
+  console.log("Server running", PORT);
 });
