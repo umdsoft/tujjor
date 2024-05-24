@@ -10,7 +10,7 @@ const fs = require("fs");
 const {promisify} = require("util");
 const {shouldCompress} = require("./utils");
 const compression = require("compression");
-const routes = require("./routes");
+const router = require("./routes");
 //Connect MongoDB
 connect();
 
@@ -36,7 +36,7 @@ app.get("/", (req, res) => {
   res.send("Success working Server");
 });
 
-app.use("/", routes);
+app.use("/", router);
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
   console.log("Server running", PORT);
