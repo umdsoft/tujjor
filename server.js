@@ -1,5 +1,5 @@
 const express = require("express");
-const router = require("express").Router();
+
 const app = express();
 const logger = require("morgan");
 const bodyParser = require("body-parser");
@@ -11,24 +11,14 @@ const fs = require("fs");
 const {promisify} = require("util");
 const {shouldCompress} = require("./utils");
 const compression = require("compression");
-const errorHandler = require("./middleware/error");
+// const errorHandler = require("./middleware/error");
 //Connect MongoDB
 connect();
 
 // Settings
 dotenv.config({path: "./config/config.env"});
 app.use(express.static(path.join(__dirname, "public")));
-app.use(
-  logger("dev", {
-    skip: (req, res) => req.method === "OPTIONS",
-  })
-);
-app.use(
-  compression({
-    filter: shouldCompress,
-    threshold: 0,
-  })
-);
+
 app.use(bodyParser.json());
 app.use(cors());
 
@@ -59,7 +49,7 @@ app.use("/api/help", require("./routes/help"));
 app.use("/api/info", require("./routes/info"));
 app.use("/api/news", require("./routes/news"));
 app.use("/api/product", require("./routes/product"));
-app.use(errorHandler);
+// app.use(errorHandler);
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
   console.log("Server running", PORT);
