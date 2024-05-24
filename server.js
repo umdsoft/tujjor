@@ -1,4 +1,5 @@
 const express = require("express");
+const router = require("express").Router();
 const app = express();
 const logger = require("morgan");
 const bodyParser = require("body-parser");
@@ -11,7 +12,6 @@ const {promisify} = require("util");
 const {shouldCompress} = require("./utils");
 const compression = require("compression");
 const errorHandler = require("./middleware/error");
-const router = require("./routes");
 //Connect MongoDB
 connect();
 
